@@ -121,11 +121,11 @@ export default function AthleteSheet({ profile }) {
           <div className="flex items-end justify-between gap-4">
             <div>
               <h1 className="font-display text-3xl font-black leading-none">{profile.name}</h1>
-              <p className="mt-1 text-pool-100/90">
+              <p className="mt-1 text-white">
                 {t.classOf} {profile.usEntryYear} · {t.swimmer} · 🇧🇪 {t.from} {v(extras.city)}, Belgium
               </p>
             </div>
-            <div className="text-right text-sm text-pool-100/90">
+            <div className="text-right text-sm text-white">
               <div>{v(extras.email)}</div>
               <div>{v(extras.phone)}</div>
             </div>

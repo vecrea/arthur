@@ -118,7 +118,7 @@ export default function App() {
           programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine
           étape : enrichissement via College Scorecard (données officielles US) + suivi des démarches et IA.
         </div>
-        <p className="mt-3 text-center text-xs text-pool-100/50">Party in the USA — Road to D1 · fait pour {profile.name} 🏊‍♂️🇺🇸</p>
+        <p className="mt-3 text-center text-xs text-white/70">Party in the USA — Road to D1 · fait pour {profile.name} 🏊‍♂️🇺🇸</p>
       </footer>
     </div>
   )

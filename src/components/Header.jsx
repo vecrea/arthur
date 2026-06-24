@@ -28,7 +28,7 @@ export default function Header({ tab, setTab, favCount }) {
             </p>
           </div>
         </div>
-        <p className="mt-3 max-w-2xl text-sm text-pool-100/80">
+        <p className="mt-3 max-w-2xl text-sm text-white/90">
           Ton tableau de bord pour trouver l'université américaine idéale : natation,
           diplôme d'économie et soleil. Chaque fac reçoit un{' '}
           <span className="font-semibold text-white">score de compatibilité</span> selon ton profil.

@@ -29,10 +29,10 @@ export default function ProfileCard({ profile }) {
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="font-display text-2xl font-black">{profile.name}</h2>
-              <p className="text-pool-100/80">{profile.sport} · {profile.specialty}</p>
+              <p className="text-white/90">{profile.sport} · {profile.specialty}</p>
             </div>
             <div className="text-right">
-              <div className="text-[11px] uppercase tracking-wide text-pool-100/70">Niveau actuel (converti)</div>
+              <div className="text-[11px] uppercase tracking-wide text-white/80">Niveau actuel (converti)</div>
               <div
                 className="mt-1 inline-block rounded-full px-3 py-1 font-display text-sm font-extrabold text-white"
                 style={{ background: lvl.color }}
