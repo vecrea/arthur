@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Stat, FitBadge, ScorePill, divColor } from './ui.jsx'
+import { WEBSITES, NCSA_URL } from '../data/universities.js'
 
 const fmtCost = (n) => '$' + Math.round(n / 1000) + 'k/an'
 
@@ -53,6 +54,27 @@ export default function UniversityCard({ u, isFav, onToggleFav }) {
             <Stat label="Économie" value={u.econ} color="#7c3aed" />
             <Stat label="Sport (ambiance)" value={u.athletics} color="#e63946" />
             <Stat label="Soleil" value={u.sunshine} color="#f59e0b" />
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {WEBSITES[u.id] && (
+              <a
+                href={WEBSITES[u.id]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-full bg-navy-900 px-3 py-1 text-xs font-semibold text-white transition hover:bg-navy-800"
+              >
+                🌐 Site officiel ↗
+              </a>
+            )}
+            <a
+              href={NCSA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 rounded-full bg-pool-500 px-3 py-1 text-xs font-semibold text-white transition hover:bg-pool-600"
+            >
+              🎯 NCSA Recruiting ↗
+            </a>
           </div>
         </div>
       </div>

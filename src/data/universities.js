@@ -278,3 +278,40 @@ export const universities = [
     highlights: ['Orange County ☀️', 'Campus moderne', 'Proche de LA'],
   },
 ]
+
+// Site officiel de chaque université (lien direct depuis chaque carte).
+export const WEBSITES = {
+  florida: 'https://www.ufl.edu',
+  georgia: 'https://www.uga.edu',
+  texas: 'https://www.utexas.edu',
+  asu: 'https://www.asu.edu',
+  arizona: 'https://www.arizona.edu',
+  auburn: 'https://www.auburn.edu',
+  tamu: 'https://www.tamu.edu',
+  alabama: 'https://www.ua.edu',
+  lsu: 'https://www.lsu.edu',
+  tennessee: 'https://www.utk.edu',
+  fsu: 'https://www.fsu.edu',
+  gatech: 'https://www.gatech.edu',
+  usc: 'https://www.usc.edu',
+  stanford: 'https://www.stanford.edu',
+  cal: 'https://www.berkeley.edu',
+  smu: 'https://www.smu.edu',
+  hawaii: 'https://manoa.hawaii.edu',
+  ucsd: 'https://www.ucsd.edu',
+  ucsb: 'https://www.ucsb.edu',
+  gcu: 'https://www.gcu.edu',
+  fgcu: 'https://www.fgcu.edu',
+  uiw: 'https://www.uiw.edu',
+  tampa: 'https://www.ut.edu',
+  nova: 'https://www.nova.edu',
+  lynn: 'https://www.lynn.edu',
+  emory: 'https://www.emory.edu',
+  cms: 'https://www.cmsathletics.org',
+  trinity: 'https://www.trinity.edu',
+  chapman: 'https://www.chapman.edu',
+}
+
+// Plateforme de recrutement NCSA (lien commun proposé sur chaque carte).
+export const NCSA_URL = 'https://www.ncsasports.org'
+

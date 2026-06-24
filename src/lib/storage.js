@@ -38,3 +38,23 @@ export function saveProfileExtras(obj) {
     /* ignore */
   }
 }
+
+// --- Carnet de contacts coachs ---
+const COACHES_KEY = 'pitusa.coaches.v1'
+
+export function loadCoaches() {
+  try {
+    const raw = localStorage.getItem(COACHES_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+export function saveCoaches(arr) {
+  try {
+    localStorage.setItem(COACHES_KEY, JSON.stringify(arr))
+  } catch {
+    /* ignore */
+  }
+}
