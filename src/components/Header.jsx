@@ -2,12 +2,13 @@ const TABS = [
   { key: 'ranking', label: 'Classement', icon: '🏆' },
   { key: 'favorites', label: 'Mes favoris', icon: '⭐' },
   { key: 'compare', label: 'Comparer', icon: '⚖️' },
+  { key: 'sheet', label: 'Ma fiche', icon: '📄' },
   { key: 'profile', label: 'Mon profil', icon: '🏊' },
 ]
 
 export default function Header({ tab, setTab, favCount }) {
   return (
-    <header className="relative overflow-hidden">
+    <header className="no-print relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800" />
       <div className="absolute -right-16 -top-20 h-72 w-72 rounded-full bg-pool-500/20 blur-3xl" />
       <div className="absolute -left-10 top-10 h-56 w-56 rounded-full bg-flag-500/20 blur-3xl" />

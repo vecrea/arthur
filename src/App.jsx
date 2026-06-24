@@ -4,6 +4,7 @@ import Filters from './components/Filters.jsx'
 import UniversityCard from './components/UniversityCard.jsx'
 import ProfileCard from './components/ProfileCard.jsx'
 import Compare from './components/Compare.jsx'
+import AthleteSheet from './components/AthleteSheet.jsx'
 import { profile } from './data/profile.js'
 import { universities } from './data/universities.js'
 import { computeMatches } from './lib/score.js'
@@ -106,10 +107,12 @@ export default function App() {
 
         {tab === 'compare' && <Compare unis={favUnis} onToggleFav={toggleFav} />}
 
+        {tab === 'sheet' && <AthleteSheet profile={profile} />}
+
         {tab === 'profile' && <ProfileCard profile={profile} />}
       </main>
 
-      <footer className="mx-auto max-w-6xl px-5 pb-10">
+      <footer className="no-print mx-auto max-w-6xl px-5 pb-10">
         <div className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
           ⚠️ <strong>Données indicatives (MVP).</strong> La sélection d'universités, les coûts et la force des
           programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine

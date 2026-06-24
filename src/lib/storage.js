@@ -18,3 +18,23 @@ export function saveFavorites(set) {
     /* stockage indisponible : on ignore silencieusement */
   }
 }
+
+// --- Champs editables de la fiche athlete (email, GPA, video, bio...) ---
+const EXTRAS_KEY = 'pitusa.profileExtras.v1'
+
+export function loadProfileExtras() {
+  try {
+    const raw = localStorage.getItem(EXTRAS_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+export function saveProfileExtras(obj) {
+  try {
+    localStorage.setItem(EXTRAS_KEY, JSON.stringify(obj))
+  } catch {
+    /* ignore */
+  }
+}

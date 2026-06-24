@@ -36,3 +36,31 @@ body {
 /* Petite barre de defilement discrete */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: rgba(15, 31, 72, 0.25); border-radius: 999px; }
+
+/* ---------- Impression / export PDF de la fiche athlete ---------- */
+@page {
+  margin: 1.4cm;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .print-sheet {
+    margin: 0 !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    /* forcer l'impression des couleurs (bandeau navy) */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

@@ -1,0 +1,204 @@
+import { useEffect, useState } from 'react'
+import { EVENTS, lcmToScy, formatTime } from '../lib/convert.js'
+import { loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
+
+const L = {
+  en: {
+    classOf: 'Class of', swimmer: 'Swimmer', from: 'from',
+    contact: 'Contact', academics: 'Academics', school: 'School',
+    grade: 'Current year', major: 'Intended major', gpa: 'GPA / average',
+    sat: 'SAT / ACT', english: 'English test', about: 'About me',
+    swimming: 'Swimming', clubs: 'Club(s)', coach: 'Coach / reference',
+    specialty: 'Specialty', bestTimes: 'Best times', course: 'long course (50m) → yards (SCY)',
+    event: 'Event', lcm: 'LCM (50m)', scy: 'Yards (SCY)', video: 'Race video',
+    footer: 'Recruiting profile', notSet: '—',
+  },
+  fr: {
+    classOf: 'Promo', swimmer: 'Nageur', from: 'de',
+    contact: 'Contact', academics: 'Académique', school: 'Établissement',
+    grade: 'Classe actuelle', major: 'Filière visée', gpa: 'Moyenne / GPA',
+    sat: 'SAT / ACT', english: "Test d'anglais", about: 'À propos',
+    swimming: 'Natation', clubs: 'Club(s)', coach: 'Coach / référence',
+    specialty: 'Spécialité', bestTimes: 'Meilleurs temps', course: 'grand bassin (50m) → yards (SCY)',
+    event: 'Épreuve', lcm: 'Bassin 50m', scy: 'Yards (SCY)', video: 'Vidéo de course',
+    footer: 'Fiche de recrutement', notSet: '—',
+  },
+}
+
+const DEFAULT_BIO_EN =
+  "16-year-old Belgian swimmer specializing in sprint freestyle and backstroke, competing at national level (Belgian Championships). Trained at the Cercle des Nageurs de Marseille (sub-elite group). Targeting Fall 2028 enrollment with a major in Economics. Motivated, coachable, and committed to combining academic and athletic excellence in the US."
+
+const FIELDS = [
+  { key: 'email', label: { en: 'Email', fr: 'Email' }, ph: 'arthur@email.com' },
+  { key: 'phone', label: { en: 'Phone', fr: 'Téléphone' }, ph: '+32 ...' },
+  { key: 'city', label: { en: 'City (Belgium)', fr: 'Ville (Belgique)' }, ph: 'Bruxelles' },
+  { key: 'homeClub', label: { en: 'Home club', fr: 'Club principal' }, ph: 'Ton club belge' },
+  { key: 'coachName', label: { en: 'Coach', fr: 'Coach' }, ph: 'Nom du coach' },
+  { key: 'average', label: { en: 'GPA / average', fr: 'Moyenne' }, ph: 'ex. 15/20' },
+  { key: 'sat', label: { en: 'SAT / ACT', fr: 'SAT / ACT' }, ph: 'à venir' },
+  { key: 'english', label: { en: 'English test', fr: "Test d'anglais" }, ph: 'TOEFL/Duolingo à venir' },
+  { key: 'videoUrl', label: { en: 'Race video (URL)', fr: 'Vidéo (lien)' }, ph: 'https://youtube.com/...' },
+]
+
+export default function AthleteSheet({ profile }) {
+  const [lang, setLang] = useState('en')
+  const [extras, setExtras] = useState(() => ({
+    email: '', phone: '', city: '', homeClub: '', coachName: '',
+    average: '', sat: '', english: '', videoUrl: '', bio: DEFAULT_BIO_EN,
+    ...loadProfileExtras(),
+  }))
+
+  useEffect(() => saveProfileExtras(extras), [extras])
+  const set = (k, v) => setExtras((e) => ({ ...e, [k]: v }))
+  const t = L[lang]
+  const v = (x) => (x && String(x).trim() ? x : t.notSet)
+
+  const times = EVENTS.map((e) => {
+    const lcm = profile.times?.[e.key]
+    if (lcm == null) return null
+    return { ...e, lcm, scy: lcmToScy(lcm, e.distance) }
+  }).filter(Boolean)
+
+  return (
+    <div className="space-y-4">
+      {/* Barre d'actions (non imprimee) */}
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+        <div>
+          <h2 className="font-display text-xl font-extrabold text-navy-900">📄 Ta fiche athlète</h2>
+          <p className="text-sm text-slate-500">À envoyer aux coachs US. Remplis les champs, puis exporte en PDF.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-full bg-slate-100 p-1 text-sm font-semibold">
+            {['en', 'fr'].map((lg) => (
+              <button
+                key={lg}
+                onClick={() => setLang(lg)}
+                className={'rounded-full px-3 py-1 ' + (lang === lg ? 'bg-navy-900 text-white' : 'text-slate-500')}
+              >
+                {lg.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600"
+          >
+            🖨️ Exporter / Imprimer (PDF)
+          </button>
+        </div>
+      </div>
+
+      {/* Panneau d'edition (non imprime) */}
+      <div className="no-print rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Compléter ta fiche</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {FIELDS.map((f) => (
+            <label key={f.key} className="block">
+              <span className="text-xs font-medium text-slate-500">{f.label[lang]}</span>
+              <input
+                value={extras[f.key]}
+                onChange={(e) => set(f.key, e.target.value)}
+                placeholder={f.ph}
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20"
+              />
+            </label>
+          ))}
+        </div>
+        <label className="mt-3 block">
+          <span className="text-xs font-medium text-slate-500">{t.about}</span>
+          <textarea
+            value={extras.bio}
+            onChange={(e) => set('bio', e.target.value)}
+            rows={3}
+            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20"
+          />
+        </label>
+      </div>
+
+      {/* ---------- LA FICHE (imprimable) ---------- */}
+      <div className="print-sheet mx-auto max-w-3xl overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div className="bg-gradient-to-r from-navy-900 to-navy-800 p-6 text-white print:bg-navy-900">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h1 className="font-display text-3xl font-black leading-none">{profile.name}</h1>
+              <p className="mt-1 text-pool-100/90">
+                {t.classOf} {profile.usEntryYear} · {t.swimmer} · 🇧🇪 {t.from} {v(extras.city)}, Belgium
+              </p>
+            </div>
+            <div className="text-right text-sm text-pool-100/90">
+              <div>{v(extras.email)}</div>
+              <div>{v(extras.phone)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-6 p-6 sm:grid-cols-2">
+          {/* Academics + about */}
+          <section>
+            <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600">{t.academics}</h3>
+            <dl className="space-y-1 text-sm">
+              <Row k={t.school} val={profile.currentGrade} />
+              <Row k={t.major} val={profile.major} />
+              <Row k={t.gpa} val={v(extras.average)} />
+              <Row k={t.sat} val={v(extras.sat)} />
+              <Row k={t.english} val={extras.english || profile.englishTest} />
+            </dl>
+
+            <h3 className="mb-2 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600">{t.about}</h3>
+            <p className="text-sm leading-relaxed text-slate-700">{extras.bio}</p>
+          </section>
+
+          {/* Swimming */}
+          <section>
+            <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-pool-600">{t.swimming}</h3>
+            <dl className="space-y-1 text-sm">
+              <Row k={t.specialty} val={profile.specialty} />
+              <Row k={t.clubs} val={[extras.homeClub, profile.club].filter(Boolean).join(' · ') || t.notSet} />
+              <Row k={t.coach} val={v(extras.coachName) === t.notSet ? 'CNM Marseille' : extras.coachName} />
+            </dl>
+
+            <h3 className="mb-1 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-pool-600">{t.bestTimes}</h3>
+            <p className="mb-2 text-[11px] text-slate-400">{t.course}</p>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[11px] uppercase tracking-wide text-slate-400">
+                  <th className="py-1 font-semibold">{t.event}</th>
+                  <th className="py-1 font-semibold">{t.lcm}</th>
+                  <th className="py-1 font-semibold">{t.scy}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {times.map((e) => (
+                  <tr key={e.key} className="border-t border-slate-100">
+                    <td className="py-1 font-semibold text-navy-900">{e.label}</td>
+                    <td className="py-1 tabular-nums text-slate-700">{formatTime(e.lcm)}</td>
+                    <td className="py-1 tabular-nums text-slate-500">≈ {formatTime(e.scy)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 text-xs text-slate-400">
+          <span>{t.video}: {v(extras.videoUrl)}</span>
+          <span>Party in the USA — Road to D1 · {t.footer}</span>
+        </div>
+      </div>
+
+      <p className="no-print text-center text-xs text-slate-400">
+        💡 Astuce : « Exporter » ouvre l'impression — choisis « Enregistrer en PDF » comme destination.
+        Les temps en yards sont indicatifs (à confirmer).
+      </p>
+    </div>
+  )
+}
+
+function Row({ k, val }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <dt className="text-slate-400">{k}</dt>
+      <dd className="text-right font-medium text-navy-900">{val}</dd>
+    </div>
+  )
+}
