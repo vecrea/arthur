@@ -193,15 +193,6 @@ export const universities = [
     highlights: ['Soleil d’Arizona', 'Coût abordable', 'D1 accessible'],
   },
   {
-    id: 'fgcu', name: 'Florida Gulf Coast University', shortName: 'FGCU (Eagles)',
-    city: 'Fort Myers', state: 'FL', division: 'D1', conference: 'CCSA / ASUN',
-    type: 'Publique', enrollment: 16000, sizeLabel: 'Moyenne',
-    sunshine: 5, econ: 2, athletics: 3, swim: 3, admission: 2,
-    costUSD: 35000, scholarshipNote: 'Bourses sportives possibles',
-    swimNote: 'Programme D1 mid-major bien orienté natation.',
-    highlights: ['Golfe de Floride ☀️', 'Coût raisonnable', 'D1 accessible'],
-  },
-  {
     id: 'uiw', name: 'University of the Incarnate Word', shortName: 'Incarnate Word (Cardinals)',
     city: 'San Antonio', state: 'TX', division: 'D1', conference: 'Southland',
     type: 'Privée', enrollment: 9000, sizeLabel: 'Petite',
@@ -301,7 +292,6 @@ export const WEBSITES = {
   ucsd: 'https://www.ucsd.edu',
   ucsb: 'https://www.ucsb.edu',
   gcu: 'https://www.gcu.edu',
-  fgcu: 'https://www.fgcu.edu',
   uiw: 'https://www.uiw.edu',
   tampa: 'https://www.ut.edu',
   nova: 'https://www.nova.edu',

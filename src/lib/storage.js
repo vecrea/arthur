@@ -58,3 +58,23 @@ export function saveCoaches(arr) {
     /* ignore */
   }
 }
+
+// --- Checklist des démarches (cases cochées) ---
+const CHECKLIST_KEY = 'pitusa.checklist.v1'
+
+export function loadChecklist() {
+  try {
+    const raw = localStorage.getItem(CHECKLIST_KEY)
+    return raw ? new Set(JSON.parse(raw)) : new Set()
+  } catch {
+    return new Set()
+  }
+}
+
+export function saveChecklist(set) {
+  try {
+    localStorage.setItem(CHECKLIST_KEY, JSON.stringify([...set]))
+  } catch {
+    /* ignore */
+  }
+}

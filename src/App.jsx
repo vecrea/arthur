@@ -6,6 +6,7 @@ import ProfileCard from './components/ProfileCard.jsx'
 import Compare from './components/Compare.jsx'
 import AthleteSheet from './components/AthleteSheet.jsx'
 import Coaches from './components/Coaches.jsx'
+import Steps from './components/Steps.jsx'
 import { profile } from './data/profile.js'
 import { universities } from './data/universities.js'
 import { computeMatches } from './lib/score.js'
@@ -111,6 +112,8 @@ export default function App() {
         {tab === 'sheet' && <AthleteSheet profile={profile} />}
 
         {tab === 'coaches' && <Coaches unis={matches} favorites={favorites} />}
+
+        {tab === 'steps' && <Steps />}
 
         {tab === 'profile' && <ProfileCard profile={profile} />}
       </main>
