@@ -18,12 +18,12 @@ export const LCM_TO_SCY = {
 
 // Definition des epreuves suivies.
 export const EVENTS = [
-  { key: '50FR', label: '50 NL', stroke: 'Nage libre', distance: 50 },
-  { key: '100FR', label: '100 NL', stroke: 'Nage libre', distance: 100 },
-  { key: '200FR', label: '200 NL', stroke: 'Nage libre', distance: 200 },
-  { key: '50BK', label: '50 Dos', stroke: 'Dos', distance: 50 },
-  { key: '100BK', label: '100 Dos', stroke: 'Dos', distance: 100 },
-  { key: '200BK', label: '200 Dos', stroke: 'Dos', distance: 200 },
+  { key: '50FR', label: '50 NL', labelEn: '50 Free', stroke: 'Nage libre', distance: 50 },
+  { key: '100FR', label: '100 NL', labelEn: '100 Free', stroke: 'Nage libre', distance: 100 },
+  { key: '200FR', label: '200 NL', labelEn: '200 Free', stroke: 'Nage libre', distance: 200 },
+  { key: '50BK', label: '50 Dos', labelEn: '50 Back', stroke: 'Dos', distance: 50 },
+  { key: '100BK', label: '100 Dos', labelEn: '100 Back', stroke: 'Dos', distance: 100 },
+  { key: '200BK', label: '200 Dos', labelEn: '200 Back', stroke: 'Dos', distance: 200 },
 ]
 
 // Seuils INDICATIFS de niveau en yards (SCY), hommes. Du plus rapide au plus lent.

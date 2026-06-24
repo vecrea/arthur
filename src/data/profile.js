@@ -5,13 +5,20 @@ export const profile = {
   name: 'Arthur',
   sport: 'Natation',
   specialty: 'Sprint nage libre & dos',
+  specialtyEn: 'Sprint freestyle & backstroke',
   nationality: 'Belge',
   birthDate: '2010-06-10',
   currentGrade: '5e secondaire (Belgique)',
+  currentGradeEn: '5th year, Belgian secondary',
   usEntryYear: 2028, // recruiting class : entree fac automne 2028
   major: 'Économie',
-  club: 'Stage au CNM (Cercle des Nageurs de Marseille) — groupe sous-élites',
+  majorEn: 'Economics',
+  homeClub: 'LSC',
+  coach: 'Mathieu Huberty',
+  trainingCampFr: 'Stage au Cercle des Nageurs de Marseille (CNM) — groupe sous-élites (coach Brian)',
+  trainingCampEn: 'Training camp at Cercle des Nageurs de Marseille (CNM) — sub-elite group (coach Brian)',
   englishTest: "Pas encore passé (bon niveau d'anglais)",
+  englishTestEn: 'TOEFL / Duolingo (planned)',
   gpaNote: 'À préciser (bulletin à venir)',
 
   // Temps records (LCM, en secondes)

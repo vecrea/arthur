@@ -9,7 +9,7 @@ const L = {
     grade: 'Current year', major: 'Intended major', gpa: 'GPA / average',
     sat: 'SAT / ACT', english: 'English test', about: 'About me',
     swimming: 'Swimming', clubs: 'Club(s)', coach: 'Coach / reference',
-    specialty: 'Specialty', bestTimes: 'Best times', course: 'long course (50m) → yards (SCY)',
+    specialty: 'Specialty', camp: 'Training camp', bestTimes: 'Best times', course: 'long course (50m) → yards (SCY)',
     event: 'Event', lcm: 'LCM (50m)', scy: 'Yards (SCY)', video: 'Race video',
     footer: 'Recruiting profile', notSet: '—',
   },
@@ -19,14 +19,14 @@ const L = {
     grade: 'Classe actuelle', major: 'Filière visée', gpa: 'Moyenne / GPA',
     sat: 'SAT / ACT', english: "Test d'anglais", about: 'À propos',
     swimming: 'Natation', clubs: 'Club(s)', coach: 'Coach / référence',
-    specialty: 'Spécialité', bestTimes: 'Meilleurs temps', course: 'grand bassin (50m) → yards (SCY)',
+    specialty: 'Spécialité', camp: 'Stage', bestTimes: 'Meilleurs temps', course: 'grand bassin (50m) → yards (SCY)',
     event: 'Épreuve', lcm: 'Bassin 50m', scy: 'Yards (SCY)', video: 'Vidéo de course',
     footer: 'Fiche de recrutement', notSet: '—',
   },
 }
 
 const DEFAULT_BIO_EN =
-  "16-year-old Belgian swimmer specializing in sprint freestyle and backstroke, competing at national level (Belgian Championships). Trained at the Cercle des Nageurs de Marseille (sub-elite group). Targeting Fall 2028 enrollment with a major in Economics. Motivated, coachable, and committed to combining academic and athletic excellence in the US."
+  "16-year-old Belgian swimmer specializing in sprint freestyle and backstroke. National-level competitor (Belgian Championships), training at LSC under coach Mathieu Huberty. Recently completed a training camp at the Cercle des Nageurs de Marseille (sub-elite group) under coach Brian. Targeting Fall 2028 enrollment with a major in Economics — motivated, coachable, and committed to combining academic and athletic excellence in the US."
 
 const FIELDS = [
   { key: 'email', label: { en: 'Email', fr: 'Email' }, ph: 'arthur@email.com' },
@@ -43,7 +43,7 @@ const FIELDS = [
 export default function AthleteSheet({ profile }) {
   const [lang, setLang] = useState('en')
   const [extras, setExtras] = useState(() => ({
-    email: '', phone: '', city: '', homeClub: '', coachName: '',
+    email: '', phone: '', city: '', homeClub: 'LSC', coachName: 'Mathieu Huberty',
     average: '', sat: '', english: '', videoUrl: '', bio: DEFAULT_BIO_EN,
     ...loadProfileExtras(),
   }))
@@ -137,11 +137,11 @@ export default function AthleteSheet({ profile }) {
           <section>
             <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600">{t.academics}</h3>
             <dl className="space-y-1 text-sm">
-              <Row k={t.school} val={profile.currentGrade} />
-              <Row k={t.major} val={profile.major} />
+              <Row k={t.school} val={lang === 'en' ? profile.currentGradeEn : profile.currentGrade} />
+              <Row k={t.major} val={lang === 'en' ? profile.majorEn : profile.major} />
               <Row k={t.gpa} val={v(extras.average)} />
               <Row k={t.sat} val={v(extras.sat)} />
-              <Row k={t.english} val={extras.english || profile.englishTest} />
+              <Row k={t.english} val={extras.english?.trim() ? extras.english : lang === 'en' ? profile.englishTestEn : profile.englishTest} />
             </dl>
 
             <h3 className="mb-2 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600">{t.about}</h3>
@@ -152,9 +152,10 @@ export default function AthleteSheet({ profile }) {
           <section>
             <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-pool-600">{t.swimming}</h3>
             <dl className="space-y-1 text-sm">
-              <Row k={t.specialty} val={profile.specialty} />
-              <Row k={t.clubs} val={[extras.homeClub, profile.club].filter(Boolean).join(' · ') || t.notSet} />
-              <Row k={t.coach} val={v(extras.coachName) === t.notSet ? 'CNM Marseille' : extras.coachName} />
+              <Row k={t.specialty} val={lang === 'en' ? profile.specialtyEn : profile.specialty} />
+              <Row k={t.clubs} val={v(extras.homeClub)} />
+              <Row k={t.coach} val={v(extras.coachName)} />
+              <Row k={t.camp} val={lang === 'en' ? profile.trainingCampEn : profile.trainingCampFr} />
             </dl>
 
             <h3 className="mb-1 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-pool-600">{t.bestTimes}</h3>
@@ -170,7 +171,7 @@ export default function AthleteSheet({ profile }) {
               <tbody>
                 {times.map((e) => (
                   <tr key={e.key} className="border-t border-slate-100">
-                    <td className="py-1 font-semibold text-navy-900">{e.label}</td>
+                    <td className="py-1 font-semibold text-navy-900">{lang === 'en' ? e.labelEn : e.label}</td>
                     <td className="py-1 tabular-nums text-slate-700">{formatTime(e.lcm)}</td>
                     <td className="py-1 tabular-nums text-slate-500">≈ {formatTime(e.scy)}</td>
                   </tr>

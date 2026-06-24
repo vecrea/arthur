@@ -51,8 +51,9 @@ export default function ProfileCard({ profile }) {
           <Info label="Études visées" value={`🎓 ${profile.major}`} />
           <Info label="Anglais" value={profile.englishTest} />
         </div>
-        <div className="px-4 pb-4">
-          <Info label="Club / entraînement" value={profile.club} />
+        <div className="grid grid-cols-1 gap-2 px-4 pb-4 sm:grid-cols-2">
+          <Info label="Club / coach" value={`${profile.homeClub} — ${profile.coach}`} />
+          <Info label="Stage" value={profile.trainingCampFr} />
         </div>
       </div>
 
@@ -104,7 +105,7 @@ export default function ProfileCard({ profile }) {
         <p className="mt-1 text-sm text-slate-600">
           Tes temps actuels te placent autour du niveau <strong>{lvl.label}</strong> côté US — un super point de
           départ à {ageFrom(profile.birthDate)} ans. Avec <strong>2 ans</strong> jusqu'à la rentrée {profile.usEntryYear}
-          {' '}et ton entraînement au CNM, viser la <strong>D1</strong> est un objectif réaliste. Le classement te montre
+          {' '}et ton stage au CNM (Marseille), viser la <strong>D1</strong> est un objectif réaliste. Le classement te montre
           3 catégories : <span className="font-semibold text-emerald-600">Réaliste</span>,{' '}
           <span className="font-semibold text-pool-600">Objectif</span> et{' '}
           <span className="font-semibold text-spark-600">Ambitieux</span> 🔥.
