@@ -1,0 +1,38 @@
+/* Polices Google Fonts — doit precéder toute autre regle (sauf @charset). */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  --color-navy-950: #0a1633;
+  --color-navy-900: #0f1f48;
+  --color-navy-800: #16306e;
+  --color-pool-400: #38bdf8;
+  --color-pool-500: #0ea5e9;
+  --color-pool-600: #0284c7;
+  --color-spark-400: #fbbf24;
+  --color-spark-500: #f59e0b;
+  --color-flag-500: #e63946;
+  --color-flag-600: #c81f2c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(56, 189, 248, 0.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(230, 57, 70, 0.10), transparent 55%),
+    #0a1633;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Petite barre de defilement discrete */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: rgba(15, 31, 72, 0.25); border-radius: 999px; }

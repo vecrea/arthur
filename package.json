@@ -1,0 +1,22 @@
+{
+  "name": "party-in-the-usa-road-to-d1",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Trouve l'universite US ideale pour un nageur belge : natation D1, economie et soleil.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "vite": "^6.0.7"
+  }
+}
