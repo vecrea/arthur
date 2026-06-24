@@ -7,6 +7,7 @@ import Compare from './components/Compare.jsx'
 import AthleteSheet from './components/AthleteSheet.jsx'
 import Coaches from './components/Coaches.jsx'
 import Steps from './components/Steps.jsx'
+import Ia from './components/Ia.jsx'
 import { profile } from './data/profile.js'
 import { universities } from './data/universities.js'
 import { computeMatches } from './lib/score.js'
@@ -81,7 +82,7 @@ export default function App() {
 
             <div className="grid gap-3 lg:grid-cols-2">
               {filtered.map((u) => (
-                <UniversityCard key={u.id} u={u} isFav={favorites.has(u.id)} onToggleFav={toggleFav} />
+                <UniversityCard key={u.id} u={u} profile={profile} isFav={favorites.has(u.id)} onToggleFav={toggleFav} />
               ))}
             </div>
             {filtered.length === 0 && (
@@ -95,7 +96,7 @@ export default function App() {
         {tab === 'favorites' && (
           <div className="grid gap-3 lg:grid-cols-2">
             {favUnis.map((u) => (
-              <UniversityCard key={u.id} u={u} isFav onToggleFav={toggleFav} />
+              <UniversityCard key={u.id} u={u} profile={profile} isFav onToggleFav={toggleFav} />
             ))}
             {favUnis.length === 0 && (
               <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200 lg:col-span-2">
@@ -111,9 +112,11 @@ export default function App() {
 
         {tab === 'sheet' && <AthleteSheet profile={profile} />}
 
-        {tab === 'coaches' && <Coaches unis={matches} favorites={favorites} />}
+        {tab === 'coaches' && <Coaches unis={matches} favorites={favorites} profile={profile} />}
 
         {tab === 'steps' && <Steps />}
+
+        {tab === 'ia' && <Ia />}
 
         {tab === 'profile' && <ProfileCard profile={profile} />}
       </main>

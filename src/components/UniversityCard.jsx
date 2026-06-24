@@ -2,12 +2,34 @@ import { useState } from 'react'
 import { Stat, FitBadge, ScorePill, divColor } from './ui.jsx'
 import { WEBSITES, NCSA_URL } from '../data/universities.js'
 import { VERIFIED_COACHES, coachsStaffLink, COACHES_AS_OF } from '../data/coaches.js'
+import { explainFit, loadWhyCache, saveWhy, hasApiKey } from '../lib/ai.js'
 
 const fmtCost = (n) => '$' + Math.round(n / 1000) + 'k/an'
 
-export default function UniversityCard({ u, isFav, onToggleFav }) {
+export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
   const [open, setOpen] = useState(false)
   const coaches = VERIFIED_COACHES[u.id]
+  const [why, setWhy] = useState(() => loadWhyCache()[u.id] || '')
+  const [whyLoading, setWhyLoading] = useState(false)
+  const [whyErr, setWhyErr] = useState('')
+
+  const askWhy = async () => {
+    setWhyErr('')
+    if (!hasApiKey()) {
+      setWhyErr('Ajoute ta clé API dans l’onglet « IA » pour activer ça.')
+      return
+    }
+    setWhyLoading(true)
+    try {
+      const t = await explainFit(profile, u)
+      setWhy(t)
+      saveWhy(u.id, t)
+    } catch (e) {
+      setWhyErr(e?.message === 'NO_KEY' ? 'Ajoute ta clé API dans l’onglet « IA ».' : 'Erreur IA : ' + (e?.message || 'réessaie'))
+    } finally {
+      setWhyLoading(false)
+    }
+  }
 
   return (
     <article className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-md">
@@ -154,6 +176,21 @@ export default function UniversityCard({ u, isFav, onToggleFav }) {
                 <div className="text-[10px] font-medium uppercase tracking-wide text-slate-400">{label}</div>
               </div>
             ))}
+          </div>
+
+          <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold text-navy-900">🤖 Pourquoi cette fac ?</span>
+              <button
+                onClick={askWhy}
+                disabled={whyLoading}
+                className="rounded-full bg-pool-500 px-3 py-1 text-xs font-bold text-white transition hover:bg-pool-600 disabled:opacity-50"
+              >
+                {whyLoading ? 'Analyse…' : why ? 'Régénérer' : 'Demander à l’IA'}
+              </button>
+            </div>
+            {why && <p className="mt-2 whitespace-pre-line text-slate-700">{why}</p>}
+            {whyErr && <p className="mt-2 text-xs text-flag-600">{whyErr}</p>}
           </div>
         </div>
       )}

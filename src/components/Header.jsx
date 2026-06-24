@@ -5,6 +5,7 @@ const TABS = [
   { key: 'sheet', label: 'Ma fiche', icon: '📄' },
   { key: 'coaches', label: 'Coachs', icon: '📇' },
   { key: 'steps', label: 'Démarches', icon: '🗓️' },
+  { key: 'ia', label: 'IA', icon: '🤖' },
   { key: 'profile', label: 'Mon profil', icon: '🏊' },
 ]
 

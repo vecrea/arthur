@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { loadCoaches, saveCoaches } from '../lib/storage.js'
 import { VERIFIED_COACHES, COACHES_AS_OF } from '../data/coaches.js'
+import { draftCoachEmail, hasApiKey } from '../lib/ai.js'
 
 const STATUS = {
   todo: { label: 'À contacter', color: '#64748b', emoji: '⚪' },
@@ -22,11 +23,38 @@ const blank = () => ({
   status: 'todo', contactedDate: '', nextFollowUp: '', notes: '',
 })
 
-export default function Coaches({ unis, favorites }) {
+export default function Coaches({ unis, favorites, profile }) {
   const [contacts, setContacts] = useState(() => loadCoaches())
   const [form, setForm] = useState(null) // null = fermé, sinon brouillon
+  const [emails, setEmails] = useState({}) // { [id]: texte }
+  const [emailLoading, setEmailLoading] = useState(null) // id en cours
+  const [emailErr, setEmailErr] = useState({}) // { [id]: message }
 
   useEffect(() => saveCoaches(contacts), [contacts])
+
+  const genEmail = async (c) => {
+    setEmailErr((e) => ({ ...e, [c.id]: '' }))
+    if (!hasApiKey()) {
+      setEmailErr((e) => ({ ...e, [c.id]: 'Ajoute ta clé API dans l’onglet « IA ».' }))
+      return
+    }
+    setEmailLoading(c.id)
+    try {
+      const t = await draftCoachEmail(profile, c)
+      setEmails((m) => ({ ...m, [c.id]: t }))
+    } catch (err) {
+      setEmailErr((e) => ({ ...e, [c.id]: err?.message === 'NO_KEY' ? 'Ajoute ta clé API dans l’onglet « IA ».' : 'Erreur IA : ' + (err?.message || 'réessaie') }))
+    } finally {
+      setEmailLoading(null)
+    }
+  }
+  const copyEmail = (id) => {
+    try {
+      navigator.clipboard?.writeText(emails[id] || '')
+    } catch {
+      /* ignore */
+    }
+  }
 
   const upd = (patch) => setForm((f) => ({ ...f, ...patch }))
 
@@ -255,7 +283,32 @@ export default function Coaches({ unis, favorites }) {
                   <button onClick={() => remove(c.id)} className="text-xs font-semibold text-flag-500 hover:underline">
                     Supprimer
                   </button>
+                  <button
+                    onClick={() => genEmail(c)}
+                    disabled={emailLoading === c.id}
+                    className="ml-auto rounded-full bg-pool-500 px-3 py-1 text-xs font-bold text-white transition hover:bg-pool-600 disabled:opacity-50"
+                  >
+                    {emailLoading === c.id ? 'Rédaction…' : '✍️ Email IA'}
+                  </button>
                 </div>
+
+                {emailErr[c.id] && <p className="mt-2 text-xs text-flag-600">{emailErr[c.id]}</p>}
+                {emails[c.id] && (
+                  <div className="mt-3">
+                    <textarea
+                      readOnly
+                      value={emails[c.id]}
+                      rows={9}
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none"
+                    />
+                    <div className="mt-1 flex items-center gap-2">
+                      <button onClick={() => copyEmail(c.id)} className="rounded-full bg-navy-900 px-3 py-1 text-xs font-bold text-white hover:bg-navy-800">
+                        📋 Copier
+                      </button>
+                      <span className="text-xs text-slate-400">Relis et personnalise avant d'envoyer.</span>
+                    </div>
+                  </div>
+                )}
               </article>
             )
           })}
