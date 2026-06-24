@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { loadCoaches, saveCoaches } from '../lib/storage.js'
+import { VERIFIED_COACHES, COACHES_AS_OF } from '../data/coaches.js'
 
 const STATUS = {
   todo: { label: 'À contacter', color: '#64748b', emoji: '⚪' },
@@ -54,6 +55,26 @@ export default function Coaches({ unis, favorites }) {
     if (toAdd.length) setContacts((cs) => [...toAdd, ...cs])
   }
 
+  const importVerified = () => {
+    const have = new Set(contacts.map((c) => `${c.schoolId}|${c.coachName}`.toLowerCase()))
+    const toAdd = []
+    for (const [sid, data] of Object.entries(VERIFIED_COACHES)) {
+      const u = unis.find((x) => x.id === sid)
+      const school = u ? u.shortName : sid
+      for (const s of data.staff) {
+        const key = `${sid}|${s.name}`.toLowerCase()
+        if (have.has(key)) continue
+        have.add(key)
+        toAdd.push({
+          ...blank(), id: newId(), schoolId: sid, school,
+          coachName: s.name, status: 'todo',
+          notes: `${s.role} · staff vérifié ${COACHES_AS_OF}`,
+        })
+      }
+    }
+    if (toAdd.length) setContacts((cs) => [...toAdd, ...cs])
+  }
+
   const stats = useMemo(() => {
     const by = (s) => contacts.filter((c) => c.status === s).length
     return {
@@ -85,6 +106,13 @@ export default function Coaches({ unis, favorites }) {
               ⭐ Importer mes favoris
             </button>
           )}
+          <button
+            onClick={importVerified}
+            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow hover:bg-emerald-700"
+            title={`Head & assistant coachs vérifiés (${COACHES_AS_OF}) de tes meilleures facs`}
+          >
+            🏊 Coachs vérifiés
+          </button>
           <button
             onClick={() => setForm(blank())}
             className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600"

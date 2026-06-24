@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Stat, FitBadge, ScorePill, divColor } from './ui.jsx'
 import { WEBSITES, NCSA_URL } from '../data/universities.js'
+import { VERIFIED_COACHES, coachsStaffLink, COACHES_AS_OF } from '../data/coaches.js'
 
 const fmtCost = (n) => '$' + Math.round(n / 1000) + 'k/an'
 
 export default function UniversityCard({ u, isFav, onToggleFav }) {
   const [open, setOpen] = useState(false)
+  const coaches = VERIFIED_COACHES[u.id]
 
   return (
     <article className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-md">
@@ -56,25 +58,40 @@ export default function UniversityCard({ u, isFav, onToggleFav }) {
             <Stat label="Soleil" value={u.sunshine} color="#f59e0b" />
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-2">
-            {WEBSITES[u.id] && (
+          <div className="mt-3">
+            {coaches && (
+              <p className="mb-2 text-xs text-slate-500">
+                🏊 Head Coach : <span className="font-semibold text-navy-900">{coaches.staff[0].name}</span>
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {WEBSITES[u.id] && (
+                <a
+                  href={WEBSITES[u.id]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-full bg-navy-900 px-3 py-1 text-xs font-semibold text-white transition hover:bg-navy-800"
+                >
+                  🌐 Site officiel ↗
+                </a>
+              )}
               <a
-                href={WEBSITES[u.id]}
+                href={coachsStaffLink(u)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 rounded-full bg-navy-900 px-3 py-1 text-xs font-semibold text-white transition hover:bg-navy-800"
+                className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700"
               >
-                🌐 Site officiel ↗
+                🏊 Coachs natation ↗
               </a>
-            )}
-            <a
-              href={NCSA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full bg-pool-500 px-3 py-1 text-xs font-semibold text-white transition hover:bg-pool-600"
-            >
-              🎯 NCSA Recruiting ↗
-            </a>
+              <a
+                href={NCSA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-full bg-pool-500 px-3 py-1 text-xs font-semibold text-white transition hover:bg-pool-600"
+              >
+                🎯 NCSA Recruiting ↗
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -92,6 +109,29 @@ export default function UniversityCard({ u, isFav, onToggleFav }) {
           <p className="text-slate-700">
             <span className="font-semibold">🏊 Natation :</span> {u.swimNote}
           </p>
+
+          {coaches && (
+            <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+              <p className="mb-1 font-semibold text-navy-900">
+                🏊 Staff natation <span className="font-normal text-slate-400">(vérifié {COACHES_AS_OF})</span>
+              </p>
+              <ul className="space-y-0.5">
+                {coaches.staff.map((c) => (
+                  <li key={c.name} className="text-slate-700">
+                    <span className="text-slate-400">{c.role} :</span> <span className="font-medium">{c.name}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-xs text-slate-400">
+                ✉️ Emails directs rarement publics en D1 — contacte via le{' '}
+                <a href={coachsStaffLink(u)} target="_blank" rel="noopener noreferrer" className="font-medium text-pool-600 hover:underline">
+                  staff / formulaire recrue ↗
+                </a>
+                .
+              </p>
+            </div>
+          )}
+
           <p className="text-slate-700">
             <span className="font-semibold">💶 Bourses :</span> {u.scholarshipNote}
           </p>
