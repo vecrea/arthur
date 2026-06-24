@@ -9,7 +9,7 @@ import Coaches from './components/Coaches.jsx'
 import Steps from './components/Steps.jsx'
 import Ia from './components/Ia.jsx'
 import { profile } from './data/profile.js'
-import { universities } from './data/universities.js'
+import { universities } from './data/schools.js'
 import { computeMatches } from './lib/score.js'
 import { loadFavorites, saveFavorites } from './lib/storage.js'
 
@@ -22,6 +22,7 @@ export default function App() {
     fit: 'all',
     sort: 'match',
     sunnyOnly: false,
+    curatedOnly: false,
   })
 
   useEffect(() => saveFavorites(favorites), [favorites])
@@ -41,6 +42,7 @@ export default function App() {
       if (filters.division !== 'all' && u.division !== filters.division) return false
       if (filters.fit !== 'all' && u.fit.key !== filters.fit) return false
       if (filters.sunnyOnly && u.sunshine < 4) return false
+      if (filters.curatedOnly && !u.curated) return false
       if (q) {
         const hay = `${u.name} ${u.shortName} ${u.city} ${u.state} ${u.conference}`.toLowerCase()
         if (!hay.includes(q)) return false

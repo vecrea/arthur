@@ -305,3 +305,11 @@ export const WEBSITES = {
 // Plateforme de recrutement NCSA (lien commun proposé sur chaque carte).
 export const NCSA_URL = 'https://www.ncsasports.org'
 
+// Lien site officiel : URL connue si curée, sinon recherche Google (marche partout).
+export function siteLink(u) {
+  return (
+    WEBSITES[u.id] ||
+    'https://www.google.com/search?q=' + encodeURIComponent(`${u.name} university official site`)
+  )
+}
+

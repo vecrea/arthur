@@ -81,6 +81,16 @@ export default function Filters({ filters, setFilters, count }) {
             />
             ☀️ Soleil ++
           </label>
+
+          <label className="flex cursor-pointer items-center gap-2 self-end pb-1 text-sm font-semibold text-slate-600" title="Afficher seulement les facs évaluées en détail">
+            <input
+              type="checkbox"
+              checked={filters.curatedOnly}
+              onChange={(e) => set({ curatedOnly: e.target.checked })}
+              className="h-4 w-4 rounded accent-pool-500"
+            />
+            ⭐ Curées
+          </label>
         </div>
       </div>
 

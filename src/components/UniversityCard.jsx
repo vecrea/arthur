@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Stat, FitBadge, ScorePill, divColor } from './ui.jsx'
-import { WEBSITES, NCSA_URL } from '../data/universities.js'
+import { NCSA_URL, siteLink } from '../data/universities.js'
 import { VERIFIED_COACHES, coachsStaffLink, COACHES_AS_OF } from '../data/coaches.js'
 import { explainFit, loadWhyCache, saveWhy, hasApiKey } from '../lib/ai.js'
 
@@ -71,6 +71,11 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
             <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
               {fmtCost(u.costUSD)}
             </span>
+            {!u.curated && (
+              <span className="rounded-md bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-500" title="Fiche annuaire : infos de base, notes non évaluées en détail">
+                Annuaire
+              </span>
+            )}
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1.5">
@@ -87,16 +92,14 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
               </p>
             )}
             <div className="flex flex-wrap gap-2">
-              {WEBSITES[u.id] && (
-                <a
-                  href={WEBSITES[u.id]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 rounded-full bg-navy-900 px-3 py-1 text-xs font-semibold text-white transition hover:bg-navy-800"
-                >
-                  🌐 Site officiel ↗
-                </a>
-              )}
+              <a
+                href={siteLink(u)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-full bg-navy-900 px-3 py-1 text-xs font-semibold text-white transition hover:bg-navy-800"
+              >
+                🌐 Site officiel ↗
+              </a>
               <a
                 href={coachsStaffLink(u)}
                 target="_blank"
