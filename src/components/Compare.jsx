@@ -1,4 +1,4 @@
-import { Dots, FitBadge, divColor } from './ui.jsx'
+import { Dots, FitBadge, TypeBadge, divColor } from './ui.jsx'
 import { useLang } from '../lib/i18n.jsx'
 
 export default function Compare({ unis, onToggleFav }) {
@@ -11,6 +11,7 @@ export default function Compare({ unis, onToggleFav }) {
     { label: 'Division', render: (u) => (
         <span className="rounded-md px-2 py-0.5 text-xs font-bold text-white" style={{ background: divColor(u.division) }}>{u.division}</span>
       ) },
+    { label: 'Type', render: (u) => <TypeBadge type={u.type} /> },
     { label: t('Lieu', 'Location'), render: (u) => <span className="text-sm text-slate-600">{u.sunshine >= 4 ? '☀️ ' : ''}{u.city}, {u.state}</span> },
     { label: t('Natation', 'Swimming'), render: (u) => <Dots value={u.swim} color="#0ea5e9" /> },
     { label: t('Économie', 'Economics'), render: (u) => <Dots value={u.econ} color="#7c3aed" /> },

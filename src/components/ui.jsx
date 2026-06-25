@@ -37,6 +37,23 @@ export function FitBadge({ fit }) {
   )
 }
 
+// Pastille publique / privée (couleur + icône). Robuste FR ou EN en entrée.
+export function TypeBadge({ type }) {
+  const { t } = useLang()
+  if (!type) return null
+  const isPublic = /^public/i.test(type) // 'Public' ou 'Publique'
+  return (
+    <span
+      className={
+        'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold ' +
+        (isPublic ? 'bg-sky-100 text-sky-700' : 'bg-violet-100 text-violet-700')
+      }
+    >
+      {isPublic ? '🏛️' : '🎓'} {isPublic ? t('Publique', 'Public') : t('Privée', 'Private')}
+    </span>
+  )
+}
+
 // Pastille de score 0-100 avec couleur graduee.
 export function ScorePill({ score, size = 'md' }) {
   const color = score >= 80 ? '#16a34a' : score >= 65 ? '#0ea5e9' : score >= 50 ? '#f59e0b' : '#94a3b8'

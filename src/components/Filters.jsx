@@ -49,6 +49,19 @@ export default function Filters({ filters, setFilters, count }) {
           </div>
 
           <div>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t('Type', 'Type')}</p>
+            <Segment
+              value={filters.type}
+              onChange={(v) => set({ type: v })}
+              options={[
+                { value: 'all', label: t('Toutes', 'All') },
+                { value: 'Publique', label: t('🏛️ Publique', '🏛️ Public') },
+                { value: 'Privée', label: t('🎓 Privée', '🎓 Private') },
+              ]}
+            />
+          </div>
+
+          <div>
             <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t('Recrutement', 'Recruiting')}</p>
             <Segment
               value={filters.fit}

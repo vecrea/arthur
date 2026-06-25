@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Stat, FitBadge, ScorePill, divColor } from './ui.jsx'
+import { Stat, FitBadge, ScorePill, TypeBadge, divColor } from './ui.jsx'
 import { NCSA_URL, siteLink } from '../data/universities.js'
 import { VERIFIED_COACHES, coachsStaffLink, COACHES_AS_OF } from '../data/coaches.js'
 import { explainFit, loadWhyCache, saveWhy, hasApiKey } from '../lib/ai.js'
@@ -49,7 +49,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
               <h3 className="truncate font-display text-lg font-extrabold text-navy-900">{u.shortName}</h3>
               <p className="text-sm text-slate-500">
                 {u.sunshine >= 4 ? '☀️ ' : ''}
-                {u.city}, {u.state} · {u.type}
+                {u.city}, {u.state}
               </p>
             </div>
             <button
@@ -67,6 +67,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
               {u.division}
             </span>
             <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{u.conference}</span>
+            <TypeBadge type={u.type} />
             <FitBadge fit={u.fit} />
             <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">{fmtCost(u.costUSD)}</span>
             {!u.curated && (
