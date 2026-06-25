@@ -5,6 +5,7 @@ const TABS = [
   { key: 'ranking', label: 'Classement', labelEn: 'Rankings', icon: '🏆' },
   { key: 'favorites', label: 'Mes favoris', labelEn: 'Favorites', icon: '⭐' },
   { key: 'compare', label: 'Comparer', labelEn: 'Compare', icon: '⚖️' },
+  { key: 'budget', label: 'Budget', labelEn: 'Budget', icon: '💶' },
   { key: 'sheet', label: 'Ma fiche', labelEn: 'My sheet', icon: '📄' },
   { key: 'recruit', label: 'Recrutable ?', labelEn: 'Recruitable?', icon: '🎯' },
   { key: 'times', label: 'Mes chronos', labelEn: 'My times', icon: '⏱️' },

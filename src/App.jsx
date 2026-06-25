@@ -4,6 +4,7 @@ import Filters from './components/Filters.jsx'
 import UniversityCard from './components/UniversityCard.jsx'
 import ProfileCard from './components/ProfileCard.jsx'
 import Compare from './components/Compare.jsx'
+import Budget from './components/Budget.jsx'
 import AthleteSheet from './components/AthleteSheet.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Recruitable from './components/Recruitable.jsx'
@@ -131,6 +132,8 @@ export default function App() {
         )}
 
         {tab === 'compare' && <Compare unis={favLoc} onToggleFav={toggleFav} />}
+
+        {tab === 'budget' && <Budget schools={matchesLoc} favorites={favorites} />}
 
         {tab === 'sheet' && <AthleteSheet profile={profile} />}
 
