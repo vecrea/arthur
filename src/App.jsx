@@ -8,6 +8,7 @@ import AthleteSheet from './components/AthleteSheet.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Recruitable from './components/Recruitable.jsx'
 import TimeTracker from './components/TimeTracker.jsx'
+import Goals from './components/Goals.jsx'
 import Coaches from './components/Coaches.jsx'
 import Steps from './components/Steps.jsx'
 import Ia from './components/Ia.jsx'
@@ -136,6 +137,8 @@ export default function App() {
         {tab === 'recruit' && <Recruitable profile={profile} />}
 
         {tab === 'times' && <TimeTracker profile={profile} />}
+
+        {tab === 'goals' && <Goals profile={profile} />}
 
         {tab === 'coaches' && <Coaches unis={matchesLoc} favorites={favorites} profile={profile} />}
 

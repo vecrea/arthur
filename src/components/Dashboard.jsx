@@ -1,6 +1,7 @@
 import { athleteLevel, LEVELS, EVENTS, formatTime } from '../lib/convert.js'
 import { CHECKLIST, ROADMAP } from '../data/checklist.js'
-import { loadChecklist, loadCoaches, loadTimes } from '../lib/storage.js'
+import { loadChecklist, loadCoaches, loadTimes, loadGoals } from '../lib/storage.js'
+import { goalStatus } from '../lib/goals.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const ALL_IDS = CHECKLIST.flatMap((p) => p.items.map((i) => i.id))
@@ -53,6 +54,10 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
   const times = loadTimes()
   const lastEntry = times.length ? [...times].sort((a, b) => b.date.localeCompare(a.date))[0] : null
   const lastEv = lastEntry ? EV_BY_KEY[lastEntry.eventKey] : null
+
+  // Objectifs.
+  const goals = loadGoals()
+  const goalsAchieved = goals.filter((g) => goalStatus(g, times, profile).achieved).length
 
   const top = (matches || []).slice(0, 3)
 
@@ -115,6 +120,17 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
             </>
           ) : (
             <p className="text-sm text-slate-400">{t('Aucun chrono enregistré.', 'No times logged yet.')}</p>
+          )}
+        </Tile>
+
+        <Tile onClick={() => setTab('goals')} icon="🏁" title={t('Objectifs', 'Goals')} cta={t('Définir / suivre', 'Set / track')}>
+          {goals.length ? (
+            <>
+              <div className="font-display text-2xl font-black text-navy-900">{goals.length} <span className="text-sm font-semibold text-slate-400">{t('objectif(s)', 'goal(s)')}</span></div>
+              <p className="mt-1 text-sm text-slate-500">🎉 {goalsAchieved} {t('atteint(s)', 'achieved')}</p>
+            </>
+          ) : (
+            <p className="text-sm text-slate-400">{t('Aucun objectif fixé.', 'No goals set.')}</p>
           )}
         </Tile>
 

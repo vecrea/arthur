@@ -79,6 +79,26 @@ export function saveTimes(arr) {
   }
 }
 
+// --- Objectifs de chronos (cibles par épreuve) ---
+const GOALS_KEY = 'pitusa.goals.v1'
+
+export function loadGoals() {
+  try {
+    const raw = localStorage.getItem(GOALS_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+export function saveGoals(arr) {
+  try {
+    localStorage.setItem(GOALS_KEY, JSON.stringify(arr))
+  } catch {
+    /* ignore */
+  }
+}
+
 // --- Checklist des démarches (cases cochées) ---
 const CHECKLIST_KEY = 'pitusa.checklist.v1'
 

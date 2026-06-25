@@ -8,6 +8,7 @@ const TABS = [
   { key: 'sheet', label: 'Ma fiche', labelEn: 'My sheet', icon: '📄' },
   { key: 'recruit', label: 'Recrutable ?', labelEn: 'Recruitable?', icon: '🎯' },
   { key: 'times', label: 'Mes chronos', labelEn: 'My times', icon: '⏱️' },
+  { key: 'goals', label: 'Objectifs', labelEn: 'Goals', icon: '🏁' },
   { key: 'coaches', label: 'Coachs', labelEn: 'Coaches', icon: '📇' },
   { key: 'steps', label: 'Démarches', labelEn: 'Steps', icon: '🗓️' },
   { key: 'ia', label: 'IA', labelEn: 'AI', icon: '🤖' },
