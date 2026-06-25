@@ -1,4 +1,6 @@
+import { useRef, useState } from 'react'
 import { EVENTS, athleteLevel, lcmToScy, scyLevel, formatTime, LEVELS } from '../lib/convert.js'
+import { downloadBackup, importBackup } from '../lib/backup.js'
 import { useLang } from '../lib/i18n.jsx'
 
 function ageFrom(birthDate) {
@@ -24,6 +26,29 @@ export default function ProfileCard({ profile }) {
   const { level, byEvent } = athleteLevel(profile)
   const lvl = LEVELS[level]
   const age = ageFrom(profile.birthDate)
+
+  const fileRef = useRef(null)
+  const [backupMsg, setBackupMsg] = useState('')
+  const onImportFile = (e) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    if (!window.confirm(t('Importer remplacera tes données sur cet appareil. Continuer ?', 'Importing will replace your data on this device. Continue?'))) {
+      e.target.value = ''
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const res = importBackup(String(reader.result))
+      if (res.ok) {
+        setBackupMsg(t(`✅ ${res.count} éléments importés. Rechargement…`, `✅ ${res.count} items imported. Reloading…`))
+        setTimeout(() => location.reload(), 900)
+      } else {
+        setBackupMsg(t('❌ Fichier invalide.', '❌ Invalid file.'))
+      }
+    }
+    reader.readAsText(f)
+    e.target.value = ''
+  }
 
   return (
     <div className="space-y-5">
@@ -126,6 +151,33 @@ export default function ProfileCard({ profile }) {
           {t(
             "💡 À venir (Phases 2 & 3) : suivi des démarches (NCAA, SAT/TOEFL), carnet de contacts coachs, et recommandations IA + générateur d'emails aux coachs.",
             '💡 Coming soon (Phases 2 & 3): steps tracking (NCAA, SAT/TOEFL), coach contact book, and AI recommendations + coach email generator.',
+          )}
+        </p>
+      </div>
+
+      {/* Sauvegarde & synchro entre appareils */}
+      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+        <h3 className="font-display text-lg font-extrabold text-navy-900">{t('💾 Sauvegarde & synchro', '💾 Backup & sync')}</h3>
+        <p className="mt-1 text-sm text-slate-600">
+          {t(
+            'Tes données vivent dans ce navigateur. Exporte un fichier pour les sauvegarder ou les transférer (PC ↔ téléphone), puis importe-le sur l’autre appareil.',
+            'Your data lives in this browser. Export a file to back it up or move it (PC ↔ phone), then import it on the other device.',
+          )}
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button onClick={downloadBackup} className="rounded-full bg-navy-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-navy-800">
+            {t('⬇️ Exporter mes données', '⬇️ Export my data')}
+          </button>
+          <button onClick={() => fileRef.current?.click()} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">
+            {t('⬆️ Importer un fichier', '⬆️ Import a file')}
+          </button>
+          <input ref={fileRef} type="file" accept="application/json,.json" onChange={onImportFile} className="hidden" />
+          {backupMsg && <span className="text-xs font-semibold text-emerald-700">{backupMsg}</span>}
+        </div>
+        <p className="mt-2 text-xs text-slate-400">
+          {t(
+            '⚠️ L’import remplace les données de cet appareil par celles du fichier. Le fichier contient chronos, objectifs, favoris, contacts coachs et démarches.',
+            '⚠️ Import replaces this device’s data with the file’s. The file holds times, goals, favorites, coach contacts and steps.',
           )}
         </p>
       </div>

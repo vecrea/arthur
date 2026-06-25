@@ -148,15 +148,15 @@ export default function TimeTracker({ profile }) {
           onClick={() => setScOpen((o) => !o)}
           className="flex w-full items-center justify-between px-5 py-3 text-left"
         >
-          <span className="font-display text-sm font-extrabold text-navy-900">{t('🔗 Importer depuis SwimCloud', '🔗 Import from SwimCloud')}</span>
+          <span className="font-display text-sm font-extrabold text-navy-900">{t('🔗 Importer mes temps (SwimCloud, SwimRankings…)', '🔗 Import my times (SwimCloud, SwimRankings…)')}</span>
           <span className={'text-slate-400 transition ' + (scOpen ? 'rotate-180' : '')}>⌄</span>
         </button>
         {scOpen && (
           <div className="space-y-3 border-t border-slate-100 px-5 py-4">
             <p className="text-xs text-slate-500">
               {t(
-                'SwimCloud n’a pas d’API publique : on importe par copier-coller. 1) Ouvre ton profil → 2) copie le tableau « Best Times » → 3) colle-le ci-dessous. À refaire quand tu veux pour te resynchroniser.',
-                'SwimCloud has no public API: import is via copy-paste. 1) Open your profile → 2) copy the “Best Times” table → 3) paste it below. Redo it anytime to resync.',
+                'Ces sites n’ont pas d’API publique : on importe par copier-coller. 1) Ouvre ton profil (SwimCloud, SwimRankings…) → 2) copie ton tableau de meilleurs temps → 3) colle-le ci-dessous. Marche aussi avec un CSV. À refaire quand tu veux pour te resynchroniser.',
+                'These sites have no public API: import is via copy-paste. 1) Open your profile (SwimCloud, SwimRankings…) → 2) copy your best-times table → 3) paste it below. Works with a CSV too. Redo it anytime to resync.',
               )}
             </p>
             <div className="flex flex-wrap gap-2">

@@ -35,6 +35,7 @@ function detectCourse(line, fallback) {
   return fallback
 }
 
+// Analyse un texte collé (SwimCloud, SwimRankings, CSV…).
 // Renvoie { matched: [{eventKey, course, seconds}], skipped: n }
 export function parseSwimcloud(text, fallbackCourse = 'LCM') {
   const matched = []
@@ -42,15 +43,15 @@ export function parseSwimcloud(text, fallbackCourse = 'LCM') {
   for (const raw of (text || '').split(/[\n\r]+/)) {
     const line = raw.trim()
     if (!line) continue
-    // distance + (bassin optionnel) + nage
+    // distance + unité optionnelle (m/yd) + bassin optionnel + nage
     const dm = line.match(
-      /(\d{2,4})\s*(?:(SCY|LCM|SCM|Y|L|S)\s+)?(butterfly|fly|papillon|pap|breaststroke|breast|brasse|backstroke|back|dos|freestyle|free|nage\s?libre|nl|medley|im|4\s?nages)/i,
+      /(\d{2,4})\s*(m|meters?|metres?|yd|yards?|y)?\s*(?:(SCY|LCM|SCM)\s+)?(butterfly|fly|papillon|pap|breaststroke|breast|brasse|backstroke|back|dos|freestyle|free|nage\s?libre|nl|medley|im|4\s?nages)/i,
     )
     if (!dm) continue
     const dist = parseInt(dm[1], 10)
     let st = null
     for (const [re, code] of STROKES) {
-      if (re.test(dm[3])) { st = code; break }
+      if (re.test(dm[4])) { st = code; break }
     }
     if (!st) continue
     const key = `${dist}${st}`
@@ -60,7 +61,11 @@ export function parseSwimcloud(text, fallbackCourse = 'LCM') {
     const secs = parseTime(tm[0])
     if (secs == null) continue
     if (!KEYS.has(key)) { skipped++; continue }
-    const course = (dm[2] && courseFromToken(dm[2])) || detectCourse(line, fallbackCourse)
+    // bassin : token explicite > unité yards > détection sur la ligne > défaut
+    let course
+    if (dm[3]) course = courseFromToken(dm[3]) || fallbackCourse
+    else if ((dm[2] || '').toLowerCase().startsWith('y')) course = 'SCY'
+    else course = detectCourse(line, fallbackCourse)
     matched.push({ eventKey: key, course, seconds: secs })
   }
   return { matched, skipped }
