@@ -5,6 +5,7 @@ import UniversityCard from './components/UniversityCard.jsx'
 import ProfileCard from './components/ProfileCard.jsx'
 import Compare from './components/Compare.jsx'
 import AthleteSheet from './components/AthleteSheet.jsx'
+import Dashboard from './components/Dashboard.jsx'
 import Recruitable from './components/Recruitable.jsx'
 import TimeTracker from './components/TimeTracker.jsx'
 import Coaches from './components/Coaches.jsx'
@@ -19,7 +20,7 @@ import { localizeUni } from './data/uni-en.js'
 
 export default function App() {
   const { t, lang } = useLang()
-  const [tab, setTab] = useState('ranking')
+  const [tab, setTab] = useState('home')
   const [favorites, setFavorites] = useState(() => loadFavorites())
   const [filters, setFilters] = useState({
     search: '',
@@ -81,6 +82,10 @@ export default function App() {
       <Header tab={tab} setTab={setTab} favCount={favorites.size} />
 
       <main className="mx-auto max-w-6xl px-5 py-6">
+        {tab === 'home' && (
+          <Dashboard profile={profile} matches={matchesLoc} favCount={favorites.size} setTab={setTab} />
+        )}
+
         {tab === 'ranking' && (
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

@@ -1,6 +1,7 @@
 import { useLang } from '../lib/i18n.jsx'
 
 const TABS = [
+  { key: 'home', label: 'Tableau de bord', labelEn: 'Dashboard', icon: '📊' },
   { key: 'ranking', label: 'Classement', labelEn: 'Rankings', icon: '🏆' },
   { key: 'favorites', label: 'Mes favoris', labelEn: 'Favorites', icon: '⭐' },
   { key: 'compare', label: 'Comparer', labelEn: 'Compare', icon: '⚖️' },
