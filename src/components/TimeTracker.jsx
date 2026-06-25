@@ -16,30 +16,6 @@ for (const e of EVENTS) {
   g.items.push(e)
 }
 
-// Mini-graphe de progression (axe Y = secondes SCY, plus bas = mieux → en haut).
-function Sparkline({ points }) {
-  const W = 320, H = 70, pad = 10
-  if (points.length < 2) return null
-  const ys = points.map((p) => p.scy)
-  const min = Math.min(...ys), max = Math.max(...ys)
-  const span = max - min || 1
-  const innerW = W - pad * 2, innerH = H - pad * 2
-  const xy = points.map((p, i) => {
-    const x = pad + (points.length === 1 ? innerW / 2 : (i / (points.length - 1)) * innerW)
-    const y = pad + ((p.scy - min) / span) * innerH // plus rapide (min) => en haut
-    return [x, y]
-  })
-  const line = xy.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 w-full" preserveAspectRatio="none" style={{ height: 70 }}>
-      <polyline points={line} fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-      {xy.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="2.6" fill={i === xy.length - 1 ? '#e63946' : '#0ea5e9'} />
-      ))}
-    </svg>
-  )
-}
-
 const todayISO = () => new Date().toISOString().slice(0, 10)
 
 export default function TimeTracker({ profile }) {
@@ -120,63 +96,82 @@ export default function TimeTracker({ profile }) {
         {err && <p className="mt-2 text-xs font-semibold text-flag-600">{err}</p>}
       </div>
 
-      {/* Cartes par épreuve */}
-      {Object.keys(byEvent).length === 0 ? (
-        <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
-          <div className="text-4xl">📈</div>
-          <p className="mt-3 font-semibold text-navy-900">Pas encore de chrono</p>
-          <p className="mt-1 text-sm text-slate-500">Ajoute ta première course ci-dessus pour démarrer ta courbe de progression.</p>
-        </div>
-      ) : (
-        <div className="grid gap-3 lg:grid-cols-2">
-          {EVENTS.filter((e) => byEvent[e.key]).map((e) => {
-            const list = byEvent[e.key]
-            const best = list.reduce((m, t) => (t.scy < m.scy ? t : m), list[0])
-            const latest = list[list.length - 1]
-            const delta = latest.scy - best.scy
-            const lvl = scyLevel(best.scy, e.key)
-            return (
-              <div key={e.key} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="font-display text-lg font-extrabold text-navy-900">{e.label}</h3>
-                    <p className="text-xs text-slate-500">{list.length} chrono(s) · record {formatTime(best.scy)} SCY</p>
+      {/* Une case par épreuve (nage × distance), groupée par nage */}
+      <div className="space-y-4">
+        {EVENT_GROUPS.map((g) => (
+          <div key={g.stroke} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+            <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-slate-500">{g.stroke}</h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {g.items.map((e) => {
+                const list = byEvent[e.key]
+                const selected = e.key === eventKey
+                const best = list ? list.reduce((m, t) => (t.scy < m.scy ? t : m), list[0]) : null
+                const lvl = best ? scyLevel(best.scy, e.key) : 0
+                return (
+                  <div
+                    key={e.key}
+                    onClick={() => setEventKey(e.key)}
+                    title={`Choisir « ${e.label} » dans le formulaire`}
+                    className={
+                      'cursor-pointer rounded-xl border p-3 transition ' +
+                      (selected ? 'border-pool-500 ring-2 ring-pool-500/20 ' : 'border-slate-200 hover:border-pool-300 ') +
+                      (best ? 'bg-white' : 'bg-slate-50/60')
+                    }
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-display font-extrabold text-navy-900">{e.label}</span>
+                      {best && (
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
+                          style={{ background: LEVELS[lvl].color }}
+                        >
+                          {LEVELS[lvl].short}
+                        </span>
+                      )}
+                    </div>
+
+                    {best ? (
+                      <>
+                        <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
+                          <span className="font-display text-xl font-black text-navy-900">{formatTime(best.seconds)}</span>
+                          <span className="text-[10px] font-bold uppercase text-slate-400">{best.course}</span>
+                          {best.course !== 'SCY' && <span className="text-xs text-pool-600">→ {formatTime(best.scy)} SCY</span>}
+                        </div>
+                        <ul className="mt-2 space-y-1 border-t border-slate-100 pt-2">
+                          {[...list].reverse().map((t) => (
+                            <li key={t.id} className="flex items-center justify-between gap-2 text-xs">
+                              <span className="min-w-0 truncate text-slate-600">
+                                <span className="font-semibold text-navy-900">{formatTime(t.seconds)}</span>
+                                <span className="ml-1 text-[9px] font-bold uppercase text-slate-400">{t.course}</span>
+                                <span className="ml-1.5 text-slate-400">{t.date}{t.meet ? ` · ${t.meet}` : ''}</span>
+                              </span>
+                              <button
+                                onClick={(ev) => { ev.stopPropagation(); remove(t.id) }}
+                                className="shrink-0 text-slate-300 transition hover:text-flag-500"
+                                title="Supprimer"
+                                aria-label="Supprimer"
+                              >
+                                ✕
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <p className="mt-1 text-sm text-slate-300">— pas de temps</p>
+                    )}
                   </div>
-                  <span className="rounded-full px-2.5 py-1 text-xs font-bold text-white" style={{ background: LEVELS[lvl].color }}>
-                    {LEVELS[lvl].short}
-                  </span>
-                </div>
-
-                <Sparkline points={list} />
-
-                {delta > 0.001 && (
-                  <p className="mt-1 text-xs text-slate-500">Dernier : {formatTime(latest.scy)} SCY (+{delta.toFixed(2)} s vs record)</p>
-                )}
-
-                <ul className="mt-2 divide-y divide-slate-50">
-                  {[...list].reverse().map((t) => (
-                    <li key={t.id} className="flex items-center justify-between gap-2 py-1.5 text-sm">
-                      <div className="min-w-0">
-                        <span className="font-semibold text-navy-900">{formatTime(t.seconds)}</span>
-                        <span className="ml-1 text-[10px] font-bold uppercase text-slate-400">{t.course}</span>
-                        {t.course !== 'SCY' && <span className="ml-1 text-xs text-pool-600">→ {formatTime(t.scy)} SCY</span>}
-                        <span className="ml-2 text-xs text-slate-400">{t.date}{t.meet ? ` · ${t.meet}` : ''}</span>
-                      </div>
-                      <button onClick={() => remove(t.id)} className="shrink-0 text-slate-300 transition hover:text-flag-500" title="Supprimer" aria-label="Supprimer">
-                        ✕
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          })}
-        </div>
-      )}
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         💡 Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY)
-        pour suivre ta trajectoire vers les repères de l’onglet <strong>« Recrutable ? »</strong>. Le point rouge = ton dernier chrono.
+        pour suivre ta trajectoire vers les repères de l’onglet <strong>« Recrutable ? »</strong>. Clique sur une case pour la
+        pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.
       </p>
     </div>
   )
