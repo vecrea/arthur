@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { loadCoaches, saveCoaches } from '../lib/storage.js'
+import { loadCoaches, saveCoaches, loadProfileExtras } from '../lib/storage.js'
 import { VERIFIED_COACHES, COACHES_AS_OF } from '../data/coaches.js'
 import { draftCoachEmail, hasApiKey } from '../lib/ai.js'
+import { buildCoachEmail } from '../lib/emailTemplate.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const STATUS = {
@@ -31,6 +32,15 @@ export default function Coaches({ unis, favorites, profile }) {
   const [emailErr, setEmailErr] = useState({}) // { [id]: message }
 
   useEffect(() => saveCoaches(contacts), [contacts])
+
+  const extras = useMemo(() => loadProfileExtras(), [])
+
+  // Email d'intro pré-rempli, sans clé API (modèle).
+  const genTemplate = (c) => {
+    const { subject, body } = buildCoachEmail(profile, c, extras)
+    setEmails((m) => ({ ...m, [c.id]: `Subject: ${subject}\n\n${body}` }))
+    setEmailErr((e) => ({ ...e, [c.id]: '' }))
+  }
 
   const stLabel = (s) => t(STATUS[s].label, STATUS[s].labelEn)
   const noKeyMsg = t('Ajoute ta clé API dans l’onglet « IA ».', 'Add your API key in the “AI” tab.')
@@ -274,13 +284,23 @@ export default function Coaches({ unis, favorites, profile }) {
                   <button onClick={() => remove(c.id)} className="text-xs font-semibold text-flag-500 hover:underline">
                     {t('Supprimer', 'Delete')}
                   </button>
-                  <button
-                    onClick={() => genEmail(c)}
-                    disabled={emailLoading === c.id}
-                    className="ml-auto rounded-full bg-pool-500 px-3 py-1 text-xs font-bold text-white transition hover:bg-pool-600 disabled:opacity-50"
-                  >
-                    {emailLoading === c.id ? t('Rédaction…', 'Drafting…') : t('✍️ Email IA', '✍️ AI email')}
-                  </button>
+                  <div className="ml-auto flex gap-1.5">
+                    <button
+                      onClick={() => genTemplate(c)}
+                      className="rounded-full bg-pool-500 px-3 py-1 text-xs font-bold text-white transition hover:bg-pool-600"
+                      title={t('Email pré-rempli, sans clé API', 'Pre-filled email, no API key')}
+                    >
+                      {t('📝 Email (modèle)', '📝 Email (template)')}
+                    </button>
+                    <button
+                      onClick={() => genEmail(c)}
+                      disabled={emailLoading === c.id}
+                      className="rounded-full bg-navy-900 px-3 py-1 text-xs font-bold text-white transition hover:bg-navy-800 disabled:opacity-50"
+                      title={t('Version IA (nécessite une clé API, onglet IA)', 'AI version (requires an API key, AI tab)')}
+                    >
+                      {emailLoading === c.id ? t('Rédaction…', 'Drafting…') : t('✍️ IA', '✍️ AI')}
+                    </button>
+                  </div>
                 </div>
 
                 {emailErr[c.id] && <p className="mt-2 text-xs text-flag-600">{emailErr[c.id]}</p>}
