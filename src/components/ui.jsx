@@ -41,7 +41,7 @@ export function FitBadge({ fit }) {
 export function TypeBadge({ type }) {
   const { t } = useLang()
   if (!type) return null
-  const isPublic = /^public/i.test(type) // 'Public' ou 'Publique'
+  const isPublic = /^publi/i.test(type) // 'Public' (EN) ou 'Publique' (FR)
   return (
     <span
       className={
