@@ -79,6 +79,25 @@ export function saveTimes(arr) {
   }
 }
 
+// --- URL du profil SwimCloud (pour l'import copier-coller) ---
+const SC_URL_KEY = 'pitusa.swimcloudUrl.v1'
+
+export function loadSwimcloudUrl() {
+  try {
+    return localStorage.getItem(SC_URL_KEY) || ''
+  } catch {
+    return ''
+  }
+}
+
+export function saveSwimcloudUrl(url) {
+  try {
+    localStorage.setItem(SC_URL_KEY, url)
+  } catch {
+    /* ignore */
+  }
+}
+
 // --- Objectifs de chronos (cibles par épreuve) ---
 const GOALS_KEY = 'pitusa.goals.v1'
 

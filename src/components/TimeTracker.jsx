@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { EVENTS, toScy, scyLevel, formatTime, parseTime, LEVELS, STROKE_EN } from '../lib/convert.js'
-import { loadTimes, saveTimes } from '../lib/storage.js'
+import { loadTimes, saveTimes, loadSwimcloudUrl, saveSwimcloudUrl } from '../lib/storage.js'
+import { parseSwimcloud } from '../lib/swimcloud.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
@@ -45,6 +46,41 @@ export default function TimeTracker({ profile }) {
     setTimeStr(''); setMeet('')
   }
   const remove = (id) => setTimes((prev) => prev.filter((it) => it.id !== id))
+
+  // --- Import SwimCloud (copier-coller) ---
+  const [scOpen, setScOpen] = useState(false)
+  const [scUrl, setScUrl] = useState(() => loadSwimcloudUrl())
+  const [scCourse, setScCourse] = useState('LCM')
+  const [scPaste, setScPaste] = useState('')
+  const [scMsg, setScMsg] = useState('')
+  useEffect(() => saveSwimcloudUrl(scUrl), [scUrl])
+
+  const importSwimcloud = () => {
+    const { matched, skipped } = parseSwimcloud(scPaste, scCourse)
+    if (matched.length === 0) {
+      setScMsg(t('Aucun temps reconnu. Colle le tableau « Best Times » de ton profil SwimCloud.', 'No times recognized. Paste the “Best Times” table from your SwimCloud profile.'))
+      return
+    }
+    // Dédoublonnage contre l'état courant (synchronisé pour le message).
+    const seen = new Set(times.map((it) => `${it.eventKey}|${it.course}|${Math.round(it.seconds * 100)}`))
+    const extra = []
+    for (const m of matched) {
+      const k = `${m.eventKey}|${m.course}|${Math.round(m.seconds * 100)}`
+      if (seen.has(k)) continue
+      seen.add(k)
+      extra.push({ id: `sc-${Date.now()}-${m.eventKey}-${Math.round(m.seconds * 100)}`, eventKey: m.eventKey, course: m.course, seconds: m.seconds, date: todayISO(), meet: 'SwimCloud' })
+    }
+    if (extra.length) setTimes((prev) => [...prev, ...extra])
+    const added = extra.length
+    const dup = matched.length - added
+    setScMsg(
+      t(
+        `✅ ${added} temps importés${dup ? ` · ${dup} doublon(s) ignoré(s)` : ''}${skipped ? ` · ${skipped} épreuve(s) non suivie(s)` : ''}.`,
+        `✅ ${added} times imported${dup ? ` · ${dup} duplicate(s) skipped` : ''}${skipped ? ` · ${skipped} untracked event(s)` : ''}.`,
+      ),
+    )
+    setScPaste('')
+  }
 
   const byEvent = useMemo(() => {
     const map = {}
@@ -104,6 +140,67 @@ export default function TimeTracker({ profile }) {
           className={inputCls + ' mt-2 w-full'}
         />
         {err && <p className="mt-2 text-xs font-semibold text-flag-600">{err}</p>}
+      </div>
+
+      {/* Import SwimCloud (copier-coller) */}
+      <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+        <button
+          onClick={() => setScOpen((o) => !o)}
+          className="flex w-full items-center justify-between px-5 py-3 text-left"
+        >
+          <span className="font-display text-sm font-extrabold text-navy-900">{t('🔗 Importer depuis SwimCloud', '🔗 Import from SwimCloud')}</span>
+          <span className={'text-slate-400 transition ' + (scOpen ? 'rotate-180' : '')}>⌄</span>
+        </button>
+        {scOpen && (
+          <div className="space-y-3 border-t border-slate-100 px-5 py-4">
+            <p className="text-xs text-slate-500">
+              {t(
+                'SwimCloud n’a pas d’API publique : on importe par copier-coller. 1) Ouvre ton profil → 2) copie le tableau « Best Times » → 3) colle-le ci-dessous. À refaire quand tu veux pour te resynchroniser.',
+                'SwimCloud has no public API: import is via copy-paste. 1) Open your profile → 2) copy the “Best Times” table → 3) paste it below. Redo it anytime to resync.',
+              )}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <input
+                value={scUrl}
+                onChange={(e) => setScUrl(e.target.value)}
+                placeholder="https://www.swimcloud.com/swimmer/........"
+                className={inputCls + ' min-w-0 flex-1'}
+              />
+              {scUrl.trim() && (
+                <a
+                  href={scUrl.trim()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-navy-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-navy-800"
+                >
+                  {t('Ouvrir mon profil ↗', 'Open my profile ↗')}
+                </a>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500">{t('Bassin de ces temps :', 'Course of these times:')}</span>
+              <select value={scCourse} onChange={(e) => setScCourse(e.target.value)} className={inputCls}>
+                <option value="LCM">50 m (LCM)</option>
+                <option value="SCM">25 m (SCM)</option>
+                <option value="SCY">Yards (SCY)</option>
+              </select>
+              <span className="text-[11px] text-slate-400">{t('(détecté par ligne si SwimCloud l’indique)', '(auto-detected per line when SwimCloud shows it)')}</span>
+            </div>
+            <textarea
+              value={scPaste}
+              onChange={(e) => setScPaste(e.target.value)}
+              rows={5}
+              placeholder={t('Colle ici ton tableau de meilleurs temps… ex : 100 Free  57.80  …', 'Paste your best-times table here… e.g. 100 Free  57.80  …')}
+              className={inputCls + ' w-full font-mono text-xs'}
+            />
+            <div className="flex flex-wrap items-center gap-3">
+              <button onClick={importSwimcloud} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-700">
+                {t('Importer', 'Import')}
+              </button>
+              {scMsg && <span className="text-xs font-semibold text-slate-600">{scMsg}</span>}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Une case par épreuve (nage × distance), groupée par nage */}
