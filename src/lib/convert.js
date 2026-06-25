@@ -16,6 +16,16 @@ export const LCM_TO_SCY = {
   400: 0.9,
 }
 
+// Facteur SCM (petit bassin 25 m) -> SCY. Le nombre de virages est IDENTIQUE
+// en 25 m et 25 yd : la conversion est donc quasiment le seul ratio
+// metres->yards (~0,914) et varie peu avec la distance (contrairement au LCM).
+export const SCM_TO_SCY = {
+  50: 0.913,
+  100: 0.913,
+  200: 0.915,
+  400: 0.917,
+}
+
 // Definition des epreuves suivies.
 export const EVENTS = [
   { key: '50FR', label: '50 NL', labelEn: '50 Free', stroke: 'Nage libre', distance: 50 },
@@ -58,6 +68,19 @@ export const LEVELS = {
 export function lcmToScy(seconds, distance) {
   const f = LCM_TO_SCY[distance] ?? 0.89
   return seconds * f
+}
+
+// Convertit un temps SCM (petit bassin 25 m) vers SCY (en secondes).
+export function scmToScy(seconds, distance) {
+  const f = SCM_TO_SCY[distance] ?? 0.914
+  return seconds * f
+}
+
+// Convertit n'importe quel bassin ('LCM' | 'SCM' | 'SCY') vers SCY.
+export function toScy(seconds, distance, course) {
+  if (course === 'SCY') return seconds
+  if (course === 'SCM') return scmToScy(seconds, distance)
+  return lcmToScy(seconds, distance) // LCM par defaut
 }
 
 // Niveau (1..5) d'un temps SCY pour une epreuve donnee.

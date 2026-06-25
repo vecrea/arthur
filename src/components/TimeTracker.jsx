@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { EVENTS, lcmToScy, scyLevel, formatTime, parseTime, LEVELS } from '../lib/convert.js'
+import { EVENTS, toScy, scyLevel, formatTime, parseTime, LEVELS } from '../lib/convert.js'
 import { loadTimes, saveTimes } from '../lib/storage.js'
 
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
-const toScy = (e) => (e.course === 'SCY' ? e.seconds : lcmToScy(e.seconds, EV_BY_KEY[e.eventKey].distance))
+const entryScy = (e) => toScy(e.seconds, EV_BY_KEY[e.eventKey].distance, e.course)
 
 // Mini-graphe de progression (axe Y = secondes SCY, plus bas = mieux → en haut).
 function Sparkline({ points }) {
@@ -58,7 +58,7 @@ export default function TimeTracker({ profile }) {
     const map = {}
     for (const e of EVENTS) {
       const list = times.filter((t) => t.eventKey === e.key).sort((a, b) => a.date.localeCompare(b.date))
-      if (list.length) map[e.key] = list.map((t) => ({ ...t, scy: toScy(t) }))
+      if (list.length) map[e.key] = list.map((t) => ({ ...t, scy: entryScy(t) }))
     }
     return map
   }, [times])
@@ -80,6 +80,7 @@ export default function TimeTracker({ profile }) {
           </select>
           <select value={course} onChange={(e) => setCourse(e.target.value)} className={inputCls}>
             <option value="LCM">50 m (LCM)</option>
+            <option value="SCM">25 m (SCM)</option>
             <option value="SCY">Yards (SCY)</option>
           </select>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
@@ -143,7 +144,7 @@ export default function TimeTracker({ profile }) {
                       <div className="min-w-0">
                         <span className="font-semibold text-navy-900">{formatTime(t.seconds)}</span>
                         <span className="ml-1 text-[10px] font-bold uppercase text-slate-400">{t.course}</span>
-                        {t.course === 'LCM' && <span className="ml-1 text-xs text-pool-600">→ {formatTime(t.scy)} SCY</span>}
+                        {t.course !== 'SCY' && <span className="ml-1 text-xs text-pool-600">→ {formatTime(t.scy)} SCY</span>}
                         <span className="ml-2 text-xs text-slate-400">{t.date}{t.meet ? ` · ${t.meet}` : ''}</span>
                       </div>
                       <button onClick={() => remove(t.id)} className="shrink-0 text-slate-300 transition hover:text-flag-500" title="Supprimer" aria-label="Supprimer">
@@ -159,8 +160,8 @@ export default function TimeTracker({ profile }) {
       )}
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
-        💡 Astuce : note tes temps en grand bassin (LCM) — ils sont convertis en yards (SCY) pour suivre ta trajectoire vers les
-        repères de l’onglet <strong>« Recrutable ? »</strong>. Le point rouge = ton dernier chrono.
+        💡 Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY)
+        pour suivre ta trajectoire vers les repères de l’onglet <strong>« Recrutable ? »</strong>. Le point rouge = ton dernier chrono.
       </p>
     </div>
   )
