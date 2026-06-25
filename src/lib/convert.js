@@ -14,6 +14,8 @@ export const LCM_TO_SCY = {
   100: 0.889,
   200: 0.895,
   400: 0.9,
+  800: 0.905,
+  1500: 0.91,
 }
 
 // Facteur SCM (petit bassin 25 m) -> SCY. Le nombre de virages est IDENTIQUE
@@ -24,16 +26,31 @@ export const SCM_TO_SCY = {
   100: 0.913,
   200: 0.915,
   400: 0.917,
+  800: 0.918,
+  1500: 0.92,
 }
 
-// Definition des epreuves suivies.
+// Definition des epreuves suivies : toutes les courses individuelles
+// (nage libre, dos, brasse, papillon, 4 nages). Les temps d'Arthur ne
+// concernent que quelques-unes ; les autres servent au suivi de chronos.
 export const EVENTS = [
   { key: '50FR', label: '50 NL', labelEn: '50 Free', stroke: 'Nage libre', distance: 50 },
   { key: '100FR', label: '100 NL', labelEn: '100 Free', stroke: 'Nage libre', distance: 100 },
   { key: '200FR', label: '200 NL', labelEn: '200 Free', stroke: 'Nage libre', distance: 200 },
+  { key: '400FR', label: '400 NL', labelEn: '400 Free', stroke: 'Nage libre', distance: 400 },
+  { key: '800FR', label: '800 NL', labelEn: '800 Free', stroke: 'Nage libre', distance: 800 },
+  { key: '1500FR', label: '1500 NL', labelEn: '1500 Free', stroke: 'Nage libre', distance: 1500 },
   { key: '50BK', label: '50 Dos', labelEn: '50 Back', stroke: 'Dos', distance: 50 },
   { key: '100BK', label: '100 Dos', labelEn: '100 Back', stroke: 'Dos', distance: 100 },
   { key: '200BK', label: '200 Dos', labelEn: '200 Back', stroke: 'Dos', distance: 200 },
+  { key: '50BR', label: '50 Brasse', labelEn: '50 Breast', stroke: 'Brasse', distance: 50 },
+  { key: '100BR', label: '100 Brasse', labelEn: '100 Breast', stroke: 'Brasse', distance: 100 },
+  { key: '200BR', label: '200 Brasse', labelEn: '200 Breast', stroke: 'Brasse', distance: 200 },
+  { key: '50FL', label: '50 Pap', labelEn: '50 Fly', stroke: 'Papillon', distance: 50 },
+  { key: '100FL', label: '100 Pap', labelEn: '100 Fly', stroke: 'Papillon', distance: 100 },
+  { key: '200FL', label: '200 Pap', labelEn: '200 Fly', stroke: 'Papillon', distance: 200 },
+  { key: '200IM', label: '200 4N', labelEn: '200 IM', stroke: '4 nages', distance: 200 },
+  { key: '400IM', label: '400 4N', labelEn: '400 IM', stroke: '4 nages', distance: 400 },
 ]
 
 // Seuils INDICATIFS de niveau en yards (SCY), hommes. Du plus rapide au plus lent.
@@ -44,9 +61,20 @@ export const THRESHOLDS_SCY = {
   '50FR': [19.3, 20.2, 21.2, 22.5],
   '100FR': [42.5, 44.0, 46.0, 48.5],
   '200FR': [94.0, 97.0, 101.0, 106.0],
+  '400FR': [203.0, 211.0, 221.0, 234.0],
+  '800FR': [425.0, 443.0, 462.0, 489.0],
+  '1500FR': [819.0, 855.0, 892.0, 946.0],
   '50BK': [21.5, 22.5, 23.5, 25.0],
   '100BK': [46.5, 48.5, 50.5, 53.0],
   '200BK': [101.0, 105.0, 109.0, 115.0],
+  '50BR': [24.0, 25.2, 26.4, 28.0],
+  '100BR': [52.5, 54.5, 56.5, 59.5],
+  '200BR': [114.0, 118.0, 122.0, 128.0],
+  '50FL': [20.8, 21.8, 22.8, 24.2],
+  '100FL': [45.5, 47.0, 49.0, 52.0],
+  '200FL': [102.0, 106.0, 110.0, 116.0],
+  '200IM': [104.0, 108.0, 112.0, 118.0],
+  '400IM': [222.0, 230.0, 239.0, 252.0],
 }
 
 // Cibles SCY nommees pour une epreuve : du plus rapide (elite) au plus lent.

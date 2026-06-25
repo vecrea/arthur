@@ -5,6 +5,17 @@ import { loadTimes, saveTimes } from '../lib/storage.js'
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 const entryScy = (e) => toScy(e.seconds, EV_BY_KEY[e.eventKey].distance, e.course)
 
+// Regroupe les épreuves par nage (pour les <optgroup> du sélecteur).
+const EVENT_GROUPS = []
+for (const e of EVENTS) {
+  let g = EVENT_GROUPS[EVENT_GROUPS.length - 1]
+  if (!g || g.stroke !== e.stroke) {
+    g = { stroke: e.stroke, items: [] }
+    EVENT_GROUPS.push(g)
+  }
+  g.items.push(e)
+}
+
 // Mini-graphe de progression (axe Y = secondes SCY, plus bas = mieux → en haut).
 function Sparkline({ points }) {
   const W = 320, H = 70, pad = 10
@@ -74,8 +85,12 @@ export default function TimeTracker({ profile }) {
 
         <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
           <select value={eventKey} onChange={(e) => setEventKey(e.target.value)} className={inputCls + ' lg:col-span-2'}>
-            {EVENTS.map((e) => (
-              <option key={e.key} value={e.key}>{e.label} — {e.stroke}</option>
+            {EVENT_GROUPS.map((g) => (
+              <optgroup key={g.stroke} label={g.stroke}>
+                {g.items.map((e) => (
+                  <option key={e.key} value={e.key}>{e.label}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
           <select value={course} onChange={(e) => setCourse(e.target.value)} className={inputCls}>
