@@ -1,4 +1,5 @@
 // Petits composants visuels reutilisables.
+import { useLang } from '../lib/i18n.jsx'
 
 export function Dots({ value, max = 5, color = '#0ea5e9' }) {
   return (
@@ -24,13 +25,14 @@ export function Stat({ label, value, color }) {
 }
 
 export function FitBadge({ fit }) {
+  const { t } = useLang()
   return (
     <span
       className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold text-white"
       style={{ background: fit.color }}
     >
       <span>{fit.emoji}</span>
-      {fit.label}
+      {t(fit.label, fit.labelEn)}
     </span>
   )
 }

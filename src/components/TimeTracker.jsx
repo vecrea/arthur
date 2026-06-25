@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { EVENTS, toScy, scyLevel, formatTime, parseTime, LEVELS } from '../lib/convert.js'
+import { EVENTS, toScy, scyLevel, formatTime, parseTime, LEVELS, STROKE_EN } from '../lib/convert.js'
 import { loadTimes, saveTimes } from '../lib/storage.js'
+import { useLang } from '../lib/i18n.jsx'
 
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 const entryScy = (e) => toScy(e.seconds, EV_BY_KEY[e.eventKey].distance, e.course)
@@ -19,6 +20,7 @@ for (const e of EVENTS) {
 const todayISO = () => new Date().toISOString().slice(0, 10)
 
 export default function TimeTracker({ profile }) {
+  const { t } = useLang()
   const [times, setTimes] = useState(() => loadTimes())
   useEffect(() => saveTimes(times), [times])
 
@@ -31,7 +33,10 @@ export default function TimeTracker({ profile }) {
 
   const add = () => {
     const secs = parseTime(timeStr)
-    if (secs == null) { setErr('Format invalide. Ex : 27.46 ou 1:07.39'); return }
+    if (secs == null) {
+      setErr(t('Format invalide. Ex : 27.46 ou 1:07.39', 'Invalid format. E.g. 27.46 or 1:07.39'))
+      return
+    }
     setErr('')
     setTimes((prev) => [
       ...prev,
@@ -39,13 +44,13 @@ export default function TimeTracker({ profile }) {
     ])
     setTimeStr(''); setMeet('')
   }
-  const remove = (id) => setTimes((prev) => prev.filter((t) => t.id !== id))
+  const remove = (id) => setTimes((prev) => prev.filter((it) => it.id !== id))
 
   const byEvent = useMemo(() => {
     const map = {}
     for (const e of EVENTS) {
-      const list = times.filter((t) => t.eventKey === e.key).sort((a, b) => a.date.localeCompare(b.date))
-      if (list.length) map[e.key] = list.map((t) => ({ ...t, scy: entryScy(t) }))
+      const list = times.filter((it) => it.eventKey === e.key).sort((a, b) => a.date.localeCompare(b.date))
+      if (list.length) map[e.key] = list.map((it) => ({ ...it, scy: entryScy(it) }))
     }
     return map
   }, [times])
@@ -56,15 +61,20 @@ export default function TimeTracker({ profile }) {
     <div className="space-y-5">
       {/* Formulaire d'ajout */}
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-display text-xl font-extrabold text-navy-900">⏱️ Mes chronos</h2>
-        <p className="text-sm text-slate-500">Enregistre tes courses et suis ta progression vers la D1. Tout reste chez toi (navigateur).</p>
+        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('⏱️ Mes chronos', '⏱️ My times')}</h2>
+        <p className="text-sm text-slate-500">
+          {t(
+            'Enregistre tes courses et suis ta progression vers la D1. Tout reste chez toi (navigateur).',
+            'Log your races and track your progression toward D1. Everything stays on your device (browser).',
+          )}
+        </p>
 
         <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
           <select value={eventKey} onChange={(e) => setEventKey(e.target.value)} className={inputCls + ' lg:col-span-2'}>
             {EVENT_GROUPS.map((g) => (
-              <optgroup key={g.stroke} label={g.stroke}>
+              <optgroup key={g.stroke} label={t(g.stroke, STROKE_EN[g.stroke])}>
                 {g.items.map((e) => (
-                  <option key={e.key} value={e.key}>{e.label}</option>
+                  <option key={e.key} value={e.key}>{t(e.label, e.labelEn)}</option>
                 ))}
               </optgroup>
             ))}
@@ -84,13 +94,13 @@ export default function TimeTracker({ profile }) {
             inputMode="decimal"
           />
           <button onClick={add} className="rounded-xl bg-pool-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-pool-600">
-            + Ajouter
+            {t('+ Ajouter', '+ Add')}
           </button>
         </div>
         <input
           value={meet}
           onChange={(e) => setMeet(e.target.value)}
-          placeholder="Compétition (optionnel) — ex : Championnats de Belgique"
+          placeholder={t('Compétition (optionnel) — ex : Championnats de Belgique', 'Meet (optional) — e.g. Belgian Championships')}
           className={inputCls + ' mt-2 w-full'}
         />
         {err && <p className="mt-2 text-xs font-semibold text-flag-600">{err}</p>}
@@ -100,18 +110,18 @@ export default function TimeTracker({ profile }) {
       <div className="space-y-4">
         {EVENT_GROUPS.map((g) => (
           <div key={g.stroke} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-            <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-slate-500">{g.stroke}</h3>
+            <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-slate-500">{t(g.stroke, STROKE_EN[g.stroke])}</h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {g.items.map((e) => {
                 const list = byEvent[e.key]
                 const selected = e.key === eventKey
-                const best = list ? list.reduce((m, t) => (t.scy < m.scy ? t : m), list[0]) : null
+                const best = list ? list.reduce((m, it) => (it.scy < m.scy ? it : m), list[0]) : null
                 const lvl = best ? scyLevel(best.scy, e.key) : 0
                 return (
                   <div
                     key={e.key}
                     onClick={() => setEventKey(e.key)}
-                    title={`Choisir « ${e.label} » dans le formulaire`}
+                    title={t(`Choisir « ${e.label} » dans le formulaire`, `Select “${e.labelEn}” in the form`)}
                     className={
                       'cursor-pointer rounded-xl border p-3 transition ' +
                       (selected ? 'border-pool-500 ring-2 ring-pool-500/20 ' : 'border-slate-200 hover:border-pool-300 ') +
@@ -119,13 +129,10 @@ export default function TimeTracker({ profile }) {
                     }
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-display font-extrabold text-navy-900">{e.label}</span>
+                      <span className="font-display font-extrabold text-navy-900">{t(e.label, e.labelEn)}</span>
                       {best && (
-                        <span
-                          className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
-                          style={{ background: LEVELS[lvl].color }}
-                        >
-                          {LEVELS[lvl].short}
+                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: LEVELS[lvl].color }}>
+                          {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
                         </span>
                       )}
                     </div>
@@ -138,18 +145,18 @@ export default function TimeTracker({ profile }) {
                           {best.course !== 'SCY' && <span className="text-xs text-pool-600">→ {formatTime(best.scy)} SCY</span>}
                         </div>
                         <ul className="mt-2 space-y-1 border-t border-slate-100 pt-2">
-                          {[...list].reverse().map((t) => (
-                            <li key={t.id} className="flex items-center justify-between gap-2 text-xs">
+                          {[...list].reverse().map((it) => (
+                            <li key={it.id} className="flex items-center justify-between gap-2 text-xs">
                               <span className="min-w-0 truncate text-slate-600">
-                                <span className="font-semibold text-navy-900">{formatTime(t.seconds)}</span>
-                                <span className="ml-1 text-[9px] font-bold uppercase text-slate-400">{t.course}</span>
-                                <span className="ml-1.5 text-slate-400">{t.date}{t.meet ? ` · ${t.meet}` : ''}</span>
+                                <span className="font-semibold text-navy-900">{formatTime(it.seconds)}</span>
+                                <span className="ml-1 text-[9px] font-bold uppercase text-slate-400">{it.course}</span>
+                                <span className="ml-1.5 text-slate-400">{it.date}{it.meet ? ` · ${it.meet}` : ''}</span>
                               </span>
                               <button
-                                onClick={(ev) => { ev.stopPropagation(); remove(t.id) }}
+                                onClick={(ev) => { ev.stopPropagation(); remove(it.id) }}
                                 className="shrink-0 text-slate-300 transition hover:text-flag-500"
-                                title="Supprimer"
-                                aria-label="Supprimer"
+                                title={t('Supprimer', 'Delete')}
+                                aria-label={t('Supprimer', 'Delete')}
                               >
                                 ✕
                               </button>
@@ -158,7 +165,7 @@ export default function TimeTracker({ profile }) {
                         </ul>
                       </>
                     ) : (
-                      <p className="mt-1 text-sm text-slate-300">— pas de temps</p>
+                      <p className="mt-1 text-sm text-slate-300">{t('— pas de temps', '— no time')}</p>
                     )}
                   </div>
                 )
@@ -169,9 +176,10 @@ export default function TimeTracker({ profile }) {
       </div>
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
-        💡 Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY)
-        pour suivre ta trajectoire vers les repères de l’onglet <strong>« Recrutable ? »</strong>. Clique sur une case pour la
-        pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.
+        {t(
+          '💡 Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY) pour suivre ta trajectoire vers les repères de l’onglet « Recrutable ? ». Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.',
+          '💡 Tip: log your times in long course (50 m), short course (25 m) or yards — they’re all converted to yards (SCY) to track your trajectory toward the benchmarks in the “Recruitable?” tab. Click a box to pre-select it in the form; the big number is your record in that event.',
+        )}
       </p>
     </div>
   )

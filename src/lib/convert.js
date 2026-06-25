@@ -77,6 +77,15 @@ export const THRESHOLDS_SCY = {
   '400IM': [222.0, 230.0, 239.0, 252.0],
 }
 
+// Traduction EN des noms de nage (les labels d'epreuve ont deja labelEn).
+export const STROKE_EN = {
+  'Nage libre': 'Freestyle',
+  Dos: 'Backstroke',
+  Brasse: 'Breaststroke',
+  Papillon: 'Butterfly',
+  '4 nages': 'Individual medley',
+}
+
 // Cibles SCY nommees pour une epreuve : du plus rapide (elite) au plus lent.
 export function eventTargets(eventKey) {
   const t = THRESHOLDS_SCY[eventKey]
@@ -85,11 +94,11 @@ export function eventTargets(eventKey) {
 }
 
 export const LEVELS = {
-  5: { key: 5, short: 'Élite D1', label: 'Élite D1 (scoring NCAA)', color: '#7c3aed' },
-  4: { key: 4, short: 'Solide D1', label: 'Solide Division 1', color: '#0284c7' },
-  3: { key: 3, short: 'Bas D1 / D2', label: 'Bas D1 / Haut D2', color: '#0ea5e9' },
-  2: { key: 2, short: 'D2 / D3', label: 'D2 / Haut D3', color: '#16a34a' },
-  1: { key: 1, short: 'Développement', label: 'Développement / D3', color: '#64748b' },
+  5: { key: 5, short: 'Élite D1', shortEn: 'Elite D1', label: 'Élite D1 (scoring NCAA)', labelEn: 'Elite D1 (NCAA scoring)', color: '#7c3aed' },
+  4: { key: 4, short: 'Solide D1', shortEn: 'Solid D1', label: 'Solide Division 1', labelEn: 'Solid Division 1', color: '#0284c7' },
+  3: { key: 3, short: 'Bas D1 / D2', shortEn: 'Low D1 / D2', label: 'Bas D1 / Haut D2', labelEn: 'Low D1 / High D2', color: '#0ea5e9' },
+  2: { key: 2, short: 'D2 / D3', shortEn: 'D2 / D3', label: 'D2 / Haut D3', labelEn: 'D2 / High D3', color: '#16a34a' },
+  1: { key: 1, short: 'Développement', shortEn: 'Developing', label: 'Développement / D3', labelEn: 'Developing / D3', color: '#64748b' },
 }
 
 // Convertit un temps LCM (en secondes) vers SCY (en secondes).

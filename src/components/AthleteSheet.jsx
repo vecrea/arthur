@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { EVENTS, lcmToScy, formatTime } from '../lib/convert.js'
 import { loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
+import { useLang } from '../lib/i18n.jsx'
 
 const L = {
   en: {
@@ -29,19 +30,19 @@ const DEFAULT_BIO_EN =
   "16-year-old Belgian swimmer specializing in sprint freestyle and backstroke. National-level competitor (Belgian Championships), training at LSC under coach Mathieu Huberty. Recently completed a training camp at the Cercle des Nageurs de Marseille (sub-elite group) under coach Brian. Targeting Fall 2028 enrollment with a major in Economics — motivated, coachable, and committed to combining academic and athletic excellence in the US."
 
 const FIELDS = [
-  { key: 'email', label: { en: 'Email', fr: 'Email' }, ph: 'arthur@email.com' },
-  { key: 'phone', label: { en: 'Phone', fr: 'Téléphone' }, ph: '+32 ...' },
-  { key: 'city', label: { en: 'City (Belgium)', fr: 'Ville (Belgique)' }, ph: 'Bruxelles' },
-  { key: 'homeClub', label: { en: 'Home club', fr: 'Club principal' }, ph: 'Ton club belge' },
-  { key: 'coachName', label: { en: 'Coach', fr: 'Coach' }, ph: 'Nom du coach' },
-  { key: 'average', label: { en: 'GPA / average', fr: 'Moyenne' }, ph: 'ex. 15/20' },
-  { key: 'sat', label: { en: 'SAT / ACT', fr: 'SAT / ACT' }, ph: 'à venir' },
-  { key: 'english', label: { en: 'English test', fr: "Test d'anglais" }, ph: 'TOEFL/Duolingo à venir' },
-  { key: 'videoUrl', label: { en: 'Race video (URL)', fr: 'Vidéo (lien)' }, ph: 'https://youtube.com/...' },
+  { key: 'email', label: { en: 'Email', fr: 'Email' }, ph: { en: 'arthur@email.com', fr: 'arthur@email.com' } },
+  { key: 'phone', label: { en: 'Phone', fr: 'Téléphone' }, ph: { en: '+32 ...', fr: '+32 ...' } },
+  { key: 'city', label: { en: 'City (Belgium)', fr: 'Ville (Belgique)' }, ph: { en: 'Brussels', fr: 'Bruxelles' } },
+  { key: 'homeClub', label: { en: 'Home club', fr: 'Club principal' }, ph: { en: 'Your Belgian club', fr: 'Ton club belge' } },
+  { key: 'coachName', label: { en: 'Coach', fr: 'Coach' }, ph: { en: 'Coach name', fr: 'Nom du coach' } },
+  { key: 'average', label: { en: 'GPA / average', fr: 'Moyenne' }, ph: { en: 'e.g. 15/20', fr: 'ex. 15/20' } },
+  { key: 'sat', label: { en: 'SAT / ACT', fr: 'SAT / ACT' }, ph: { en: 'coming soon', fr: 'à venir' } },
+  { key: 'english', label: { en: 'English test', fr: "Test d'anglais" }, ph: { en: 'TOEFL/Duolingo coming', fr: 'TOEFL/Duolingo à venir' } },
+  { key: 'videoUrl', label: { en: 'Race video (URL)', fr: 'Vidéo (lien)' }, ph: { en: 'https://youtube.com/...', fr: 'https://youtube.com/...' } },
 ]
 
 export default function AthleteSheet({ profile }) {
-  const [lang, setLang] = useState('en')
+  const { lang, t: tr } = useLang()
   const [extras, setExtras] = useState(() => ({
     email: '', phone: '', city: '', homeClub: 'LSC', coachName: 'Mathieu Huberty',
     average: '', sat: '', english: '', videoUrl: '', bio: DEFAULT_BIO_EN,
@@ -64,33 +65,27 @@ export default function AthleteSheet({ profile }) {
       {/* Barre d'actions (non imprimee) */}
       <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
         <div>
-          <h2 className="font-display text-xl font-extrabold text-navy-900">📄 Ta fiche athlète</h2>
-          <p className="text-sm text-slate-500">À envoyer aux coachs US. Remplis les champs, puis exporte en PDF.</p>
+          <h2 className="font-display text-xl font-extrabold text-navy-900">{tr('📄 Ta fiche athlète', '📄 Your athlete sheet')}</h2>
+          <p className="text-sm text-slate-500">
+            {tr(
+              'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
+              'To send to US coaches. Fill in the fields, then export to PDF. (Follows the site language — switch to EN for coaches.)',
+            )}
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-full bg-slate-100 p-1 text-sm font-semibold">
-            {['en', 'fr'].map((lg) => (
-              <button
-                key={lg}
-                onClick={() => setLang(lg)}
-                className={'rounded-full px-3 py-1 ' + (lang === lg ? 'bg-navy-900 text-white' : 'text-slate-500')}
-              >
-                {lg.toUpperCase()}
-              </button>
-            ))}
-          </div>
           <button
             onClick={() => window.print()}
             className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600"
           >
-            🖨️ Exporter / Imprimer (PDF)
+            {tr('🖨️ Exporter / Imprimer (PDF)', '🖨️ Export / Print (PDF)')}
           </button>
         </div>
       </div>
 
       {/* Panneau d'edition (non imprime) */}
       <div className="no-print rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Compléter ta fiche</p>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">{tr('Compléter ta fiche', 'Complete your sheet')}</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {FIELDS.map((f) => (
             <label key={f.key} className="block">
@@ -98,7 +93,7 @@ export default function AthleteSheet({ profile }) {
               <input
                 value={extras[f.key]}
                 onChange={(e) => set(f.key, e.target.value)}
-                placeholder={f.ph}
+                placeholder={f.ph[lang]}
                 className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20"
               />
             </label>
@@ -188,8 +183,10 @@ export default function AthleteSheet({ profile }) {
       </div>
 
       <p className="no-print text-center text-xs text-slate-400">
-        💡 Astuce : « Exporter » ouvre l'impression — choisis « Enregistrer en PDF » comme destination.
-        Les temps en yards sont indicatifs (à confirmer).
+        {tr(
+          "💡 Astuce : « Exporter » ouvre l'impression — choisis « Enregistrer en PDF » comme destination. Les temps en yards sont indicatifs (à confirmer).",
+          '💡 Tip: “Export” opens the print dialog — choose “Save as PDF” as the destination. Yards times are indicative (to confirm).',
+        )}
       </p>
     </div>
   )

@@ -1,3 +1,5 @@
+import { useLang } from '../lib/i18n.jsx'
+
 const SEG = 'rounded-full px-3 py-1.5 text-sm font-semibold transition'
 
 function Segment({ options, value, onChange }) {
@@ -17,6 +19,7 @@ function Segment({ options, value, onChange }) {
 }
 
 export default function Filters({ filters, setFilters, count }) {
+  const { t } = useLang()
   const set = (patch) => setFilters((f) => ({ ...f, ...patch }))
 
   return (
@@ -26,7 +29,7 @@ export default function Filters({ filters, setFilters, count }) {
           type="search"
           value={filters.search}
           onChange={(e) => set({ search: e.target.value })}
-          placeholder="🔎 Chercher une université, une ville, un état…"
+          placeholder={t('🔎 Chercher une université, une ville, un état…', '🔎 Search a university, city, state…')}
           className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20"
         />
 
@@ -37,7 +40,7 @@ export default function Filters({ filters, setFilters, count }) {
               value={filters.division}
               onChange={(v) => set({ division: v })}
               options={[
-                { value: 'all', label: 'Toutes' },
+                { value: 'all', label: t('Toutes', 'All') },
                 { value: 'D1', label: 'D1' },
                 { value: 'D2', label: 'D2' },
                 { value: 'D3', label: 'D3' },
@@ -46,28 +49,28 @@ export default function Filters({ filters, setFilters, count }) {
           </div>
 
           <div>
-            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Recrutement</p>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t('Recrutement', 'Recruiting')}</p>
             <Segment
               value={filters.fit}
               onChange={(v) => set({ fit: v })}
               options={[
-                { value: 'all', label: 'Tous' },
-                { value: 'safety', label: '✅ Réaliste' },
-                { value: 'target', label: '🎯 Objectif' },
-                { value: 'reach', label: '🔥 Ambitieux' },
+                { value: 'all', label: t('Tous', 'All') },
+                { value: 'safety', label: t('✅ Réaliste', '✅ Safety') },
+                { value: 'target', label: t('🎯 Objectif', '🎯 Target') },
+                { value: 'reach', label: t('🔥 Ambitieux', '🔥 Reach') },
               ]}
             />
           </div>
 
           <div>
-            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Trier par</p>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t('Trier par', 'Sort by')}</p>
             <Segment
               value={filters.sort}
               onChange={(v) => set({ sort: v })}
               options={[
-                { value: 'match', label: 'Compatibilité' },
-                { value: 'swim', label: 'Natation' },
-                { value: 'cost', label: 'Coût' },
+                { value: 'match', label: t('Compatibilité', 'Match') },
+                { value: 'swim', label: t('Natation', 'Swimming') },
+                { value: 'cost', label: t('Coût', 'Cost') },
               ]}
             />
           </div>
@@ -79,22 +82,25 @@ export default function Filters({ filters, setFilters, count }) {
               onChange={(e) => set({ sunnyOnly: e.target.checked })}
               className="h-4 w-4 rounded accent-spark-500"
             />
-            ☀️ Soleil ++
+            {t('☀️ Soleil ++', '☀️ Sunny ++')}
           </label>
 
-          <label className="flex cursor-pointer items-center gap-2 self-end pb-1 text-sm font-semibold text-slate-600" title="Afficher seulement les facs évaluées en détail">
+          <label
+            className="flex cursor-pointer items-center gap-2 self-end pb-1 text-sm font-semibold text-slate-600"
+            title={t('Afficher seulement les facs évaluées en détail', 'Show only schools evaluated in detail')}
+          >
             <input
               type="checkbox"
               checked={filters.curatedOnly}
               onChange={(e) => set({ curatedOnly: e.target.checked })}
               className="h-4 w-4 rounded accent-pool-500"
             />
-            ⭐ Curées
+            {t('⭐ Curées', '⭐ Curated')}
           </label>
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-slate-400">{count} université(s) affichée(s)</p>
+      <p className="mt-3 text-xs text-slate-400">{t(`${count} université(s) affichée(s)`, `${count} school(s) shown`)}</p>
     </div>
   )
 }

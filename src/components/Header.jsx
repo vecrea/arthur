@@ -1,17 +1,20 @@
+import { useLang } from '../lib/i18n.jsx'
+
 const TABS = [
-  { key: 'ranking', label: 'Classement', icon: '🏆' },
-  { key: 'favorites', label: 'Mes favoris', icon: '⭐' },
-  { key: 'compare', label: 'Comparer', icon: '⚖️' },
-  { key: 'sheet', label: 'Ma fiche', icon: '📄' },
-  { key: 'recruit', label: 'Recrutable ?', icon: '🎯' },
-  { key: 'times', label: 'Mes chronos', icon: '⏱️' },
-  { key: 'coaches', label: 'Coachs', icon: '📇' },
-  { key: 'steps', label: 'Démarches', icon: '🗓️' },
-  { key: 'ia', label: 'IA', icon: '🤖' },
-  { key: 'profile', label: 'Mon profil', icon: '🏊' },
+  { key: 'ranking', label: 'Classement', labelEn: 'Rankings', icon: '🏆' },
+  { key: 'favorites', label: 'Mes favoris', labelEn: 'Favorites', icon: '⭐' },
+  { key: 'compare', label: 'Comparer', labelEn: 'Compare', icon: '⚖️' },
+  { key: 'sheet', label: 'Ma fiche', labelEn: 'My sheet', icon: '📄' },
+  { key: 'recruit', label: 'Recrutable ?', labelEn: 'Recruitable?', icon: '🎯' },
+  { key: 'times', label: 'Mes chronos', labelEn: 'My times', icon: '⏱️' },
+  { key: 'coaches', label: 'Coachs', labelEn: 'Coaches', icon: '📇' },
+  { key: 'steps', label: 'Démarches', labelEn: 'Steps', icon: '🗓️' },
+  { key: 'ia', label: 'IA', labelEn: 'AI', icon: '🤖' },
+  { key: 'profile', label: 'Mon profil', labelEn: 'My profile', icon: '🏊' },
 ]
 
 export default function Header({ tab, setTab, favCount }) {
+  const { t, lang, setLang } = useLang()
   return (
     <header className="no-print relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800" />
@@ -19,6 +22,23 @@ export default function Header({ tab, setTab, favCount }) {
       <div className="absolute -left-10 top-10 h-56 w-56 rounded-full bg-flag-500/20 blur-3xl" />
 
       <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-4">
+        {/* Interrupteur de langue : bascule toute l'appli FR <-> EN */}
+        <div className="absolute right-5 top-6 z-10 inline-flex rounded-full bg-white/10 p-1 text-xs font-bold ring-1 ring-white/20">
+          {['fr', 'en'].map((lg) => (
+            <button
+              key={lg}
+              onClick={() => setLang(lg)}
+              aria-label={lg === 'fr' ? 'Français' : 'English'}
+              className={
+                'rounded-full px-2.5 py-1 transition ' +
+                (lang === lg ? 'bg-white text-navy-900' : 'text-white/70 hover:text-white')
+              }
+            >
+              {lg === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN'}
+            </button>
+          ))}
+        </div>
+
         <div className="flex items-center gap-3">
           <span className="text-3xl">🇺🇸</span>
           <div>
@@ -34,18 +54,21 @@ export default function Header({ tab, setTab, favCount }) {
           </div>
         </div>
         <p className="mt-3 max-w-2xl text-sm text-white/90">
-          Ton tableau de bord pour trouver l'université américaine idéale : natation,
-          diplôme d'économie et soleil. Chaque fac reçoit un{' '}
-          <span className="font-semibold text-white">score de compatibilité</span> selon ton profil.
+          {t(
+            "Ton tableau de bord pour trouver l'université américaine idéale : natation, diplôme d'économie et soleil. Chaque fac reçoit un ",
+            'Your dashboard to find the ideal US university: swimming, an economics degree and sunshine. Each school gets a ',
+          )}
+          <span className="font-semibold text-white">{t('score de compatibilité', 'compatibility score')}</span>
+          {t(' selon ton profil.', ' based on your profile.')}
         </p>
 
         <nav className="mt-5 flex flex-wrap gap-2">
-          {TABS.map((t) => {
-            const active = tab === t.key
+          {TABS.map((item) => {
+            const active = tab === item.key
             return (
               <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
+                key={item.key}
+                onClick={() => setTab(item.key)}
                 className={
                   'group relative rounded-full px-4 py-2 text-sm font-semibold transition ' +
                   (active
@@ -53,9 +76,9 @@ export default function Header({ tab, setTab, favCount }) {
                     : 'bg-white/10 text-white/80 hover:bg-white/20')
                 }
               >
-                <span className="mr-1.5">{t.icon}</span>
-                {t.label}
-                {t.key === 'favorites' && favCount > 0 && (
+                <span className="mr-1.5">{item.icon}</span>
+                {t(item.label, item.labelEn)}
+                {item.key === 'favorites' && favCount > 0 && (
                   <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-flag-500 px-1.5 text-xs font-bold text-white">
                     {favCount}
                   </span>
