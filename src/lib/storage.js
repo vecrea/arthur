@@ -59,6 +59,26 @@ export function saveCoaches(arr) {
   }
 }
 
+// --- Journal de chronos (suivi de progression) ---
+const TIMES_KEY = 'pitusa.times.v1'
+
+export function loadTimes() {
+  try {
+    const raw = localStorage.getItem(TIMES_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+export function saveTimes(arr) {
+  try {
+    localStorage.setItem(TIMES_KEY, JSON.stringify(arr))
+  } catch {
+    /* ignore */
+  }
+}
+
 // --- Checklist des démarches (cases cochées) ---
 const CHECKLIST_KEY = 'pitusa.checklist.v1'
 

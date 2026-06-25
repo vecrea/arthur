@@ -5,6 +5,8 @@ import UniversityCard from './components/UniversityCard.jsx'
 import ProfileCard from './components/ProfileCard.jsx'
 import Compare from './components/Compare.jsx'
 import AthleteSheet from './components/AthleteSheet.jsx'
+import Recruitable from './components/Recruitable.jsx'
+import TimeTracker from './components/TimeTracker.jsx'
 import Coaches from './components/Coaches.jsx'
 import Steps from './components/Steps.jsx'
 import Ia from './components/Ia.jsx'
@@ -113,6 +115,10 @@ export default function App() {
         {tab === 'compare' && <Compare unis={favUnis} onToggleFav={toggleFav} />}
 
         {tab === 'sheet' && <AthleteSheet profile={profile} />}
+
+        {tab === 'recruit' && <Recruitable profile={profile} />}
+
+        {tab === 'times' && <TimeTracker profile={profile} />}
 
         {tab === 'coaches' && <Coaches unis={matches} favorites={favorites} profile={profile} />}
 

@@ -30,13 +30,20 @@ export const EVENTS = [
 // Index 0 => niveau 5 (Elite D1) ... index 4 => seuil du niveau 2.
 // En dessous du dernier seuil => niveau 1 (Developpement / D3).
 // [Elite D1, Solide D1, Bas D1 / Haut D2, D2 / Haut D3]
-const THRESHOLDS_SCY = {
+export const THRESHOLDS_SCY = {
   '50FR': [19.3, 20.2, 21.2, 22.5],
   '100FR': [42.5, 44.0, 46.0, 48.5],
   '200FR': [94.0, 97.0, 101.0, 106.0],
   '50BK': [21.5, 22.5, 23.5, 25.0],
   '100BK': [46.5, 48.5, 50.5, 53.0],
   '200BK': [101.0, 105.0, 109.0, 115.0],
+}
+
+// Cibles SCY nommees pour une epreuve : du plus rapide (elite) au plus lent.
+export function eventTargets(eventKey) {
+  const t = THRESHOLDS_SCY[eventKey]
+  if (!t) return null
+  return { eliteD1: t[0], solidD1: t[1], lowD1: t[2], d2d3: t[3] }
 }
 
 export const LEVELS = {
@@ -86,4 +93,16 @@ export function formatTime(seconds) {
   const s = seconds - m * 60
   if (m > 0) return `${m}:${s.toFixed(2).padStart(5, '0')}`
   return s.toFixed(2)
+}
+
+// "1:07.39" | "67.39" | "27,46" -> secondes (ou null si invalide)
+export function parseTime(str) {
+  if (typeof str !== 'string') return null
+  const s = str.trim().replace(',', '.')
+  const m = s.match(/^(?:(\d+):)?(\d{1,2}(?:\.\d{1,2})?)$/)
+  if (!m) return null
+  const mins = m[1] ? parseInt(m[1], 10) : 0
+  const secs = parseFloat(m[2])
+  if (Number.isNaN(secs) || secs >= 60) return null
+  return mins * 60 + secs
 }

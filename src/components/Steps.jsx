@@ -1,8 +1,58 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CHECKLIST, CHECKLIST_AS_OF } from '../data/checklist.js'
+import { CHECKLIST, CHECKLIST_AS_OF, ROADMAP } from '../data/checklist.js'
 import { loadChecklist, saveChecklist } from '../lib/storage.js'
 
 const ALL_IDS = CHECKLIST.flatMap((p) => p.items.map((i) => i.id))
+
+function Roadmap() {
+  const today = new Date().toISOString().slice(0, 10)
+  const nextIdx = ROADMAP.findIndex((m) => m.iso >= today)
+  return (
+    <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <h3 className="font-display text-lg font-extrabold text-navy-900">🗺️ Ta roadmap jusqu’à la rentrée 2028</h3>
+      <p className="text-sm text-slate-500">Les grandes étapes datées, calées sur le calendrier NCAA et visa.</p>
+      <ol className="mt-4 space-y-0">
+        {ROADMAP.map((m, i) => {
+          const past = nextIdx === -1 ? true : i < nextIdx
+          const current = i === nextIdx
+          const last = i === ROADMAP.length - 1
+          return (
+            <li key={m.iso} className="relative flex gap-3 pb-5 last:pb-0">
+              {!last && (
+                <span
+                  className="absolute left-[15px] top-7 h-full w-0.5"
+                  style={{ background: past ? '#10b981' : '#e2e8f0' }}
+                />
+              )}
+              <span
+                className={
+                  'relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm ring-2 ' +
+                  (past
+                    ? 'bg-emerald-500 text-white ring-emerald-200'
+                    : current
+                      ? 'bg-spark-500 text-white ring-spark-300'
+                      : 'bg-slate-100 text-slate-500 ring-slate-200')
+                }
+              >
+                {m.emoji}
+              </span>
+              <div className={'min-w-0 flex-1 ' + (past ? 'opacity-60' : '')}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-pool-600">{m.date}</span>
+                  {current && (
+                    <span className="rounded-full bg-spark-500 px-2 py-0.5 text-[10px] font-bold text-white">Tu es ici</span>
+                  )}
+                </div>
+                <p className="font-semibold text-navy-900">{m.title}</p>
+                <p className="text-sm text-slate-600">{m.detail}</p>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
 
 export default function Steps() {
   const [done, setDone] = useState(() => loadChecklist())
@@ -35,6 +85,8 @@ export default function Steps() {
           <div className="h-full rounded-full bg-gradient-to-r from-pool-500 to-emerald-500 transition-all" style={{ width: `${pct}%` }} />
         </div>
       </div>
+
+      <Roadmap />
 
       {CHECKLIST.map((phase) => {
         const phaseDone = phase.items.filter((i) => done.has(i.id)).length

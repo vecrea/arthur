@@ -3,6 +3,7 @@ import { Stat, FitBadge, ScorePill, divColor } from './ui.jsx'
 import { NCSA_URL, siteLink } from '../data/universities.js'
 import { VERIFIED_COACHES, coachsStaffLink, COACHES_AS_OF } from '../data/coaches.js'
 import { explainFit, loadWhyCache, saveWhy, hasApiKey } from '../lib/ai.js'
+import { netCost } from '../lib/cost.js'
 
 const fmtCost = (n) => '$' + Math.round(n / 1000) + 'k/an'
 
@@ -160,6 +161,22 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
           <p className="text-slate-700">
             <span className="font-semibold">💶 Bourses :</span> {u.scholarshipNote}
           </p>
+
+          {(() => {
+            const c = netCost(u)
+            return (
+              <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+                <p className="font-semibold text-navy-900">
+                  💰 Coût net estimé <span className="font-normal text-slate-400">(indicatif, intl)</span>
+                </p>
+                <p className="mt-0.5 font-display text-lg font-extrabold text-emerald-700">{c.range}</p>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  <span className="font-semibold text-slate-600">{c.label}.</span> {c.note}
+                </p>
+              </div>
+            )
+          })()}
+
           <div className="flex flex-wrap gap-1.5">
             {u.highlights.map((h) => (
               <span key={h} className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200">

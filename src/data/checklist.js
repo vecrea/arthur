@@ -7,6 +7,21 @@
 
 export const CHECKLIST_AS_OF = 'juin 2026'
 
+// Frise chronologique : grandes étapes datées jusqu'à la rentrée 2028,
+// calées sur le calendrier NCAA / visa. `iso` sert à situer « tu es ici ».
+export const ROADMAP = [
+  { iso: '2026-06-15', date: '15 juin 2026', emoji: '📣', title: 'Ouverture des contacts coachs (D1)', detail: 'Les coachs D1 peuvent te contacter directement. Toi, tu peux les contacter quand tu veux — lance tes premiers emails !' },
+  { iso: '2026-09-01', date: 'Automne 2026', emoji: '🗂️', title: '5e secondaire — profils en ligne', detail: 'Profil NCSA/SwimCloud à jour, fiche athlète prête, compte NCAA Eligibility Center créé.' },
+  { iso: '2027-01-01', date: 'Hiver 2026-27', emoji: '🗣️', title: 'Tests d’anglais', detail: 'Passe le TOEFL / IELTS / Duolingo (exigé par l’admission). Vise tôt pour pouvoir repasser si besoin.' },
+  { iso: '2027-06-01', date: 'Été 2027', emoji: '🎯', title: 'Shortlist resserrée + relances', detail: 'Cible 8 à 12 facs réalistes/objectifs et relance les coachs avec tes nouveaux temps.' },
+  { iso: '2027-08-01', date: '1er août 2027', emoji: '🏫', title: 'Visites de campus possibles', detail: 'Visites officielles et non officielles autorisées dès le 1er août avant ta dernière année.' },
+  { iso: '2027-10-01', date: 'Automne 2027', emoji: '📝', title: '6e secondaire — candidatures', detail: 'Dépose tes candidatures (deadlines automne/hiver). SAT/ACT si utile pour l’admission et les bourses au mérite.' },
+  { iso: '2028-02-01', date: 'Hiver 2027-28', emoji: '💶', title: 'Offres & bourses', detail: 'Compare les offres : bourses sportives (souvent partielles) en D1/D2, aides au mérite en D3. Décide.' },
+  { iso: '2028-05-01', date: 'Printemps 2028', emoji: '🎓', title: 'Diplôme + dossier NCAA final', detail: 'Relevés et diplôme finaux au Eligibility Center, certification d’amateurisme. Réception de ton I-20.' },
+  { iso: '2028-07-01', date: 'Été 2028', emoji: '🛂', title: 'Visa F-1', detail: 'Paie le SEVIS I-901 (~350 $), remplis le DS-160, entretien visa à l’ambassade US (Bruxelles).' },
+  { iso: '2028-08-15', date: 'Automne 2028', emoji: '🇺🇸', title: 'Rentrée & premiers entraînements NCAA', detail: 'Arrivée (jusqu’à 30 jours avant le début), installation, et c’est parti — Road to D1 accomplie ! 🎉' },
+]
+
 export const CHECKLIST = [
   {
     title: '1. Fondations — maintenant (2026)',

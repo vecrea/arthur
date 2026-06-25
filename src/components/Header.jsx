@@ -3,6 +3,8 @@ const TABS = [
   { key: 'favorites', label: 'Mes favoris', icon: '⭐' },
   { key: 'compare', label: 'Comparer', icon: '⚖️' },
   { key: 'sheet', label: 'Ma fiche', icon: '📄' },
+  { key: 'recruit', label: 'Recrutable ?', icon: '🎯' },
+  { key: 'times', label: 'Mes chronos', icon: '⏱️' },
   { key: 'coaches', label: 'Coachs', icon: '📇' },
   { key: 'steps', label: 'Démarches', icon: '🗓️' },
   { key: 'ia', label: 'IA', icon: '🤖' },
