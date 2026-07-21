@@ -6,6 +6,7 @@ import ProfileCard from './components/ProfileCard.jsx'
 import Compare from './components/Compare.jsx'
 import Budget from './components/Budget.jsx'
 import AthleteSheet from './components/AthleteSheet.jsx'
+import Gpa from './components/Gpa.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Recruitable from './components/Recruitable.jsx'
 import TimeTracker from './components/TimeTracker.jsx'
@@ -136,6 +137,8 @@ export default function App() {
         {tab === 'budget' && <Budget schools={matchesLoc} favorites={favorites} />}
 
         {tab === 'sheet' && <AthleteSheet profile={profile} />}
+
+        {tab === 'gpa' && <Gpa />}
 
         {tab === 'recruit' && <Recruitable profile={profile} />}
 

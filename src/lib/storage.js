@@ -98,6 +98,26 @@ export function saveSwimcloudUrl(url) {
   }
 }
 
+// --- Bulletin (matières & notes /20) pour le calcul du GPA ---
+const GPA_KEY = 'pitusa.gpa.v1'
+
+export function loadGpaSubjects() {
+  try {
+    const raw = localStorage.getItem(GPA_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+export function saveGpaSubjects(arr) {
+  try {
+    localStorage.setItem(GPA_KEY, JSON.stringify(arr))
+  } catch {
+    /* ignore */
+  }
+}
+
 // --- Objectifs de chronos (cibles par épreuve) ---
 const GOALS_KEY = 'pitusa.goals.v1'
 

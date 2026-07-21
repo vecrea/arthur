@@ -7,6 +7,7 @@ const TABS = [
   { key: 'compare', label: 'Comparer', labelEn: 'Compare', icon: '⚖️' },
   { key: 'budget', label: 'Budget', labelEn: 'Budget', icon: '💶' },
   { key: 'sheet', label: 'Ma fiche', labelEn: 'My sheet', icon: '📄' },
+  { key: 'gpa', label: 'Notes → GPA', labelEn: 'Grades → GPA', icon: '🎓' },
   { key: 'recruit', label: 'Recrutable ?', labelEn: 'Recruitable?', icon: '🎯' },
   { key: 'times', label: 'Mes chronos', labelEn: 'My times', icon: '⏱️' },
   { key: 'goals', label: 'Objectifs', labelEn: 'Goals', icon: '🏁' },
