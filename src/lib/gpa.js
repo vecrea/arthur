@@ -25,6 +25,20 @@ export function bandFor20(g) {
   return GPA_BANDS.find((b) => x >= b.min) || GPA_BANDS[GPA_BANDS.length - 1]
 }
 
+// Ramène une note à l'échelle /20 selon l'échelle de saisie ('20' ou '100' = %).
+export function norm20(grade, scale) {
+  const x = Number(grade)
+  if (Number.isNaN(x)) return NaN
+  return scale === '100' ? x / 5 : x
+}
+
+// Bande de conversion pour une note dans son échelle native.
+export function bandFor(grade, scale) {
+  const g20 = norm20(grade, scale)
+  if (Number.isNaN(g20)) return null
+  return GPA_BANDS.find((b) => g20 >= b.min) || GPA_BANDS[GPA_BANDS.length - 1]
+}
+
 const LETTER_BY_GPA = [
   [3.85, 'A'], [3.5, 'A-'], [3.15, 'B+'], [2.85, 'B'], [2.5, 'B-'], [2.15, 'C+'], [1.85, 'C'], [1.5, 'C-'], [0, 'F'],
 ]
@@ -44,20 +58,22 @@ export function mentionKey(avg20) {
   return 'fail'
 }
 
-// Moyenne pondérée depuis [{grade, weight}] -> { avg20, gpa, count }.
-export function computeGpa(subjects) {
-  let sumW = 0, sumG20 = 0, sumGpa = 0, n = 0
+// Moyenne pondérée depuis [{grade, weight}] et l'échelle de saisie.
+// -> { avgNative (dans l'échelle saisie), avg20, gpa, count }.
+export function computeGpa(subjects, scale = '20') {
+  let sumW = 0, sumNative = 0, sum20 = 0, sumGpa = 0, n = 0
   for (const s of subjects || []) {
-    const g = Number(s.grade)
-    if (s.grade === '' || Number.isNaN(g)) continue
+    const raw = Number(s.grade)
+    if (s.grade === '' || Number.isNaN(raw)) continue
     const w = Number(s.weight) > 0 ? Number(s.weight) : 1
-    const band = bandFor20(g)
-    if (!band) continue
+    const g20 = norm20(raw, scale)
+    const band = GPA_BANDS.find((b) => g20 >= b.min) || GPA_BANDS[GPA_BANDS.length - 1]
     sumW += w
-    sumG20 += g * w
+    sumNative += raw * w
+    sum20 += g20 * w
     sumGpa += band.gpa * w
     n++
   }
   if (!n || sumW === 0) return null
-  return { avg20: sumG20 / sumW, gpa: sumGpa / sumW, count: n }
+  return { avgNative: sumNative / sumW, avg20: sum20 / sumW, gpa: sumGpa / sumW, count: n }
 }

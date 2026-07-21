@@ -118,6 +118,23 @@ export function saveGpaSubjects(arr) {
   }
 }
 
+const GPA_SCALE_KEY = 'pitusa.gpascale.v1'
+export function loadGpaScale() {
+  try {
+    // Défaut % (échelle courante en Belgique) ; '20' seulement si explicitement choisi.
+    return localStorage.getItem(GPA_SCALE_KEY) === '20' ? '20' : '100'
+  } catch {
+    return '100'
+  }
+}
+export function saveGpaScale(scale) {
+  try {
+    localStorage.setItem(GPA_SCALE_KEY, scale)
+  } catch {
+    /* ignore */
+  }
+}
+
 // --- Objectifs de chronos (cibles par épreuve) ---
 const GOALS_KEY = 'pitusa.goals.v1'
 

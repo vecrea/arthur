@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { computeGpa, bandFor20, gpaToLetter, mentionKey, GPA_BANDS } from '../lib/gpa.js'
-import { loadGpaSubjects, saveGpaSubjects, loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
+import { computeGpa, bandFor, gpaToLetter, mentionKey, GPA_BANDS } from '../lib/gpa.js'
+import { loadGpaSubjects, saveGpaSubjects, loadGpaScale, saveGpaScale, loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const rid = () => 's' + Date.now() + Math.random().toString(36).slice(2, 6)
@@ -8,18 +8,23 @@ const blank = () => ({ id: rid(), name: '', grade: '', weight: 1 })
 
 export default function Gpa() {
   const { t } = useLang()
+  const [scale, setScale] = useState(() => loadGpaScale())
   const [subjects, setSubjects] = useState(() => {
     const s = loadGpaSubjects()
     return s.length ? s : [blank(), blank(), blank()]
   })
   const [msg, setMsg] = useState('')
   useEffect(() => saveGpaSubjects(subjects), [subjects])
+  useEffect(() => saveGpaScale(scale), [scale])
+
+  const isPct = scale === '100'
+  const unit = isPct ? '%' : '/20'
 
   const addRow = () => setSubjects((s) => [...s, blank()])
   const removeRow = (id) => setSubjects((s) => s.filter((x) => x.id !== id))
   const update = (id, patch) => setSubjects((s) => s.map((x) => (x.id === id ? { ...x, ...patch } : x)))
 
-  const result = useMemo(() => computeGpa(subjects), [subjects])
+  const result = useMemo(() => computeGpa(subjects, scale), [subjects, scale])
 
   const MENTIONS = {
     summa: t('La plus grande distinction', 'Highest honors'),
@@ -33,7 +38,7 @@ export default function Gpa() {
   const useInSheet = () => {
     if (!result) return
     const extras = loadProfileExtras()
-    saveProfileExtras({ ...extras, average: `${result.gpa.toFixed(2)} / 4.0 (${result.avg20.toFixed(1)}/20)` })
+    saveProfileExtras({ ...extras, average: `${result.gpa.toFixed(2)} / 4.0 (${result.avgNative.toFixed(isPct ? 0 : 1)}${unit})` })
     setMsg(t('✅ GPA copié dans « Ma fiche ».', '✅ GPA copied to “My sheet”.'))
     setTimeout(() => setMsg(''), 2500)
   }
@@ -43,13 +48,27 @@ export default function Gpa() {
   return (
     <div className="space-y-5">
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('🎓 Notes → GPA', '🎓 Grades → GPA')}</h2>
-        <p className="text-sm text-slate-500">
-          {t(
-            'Entre tes matières et notes belges (sur 20). L’app estime ton GPA américain (sur 4.0), la lettre et la mention. Le coefficient = poids de la matière (heures/semaine), 1 par défaut.',
-            'Enter your subjects and Belgian grades (out of 20). The app estimates your US GPA (out of 4.0), the letter grade and the honor. The coefficient = subject weight (hours/week), default 1.',
-          )}
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="font-display text-xl font-extrabold text-navy-900">{t('🎓 Notes → GPA', '🎓 Grades → GPA')}</h2>
+            <p className="text-sm text-slate-500">
+              {t(
+                'Entre tes matières et notes belges. L’app estime ton GPA américain (sur 4.0), la lettre et la mention. Le coefficient = poids de la matière (heures/semaine), 1 par défaut.',
+                'Enter your subjects and Belgian grades. The app estimates your US GPA (out of 4.0), the letter grade and the honor. The coefficient = subject weight (hours/week), default 1.',
+              )}
+            </p>
+          </div>
+          <div>
+            <div className="mb-1 text-right text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t('Échelle de tes notes', 'Your grade scale')}</div>
+            <div className="inline-flex rounded-full bg-slate-100 p-1 text-sm font-semibold">
+              {[['100', '%'], ['20', '/20']].map(([v, lab]) => (
+                <button key={v} onClick={() => setScale(v)} className={'rounded-full px-4 py-1 transition ' + (scale === v ? 'bg-navy-900 text-white' : 'text-slate-500 hover:text-navy-900')}>
+                  {lab}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Résultat */}
@@ -61,7 +80,7 @@ export default function Gpa() {
           </div>
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Moyenne', 'Average')}</div>
-            <div className="mt-1 font-display text-2xl font-black">{result ? result.avg20.toFixed(1) : '—'}<span className="text-sm text-white/50"> / 20</span></div>
+            <div className="mt-1 font-display text-2xl font-black">{result ? result.avgNative.toFixed(isPct ? 0 : 1) : '—'}<span className="text-sm text-white/50"> {unit}</span></div>
           </div>
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Lettre', 'Letter')}</div>
@@ -87,7 +106,7 @@ export default function Gpa() {
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-wide text-slate-400">
                 <th className="px-3 py-2 font-semibold">{t('Matière', 'Subject')}</th>
-                <th className="w-24 px-3 py-2 font-semibold">{t('Note /20', 'Grade /20')}</th>
+                <th className="w-24 px-3 py-2 font-semibold">{t('Note', 'Grade')} {unit}</th>
                 <th className="w-20 px-3 py-2 font-semibold">{t('Coeff.', 'Weight')}</th>
                 <th className="w-24 px-3 py-2 font-semibold">GPA</th>
                 <th className="w-8 px-3 py-2"></th>
@@ -95,14 +114,14 @@ export default function Gpa() {
             </thead>
             <tbody>
               {subjects.map((s) => {
-                const band = s.grade !== '' ? bandFor20(s.grade) : null
+                const band = s.grade !== '' ? bandFor(s.grade, scale) : null
                 return (
                   <tr key={s.id} className="border-t border-slate-100">
                     <td className="px-3 py-1.5">
                       <input value={s.name} onChange={(e) => update(s.id, { name: e.target.value })} placeholder={t('ex. Mathématiques', 'e.g. Mathematics')} className={inputCls} />
                     </td>
                     <td className="px-3 py-1.5">
-                      <input type="number" min="0" max="20" step="0.1" value={s.grade} onChange={(e) => update(s.id, { grade: e.target.value })} placeholder="15" className={inputCls} />
+                      <input type="number" min="0" max={isPct ? 100 : 20} step={isPct ? 1 : 0.1} value={s.grade} onChange={(e) => update(s.id, { grade: e.target.value })} placeholder={isPct ? '75' : '15'} className={inputCls} />
                     </td>
                     <td className="px-3 py-1.5">
                       <input type="number" min="1" step="1" value={s.weight} onChange={(e) => update(s.id, { weight: e.target.value })} className={inputCls} />
@@ -139,10 +158,10 @@ export default function Gpa() {
         <div className="flex flex-wrap gap-1.5">
           {GPA_BANDS.filter((b) => b.min > 0).map((b) => (
             <span key={b.letter} className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 ring-1 ring-slate-200">
-              ≥ <span className="font-bold text-navy-900">{b.min}</span>/20 → <span className="font-bold text-pool-600">{b.gpa.toFixed(1)}</span> ({b.letter})
+              ≥ <span className="font-bold text-navy-900">{isPct ? b.min * 5 + '%' : b.min + '/20'}</span> → <span className="font-bold text-pool-600">{b.gpa.toFixed(1)}</span> ({b.letter})
             </span>
           ))}
-          <span className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 ring-1 ring-slate-200">&lt; 10/20 → <span className="font-bold">0.0</span> (F)</span>
+          <span className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 ring-1 ring-slate-200">&lt; {isPct ? '50%' : '10/20'} → <span className="font-bold">0.0</span> (F)</span>
         </div>
       </div>
 
