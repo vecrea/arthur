@@ -21,6 +21,21 @@
   --color-spark-500: #d1971f;
   --color-flag-500: #d94452;
   --color-flag-600: #b7303c;
+
+  /* Ombres « premium » — douces, étagées, diffuses (style Linear/Stripe) */
+  --shadow-card: 0 1px 2px 0 rgb(16 24 40 / 0.04), 0 10px 30px -8px rgb(16 24 40 / 0.12);
+  --shadow-card-hover: 0 4px 12px -2px rgb(16 24 40 / 0.08), 0 24px 52px -12px rgb(16 24 40 / 0.24);
+  --shadow-panel: 0 10px 28px -10px rgb(11 21 36 / 0.40), 0 34px 68px -22px rgb(11 21 36 / 0.58);
+}
+
+/* Panneau sombre « premium » — dégradé marine + halos lumineux + liseré haut.
+   Remplace les classes bg-gradient-to-br from-navy-* pour donner de la profondeur. */
+@utility panel-dark {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(14 136 211 / 0.30) 0%, transparent 46%),
+    radial-gradient(120% 140% at 0% 100%, rgb(209 151 31 / 0.16) 0%, transparent 44%),
+    linear-gradient(135deg, #0b1524 0%, #101e33 52%, #1c3057 100%);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.10);
 }
 
 html {
@@ -30,8 +45,11 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  /* Fond clair premium avec une légère profondeur */
-  background: linear-gradient(180deg, #f8fafc 0%, #eef1f6 100%);
+  /* Canevas clair « premium » — halos colorés discrets + dégradé de fond */
+  background:
+    radial-gradient(60% 55% at 12% -8%, rgb(14 136 211 / 0.07) 0%, transparent 60%),
+    radial-gradient(48% 45% at 100% -2%, rgb(28 48 87 / 0.06) 0%, transparent 55%),
+    linear-gradient(180deg, #f7f9fc 0%, #eceff5 100%);
   background-attachment: fixed;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;

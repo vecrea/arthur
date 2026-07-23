@@ -57,7 +57,7 @@ export default function Goals({ profile }) {
   return (
     <div className="space-y-5">
       {/* Formulaire */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Mes objectifs', 'My goals')}</h2>
         <p className="text-sm text-slate-500">
           {t(
@@ -99,7 +99,7 @@ export default function Goals({ profile }) {
 
       {/* Liste des objectifs */}
       {sorted.length === 0 ? (
-        <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
+        <div className="rounded-3xl bg-white p-10 text-center shadow-card ring-1 ring-slate-900/5">
           <p className="font-semibold text-navy-900">{t('Aucun objectif pour l’instant', 'No goals yet')}</p>
           <p className="mt-1 text-sm text-slate-500">
             {t('Fixe ta première cible ci-dessus — par ex. passer sous 1:00 au 100 NL d’ici 2027.', 'Set your first target above — e.g. break 1:00 in the 100 Free by 2027.')}
@@ -112,7 +112,7 @@ export default function Goals({ profile }) {
             const { targetScy, currentScy, achieved, gap, pct } = goalStatus(goal, times, profile)
             const daysLeft = goal.date ? Math.ceil((new Date(goal.date) - new Date(today)) / 86400000) : null
             return (
-              <div key={goal.id} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+              <div key={goal.id} className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="font-display text-lg font-extrabold text-navy-900">{t(ev.label, ev.labelEn)}</h3>
@@ -174,7 +174,7 @@ export default function Goals({ profile }) {
         </div>
       )}
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
         {t(
           'Ton « record » combine tes chronos enregistrés et tes temps de profil (le plus rapide), converti en yards. Mets tes chronos à jour dans « Mes chronos » et la progression se recalcule.',
           'Your “best” combines your logged times and your profile times (the fastest), converted to yards. Update your times in “My times” and the progress recomputes.',

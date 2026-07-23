@@ -10,7 +10,7 @@ function Roadmap() {
   const today = new Date().toISOString().slice(0, 10)
   const nextIdx = ROADMAP.findIndex((m) => m.iso >= today)
   return (
-    <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+    <div className="overflow-hidden rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
       <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Ta roadmap jusqu’à la rentrée 2028', 'Your roadmap to the 2028 start')}</h3>
       <p className="text-sm text-slate-500">{t('Les grandes étapes datées, calées sur le calendrier NCAA et visa.', 'The key dated milestones, aligned with the NCAA and visa calendar.')}</p>
       <ol className="mt-4 space-y-0">
@@ -62,7 +62,7 @@ export default function Steps() {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Tes démarches — Road to 2028', 'Your steps — Road to 2028')}</h2>
@@ -83,7 +83,7 @@ export default function Steps() {
       {CHECKLIST.map((phase) => {
         const phaseDone = phase.items.filter((i) => done.has(i.id)).length
         return (
-          <div key={phase.title} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+          <div key={phase.title} className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
             <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
               <h3 className="font-display font-extrabold text-navy-900">{t(phase.title, phase.titleEn)}</h3>
               <span className="text-xs font-semibold text-slate-400">{phaseDone}/{phase.items.length}</span>
@@ -132,7 +132,7 @@ export default function Steps() {
         )
       })}
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
         {t(
           `Guide indicatif (vérifié ${CHECKLIST_AS_OF}) pour un nageur international visant l'automne 2028. Les dates et frais changent — confirme toujours sur les liens officiels (NCAA, visa).`,
           `Indicative guide (verified ${CHECKLIST_AS_OF_EN}) for an international swimmer targeting fall 2028. Dates and fees change — always confirm on the official links (NCAA, visa).`,

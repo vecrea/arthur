@@ -24,7 +24,7 @@ export default function Compare({ unis, onToggleFav }) {
 
   if (unis.length === 0) {
     return (
-      <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-10 text-center shadow-card ring-1 ring-slate-900/5">
         <p className="font-semibold text-navy-900">{t("Aucune fac à comparer pour l'instant", 'No schools to compare yet')}</p>
         <p className="mt-1 text-sm text-slate-500">
           {t(
@@ -37,7 +37,7 @@ export default function Compare({ unis, onToggleFav }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+    <div className="overflow-x-auto rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
       <table className="w-full border-collapse">
         <thead>
           <tr>

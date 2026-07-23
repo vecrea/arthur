@@ -108,7 +108,7 @@ export default function App() {
               ))}
             </div>
             {filtered.length === 0 && (
-              <p className="rounded-2xl bg-white p-8 text-center text-slate-500 ring-1 ring-slate-200">
+              <p className="rounded-3xl bg-white p-8 text-center text-slate-500 ring-1 ring-slate-900/5">
                 {t('Aucune université ne correspond à ces filtres.', 'No university matches these filters.')}
               </p>
             )}
@@ -121,7 +121,7 @@ export default function App() {
               <UniversityCard key={u.id} u={u} profile={profile} isFav onToggleFav={toggleFav} />
             ))}
             {favUnis.length === 0 && (
-              <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200 lg:col-span-2">
+              <div className="rounded-3xl bg-white p-10 text-center shadow-card ring-1 ring-slate-900/5 lg:col-span-2">
                 <p className="font-semibold text-navy-900">{t('Pas encore de favoris', 'No favorites yet')}</p>
                 <p className="mt-1 text-sm text-slate-500">
                   {t("Clique sur l'étoile d'une fac dans le classement pour la sauvegarder ici.", 'Click a school’s star in the rankings to save it here.')}
@@ -155,7 +155,7 @@ export default function App() {
       </main>
 
       <footer className="no-print mx-auto max-w-6xl px-5 pb-10">
-        <div className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+        <div className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
           {t(
             "Données indicatives (MVP). La sélection d'universités, les coûts et la force des programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine étape : enrichissement via College Scorecard (données officielles US) + suivi des démarches et IA.",
             'Indicative data (MVP). The university selection, costs and swim-program strength are a first basis to verify against official 2025-26 rosters/sites. Next step: enrichment via College Scorecard (official US data) + steps tracking and AI.',
@@ -171,7 +171,7 @@ export default function App() {
 
 function StatCard({ label, value, sub, accent }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+    <div className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{label}</div>
       <div className="mt-1 font-display text-3xl font-black" style={{ color: accent }}>{value}</div>
       <div className="truncate text-xs text-slate-500">{sub}</div>

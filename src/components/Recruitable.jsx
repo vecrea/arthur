@@ -63,8 +63,8 @@ export default function Recruitable({ profile }) {
   return (
     <div className="space-y-5">
       {/* Verdict global */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="bg-gradient-to-br from-navy-950 to-navy-800 p-5 text-white">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
+        <div className="panel-dark p-5 text-white">
           <h2 className="font-display text-xl font-extrabold">{t('Suis-je recrutable ?', 'Am I recruitable?')}</h2>
           <p className="mt-1 text-sm text-white/80">
             {t(
@@ -73,13 +73,13 @@ export default function Recruitable({ profile }) {
             )}
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl bg-white/10 p-3">
+            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Niveau actuel (meilleure épreuve)', 'Current level (best event)')}</div>
               <div className="mt-1 font-display text-2xl font-black" style={{ color: LEVELS[level].color }}>
                 {t(LEVELS[level].label, LEVELS[level].labelEn)}
               </div>
             </div>
-            <div className="rounded-xl bg-white/10 p-3">
+            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Projection 2028 (+1 palier de marge)', '2028 projection (+1 level of margin)')}</div>
               <div className="mt-1 font-display text-2xl font-black" style={{ color: LEVELS[projected].color }}>
                 {t(LEVELS[projected].label, LEVELS[projected].labelEn)}
@@ -92,7 +92,7 @@ export default function Recruitable({ profile }) {
       {/* Détail par épreuve */}
       <div className="grid gap-3 lg:grid-cols-2">
         {rows.map(({ ev, lcm, scy, lvl, tg, gapLowD1, gapSolid }) => (
-          <div key={ev.key} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+          <div key={ev.key} className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h3 className="font-display text-lg font-extrabold text-navy-900">{t(ev.label, ev.labelEn)}</h3>
@@ -138,7 +138,7 @@ export default function Recruitable({ profile }) {
         ))}
       </div>
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
         {t(
           'Repères indicatifs (hommes, temps SCY) pour situer ton niveau — ce ne sont pas des minima officiels. La conversion 50 m → yards est une approximation. Les coachs regardent aussi ta progression, ta marge et ton attitude : garde tes chronos à jour dans l’onglet « Mes chronos ».',
           'Indicative benchmarks (men, SCY times) to gauge your level — not official cut-offs. The 50 m → yards conversion is an approximation. Coaches also look at your progression, your margin and your attitude: keep your times up to date in the “My times” tab.',

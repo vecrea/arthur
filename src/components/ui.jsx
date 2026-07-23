@@ -60,8 +60,11 @@ export function ScorePill({ score, size = 'md' }) {
   const dim = size === 'lg' ? 'h-16 w-16 text-2xl' : 'h-12 w-12 text-lg'
   return (
     <div
-      className={`flex ${dim} shrink-0 flex-col items-center justify-center rounded-2xl font-display font-extrabold text-white shadow-md`}
-      style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
+      className={`flex ${dim} shrink-0 flex-col items-center justify-center rounded-2xl font-display font-extrabold text-white`}
+      style={{
+        background: `linear-gradient(135deg, ${color}, ${color}cc)`,
+        boxShadow: `0 6px 16px -4px ${color}66, inset 0 1px 0 0 rgba(255,255,255,0.25)`,
+      }}
       title={`Score de compatibilité : ${score}/100`}
     >
       {score}

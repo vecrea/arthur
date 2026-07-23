@@ -12,7 +12,7 @@ function Tile({ onClick, icon, title, cta, children }) {
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col rounded-2xl bg-white p-4 text-left shadow-sm ring-1 ring-slate-200 transition hover:shadow-md hover:ring-pool-300"
+      className="group flex flex-col rounded-3xl bg-white p-5 text-left shadow-card ring-1 ring-slate-900/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-card-hover hover:ring-pool-300"
     >
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{title}</span>
@@ -64,21 +64,21 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
   return (
     <div className="space-y-5">
       {/* Hero : salutation + compte à rebours + niveau */}
-      <div className="overflow-hidden rounded-2xl shadow-sm ring-1 ring-slate-200">
-        <div className="bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 p-6 text-white">
+      <div className="overflow-hidden rounded-3xl shadow-panel ring-1 ring-white/10">
+        <div className="panel-dark p-6 text-white">
           <h2 className="font-display text-2xl font-black">{t('Salut', 'Hi')} {profile.name}</h2>
           <p className="mt-1 text-sm text-white/80">{t('Voici où tu en es sur ta Road to D1.', 'Here’s where you stand on your Road to D1.')}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl bg-white/10 p-3">
+            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Avant la rentrée', 'Until enrollment')}</div>
               <div className="font-display text-3xl font-black text-spark-400">≈ {months} {t('mois', 'months')}</div>
               <div className="text-xs text-white/70">{t('rentrée automne', 'fall')} {profile.usEntryYear}</div>
             </div>
-            <div className="rounded-xl bg-white/10 p-3">
+            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Niveau actuel', 'Current level')}</div>
               <div className="mt-1 font-display text-xl font-black" style={{ color: lvl.color }}>{t(lvl.label, lvl.labelEn)}</div>
             </div>
-            <div className="rounded-xl bg-white/10 p-3">
+            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Projection 2028', '2028 projection')}</div>
               <div className="mt-1 font-display text-xl font-black" style={{ color: projected.color }}>{t(projected.label, projected.labelEn)}</div>
             </div>
@@ -165,7 +165,7 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
         </Tile>
       </div>
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
         {t(
           'Ton tableau de bord se met à jour tout seul au fil de tes chronos, démarches et contacts. Clique une carte pour aller à la section.',
           'Your dashboard updates itself as you add times, steps and contacts. Click a card to jump to that section.',

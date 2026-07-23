@@ -8,3 +8,6 @@ dist-ssr
 
 # Temp verification scripts (local only)
 scripts/
+
+# Local screenshot output
+scratch-shots/

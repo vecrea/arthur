@@ -14,7 +14,7 @@ function ageFrom(birthDate) {
 
 function Info({ label, value }) {
   return (
-    <div className="rounded-xl bg-white p-3 ring-1 ring-slate-200">
+    <div className="rounded-xl bg-white p-3 ring-1 ring-slate-900/5">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{label}</div>
       <div className="mt-0.5 font-semibold text-navy-900">{value}</div>
     </div>
@@ -52,7 +52,7 @@ export default function ProfileCard({ profile }) {
 
   return (
     <div className="space-y-5">
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
         <div className="bg-gradient-to-r from-navy-900 to-navy-800 p-5 text-white">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -83,7 +83,7 @@ export default function ProfileCard({ profile }) {
       </div>
 
       {/* Temps & conversion */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
         <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
           <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Tes temps', 'Your times')}</h3>
           <span className="text-xs text-slate-400">{t('grand bassin → yards (US)', 'long course → yards (US)')}</span>
@@ -127,7 +127,7 @@ export default function ProfileCard({ profile }) {
       </div>
 
       {/* Roadmap */}
-      <div className="rounded-2xl border border-pool-200 bg-pool-50/60 p-5">
+      <div className="rounded-3xl border border-pool-200 bg-pool-50/60 p-5">
         <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Ta Road to D1', 'Your Road to D1')}</h3>
         <p className="mt-1 text-sm text-slate-600">
           {t(
@@ -156,7 +156,7 @@ export default function ProfileCard({ profile }) {
       </div>
 
       {/* Sauvegarde & synchro entre appareils */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Sauvegarde & synchro', 'Backup & sync')}</h3>
         <p className="mt-1 text-sm text-slate-600">
           {t(

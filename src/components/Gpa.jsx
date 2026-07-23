@@ -49,7 +49,7 @@ export default function Gpa() {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Notes → GPA', 'Grades → GPA')}</h2>
@@ -74,8 +74,8 @@ export default function Gpa() {
       </div>
 
       {/* Résultat */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="grid gap-3 bg-gradient-to-br from-navy-950 to-navy-800 p-5 text-white sm:grid-cols-4">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
+        <div className="grid gap-3 panel-dark p-5 text-white sm:grid-cols-4">
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('GPA estimé (US)', 'Estimated GPA (US)')}</div>
             <div className="font-display text-4xl font-black text-spark-400">{result ? result.gpa.toFixed(2) : '—'}<span className="text-lg text-white/50"> / 4.0</span></div>
@@ -111,7 +111,7 @@ export default function Gpa() {
       )}
 
       {/* Matières */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -163,19 +163,19 @@ export default function Gpa() {
       </div>
 
       {/* Barème */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{t('Barème de conversion (indicatif)', 'Conversion scale (indicative)')}</p>
         <div className="flex flex-wrap gap-1.5">
           {GPA_BANDS.filter((b) => b.min > 0).map((b) => (
-            <span key={b.letter} className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 ring-1 ring-slate-200">
+            <span key={b.letter} className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 ring-1 ring-slate-900/5">
               ≥ <span className="font-bold text-navy-900">{isPct ? b.min * 5 + '%' : b.min + '/20'}</span> → <span className="font-bold text-pool-600">{b.gpa.toFixed(1)}</span> ({b.letter})
             </span>
           ))}
-          <span className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 ring-1 ring-slate-200">&lt; {isPct ? '50%' : '10/20'} → <span className="font-bold">0.0</span> (F)</span>
+          <span className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 ring-1 ring-slate-900/5">&lt; {isPct ? '50%' : '10/20'} → <span className="font-bold">0.0</span> (F)</span>
         </div>
       </div>
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
         {t(
           'Conversion indicative : il n’existe pas de barème officiel unique (WES, NCAA Eligibility Center et chaque fac ont le leur). Utile pour te situer et remplir ta fiche, mais le GPA officiel sera recalculé par l’organisme d’évaluation à partir de tes relevés.',
           'Indicative conversion: there is no single official scale (WES, NCAA Eligibility Center and each school use their own). Useful to place yourself and fill your sheet, but the official GPA will be recomputed by the evaluator from your transcripts.',

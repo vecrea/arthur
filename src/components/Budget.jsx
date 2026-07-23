@@ -50,7 +50,7 @@ export default function Budget({ schools, favorites }) {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Budget sur 4 ans', '4-year budget')}</h2>
         <p className="text-sm text-slate-500">
           {t(
@@ -95,7 +95,7 @@ export default function Budget({ schools, favorites }) {
       </div>
 
       {/* Hypothèses */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">{t('Hypothèses (ajuste-les)', 'Assumptions (adjust them)')}</p>
 
         <div className="space-y-4">
@@ -134,8 +134,8 @@ export default function Budget({ schools, favorites }) {
       </div>
 
       {/* Résultat */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="bg-gradient-to-br from-navy-950 to-navy-800 p-5 text-white">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
+        <div className="panel-dark p-5 text-white">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t(`Coût total estimé sur ${years} an(s)`, `Estimated total over ${years} year(s)`)}</div>
           <div className="font-display text-4xl font-black text-spark-400">≈ {eur(totalEUR)}</div>
           <div className="mt-1 text-sm text-white/80">{t('soit', 'i.e.')} ≈ {eur(annualEUR)} / {t('an', 'yr')} {scholar > 0 && <>· {t('économie bourse', 'scholarship saving')} ≈ {eur(savedEUR)}</>}</div>
@@ -151,7 +151,7 @@ export default function Budget({ schools, favorites }) {
         </table>
       </div>
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
         {t(
           'Estimation indicative en euros. Le « coût annoncé » inclut généralement logement, repas et assurance santé ; les vols et le visa sont ajoutés en plus. Les bourses sportives en natation sont souvent partielles — confirme l’offre réelle avec le coach. Taux de change à ajuster le moment venu.',
           'Indicative estimate in euros. The “sticker cost” usually includes housing, meals and health insurance; flights and visa are added on top. Swimming athletic scholarships are often partial — confirm the real offer with the coach. Adjust the exchange rate when the time comes.',

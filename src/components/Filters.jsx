@@ -4,7 +4,7 @@ const SEG = 'rounded-full px-3 py-1.5 text-sm font-semibold transition'
 
 function Segment({ options, value, onChange }) {
   return (
-    <div className="inline-flex flex-wrap gap-1 rounded-full bg-white p-1 ring-1 ring-slate-200">
+    <div className="inline-flex flex-wrap gap-1 rounded-full bg-white p-1 ring-1 ring-slate-900/5">
       {options.map((o) => (
         <button
           key={o.value}
@@ -23,7 +23,7 @@ export default function Filters({ filters, setFilters, count }) {
   const set = (patch) => setFilters((f) => ({ ...f, ...patch }))
 
   return (
-    <div className="rounded-2xl bg-white/95 p-4 shadow-sm ring-1 ring-slate-200">
+    <div className="rounded-3xl bg-white/95 p-4 shadow-card ring-1 ring-slate-900/5">
       <div className="flex flex-col gap-3">
         <input
           type="search"

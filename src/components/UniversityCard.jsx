@@ -39,7 +39,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
   }
 
   return (
-    <article className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-md">
+    <article className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-card-hover">
       <div className="flex items-start gap-4 p-4">
         <ScorePill score={u.match} />
 
@@ -135,7 +135,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
           </p>
 
           {coaches && (
-            <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+            <div className="rounded-lg bg-white p-3 ring-1 ring-slate-900/5">
               <p className="mb-1 font-semibold text-navy-900">
                 {t('Staff natation', 'Swim staff')} <span className="font-normal text-slate-400">({t('vérifié', 'verified')} {COACHES_AS_OF})</span>
               </p>
@@ -163,7 +163,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
           {(() => {
             const c = netCost(u, lang)
             return (
-              <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+              <div className="rounded-lg bg-white p-3 ring-1 ring-slate-900/5">
                 <p className="font-semibold text-navy-900">
                   {t('Coût net estimé', 'Estimated net cost')} <span className="font-normal text-slate-400">({t('indicatif, intl', 'indicative, intl')})</span>
                 </p>
@@ -177,7 +177,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
 
           <div className="flex flex-wrap gap-1.5">
             {u.highlights.map((h) => (
-              <span key={h} className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200">
+              <span key={h} className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-900/5">
                 {h}
               </span>
             ))}
@@ -189,14 +189,14 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
               [t('Lifestyle', 'Lifestyle'), u.breakdown.lifestyle],
               [t('Coût', 'Cost'), u.breakdown.cost],
             ].map(([label, v]) => (
-              <div key={label} className="rounded-lg bg-white p-2 text-center ring-1 ring-slate-200">
+              <div key={label} className="rounded-lg bg-white p-2 text-center ring-1 ring-slate-900/5">
                 <div className="font-display text-base font-extrabold text-navy-900">{v}</div>
                 <div className="text-[10px] font-medium uppercase tracking-wide text-slate-400">{label}</div>
               </div>
             ))}
           </div>
 
-          <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+          <div className="rounded-lg bg-white p-3 ring-1 ring-slate-900/5">
             <div className="flex items-center justify-between gap-2">
               <span className="font-semibold text-navy-900">{t('Pourquoi cette fac ?', 'Why this school?')}</span>
               <button

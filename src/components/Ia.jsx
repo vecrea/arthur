@@ -22,7 +22,7 @@ export default function Ia() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Assistant IA', 'AI assistant')}</h2>
         <p className="mt-1 text-sm text-slate-500">
           {t(
@@ -86,7 +86,7 @@ export default function Ia() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-pool-200 bg-pool-50/60 p-4 text-sm text-slate-600">
+      <div className="rounded-3xl border border-pool-200 bg-pool-50/60 p-4 text-sm text-slate-600">
         <p className="font-semibold text-navy-900">{t('Comment ça marche ?', 'How does it work?')}</p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
           <li>{t("Tu paies seulement quand tu cliques sur un bouton IA (pas d'abonnement).", 'You only pay when you click an AI button (no subscription).')}</li>

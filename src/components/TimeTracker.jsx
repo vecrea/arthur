@@ -96,7 +96,7 @@ export default function TimeTracker({ profile }) {
   return (
     <div className="space-y-5">
       {/* Formulaire d'ajout */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
         <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Mes chronos', 'My times')}</h2>
         <p className="text-sm text-slate-500">
           {t(
@@ -143,7 +143,7 @@ export default function TimeTracker({ profile }) {
       </div>
 
       {/* Import SwimCloud (copier-coller) */}
-      <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+      <div className="rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
         <button
           onClick={() => setScOpen((o) => !o)}
           className="flex w-full items-center justify-between px-5 py-3 text-left"
@@ -206,7 +206,7 @@ export default function TimeTracker({ profile }) {
       {/* Une case par épreuve (nage × distance), groupée par nage */}
       <div className="space-y-4">
         {EVENT_GROUPS.map((g) => (
-          <div key={g.stroke} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+          <div key={g.stroke} className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
             <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-slate-500">{t(g.stroke, STROKE_EN[g.stroke])}</h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {g.items.map((e) => {
@@ -272,7 +272,7 @@ export default function TimeTracker({ profile }) {
         ))}
       </div>
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
+      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
         {t(
           'Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY) pour suivre ta trajectoire vers les repères de l’onglet « Recrutable ? ». Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.',
           'Tip: log your times in long course (50 m), short course (25 m) or yards — they’re all converted to yards (SCY) to track your trajectory toward the benchmarks in the “Recruitable?” tab. Click a box to pre-select it in the form; the big number is your record in that event.',

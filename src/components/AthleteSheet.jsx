@@ -63,7 +63,7 @@ export default function AthleteSheet({ profile }) {
   return (
     <div className="space-y-4">
       {/* Barre d'actions (non imprimee) */}
-      <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
         <div>
           <h2 className="font-display text-xl font-extrabold text-navy-900">{tr('Ta fiche athlète', 'Your athlete sheet')}</h2>
           <p className="text-sm text-slate-500">
@@ -84,7 +84,7 @@ export default function AthleteSheet({ profile }) {
       </div>
 
       {/* Panneau d'edition (non imprime) */}
-      <div className="no-print rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+      <div className="no-print rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">{tr('Compléter ta fiche', 'Complete your sheet')}</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {FIELDS.map((f) => (
@@ -111,7 +111,7 @@ export default function AthleteSheet({ profile }) {
       </div>
 
       {/* ---------- LA FICHE (imprimable) ---------- */}
-      <div className="print-sheet mx-auto max-w-3xl overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+      <div className="print-sheet mx-auto max-w-3xl overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
         <div className="bg-gradient-to-r from-navy-900 to-navy-800 p-6 text-white print:bg-navy-900">
           <div className="flex items-end justify-between gap-4">
             <div>

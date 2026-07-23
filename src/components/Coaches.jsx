@@ -129,7 +129,7 @@ export default function Coaches({ unis, favorites, profile }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
         <div>
           <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Contacts coachs', 'Coach contacts')}</h2>
           <p className="text-sm text-slate-500">{t("Suis chaque coach que tu contactes, du premier email à l'offre.", 'Track every coach you contact, from first email to offer.')}</p>
@@ -163,7 +163,7 @@ export default function Coaches({ unis, favorites, profile }) {
 
       {/* Formulaire */}
       {form && (
-        <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-pool-300">
+        <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-pool-300">
           <p className="mb-3 font-display font-extrabold text-navy-900">
             {form.id ? t('Modifier le contact', 'Edit contact') : t('+ Nouveau contact', '+ New contact')}
           </p>
@@ -226,7 +226,7 @@ export default function Coaches({ unis, favorites, profile }) {
 
       {/* Liste */}
       {sorted.length === 0 && !form ? (
-        <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
+        <div className="rounded-3xl bg-white p-10 text-center shadow-card ring-1 ring-slate-900/5">
           <p className="font-semibold text-navy-900">{t("Aucun coach pour l'instant", 'No coaches yet')}</p>
           <p className="mt-1 text-sm text-slate-500">
             {t(
@@ -240,7 +240,7 @@ export default function Coaches({ unis, favorites, profile }) {
           {sorted.map((c) => {
             const st = STATUS[c.status] ?? STATUS.todo
             return (
-              <article key={c.id} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+              <article key={c.id} className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="truncate font-display text-lg font-extrabold text-navy-900">{c.school || t('Université ?', 'University?')}</h3>
@@ -345,7 +345,7 @@ function Field({ label, value, onChange, ph, type = 'text' }) {
 
 function StatCard({ label, value, accent }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+    <div className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{label}</div>
       <div className="mt-1 font-display text-3xl font-black" style={{ color: accent }}>{value}</div>
     </div>
