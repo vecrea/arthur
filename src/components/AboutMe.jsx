@@ -26,6 +26,7 @@ function parseCoachHash() {
 
 // Petit graphe SVG de progression (temps de course tels quels, plus rapide = plus haut).
 function ProgressionChart({ points, color, t }) {
+  const [hover, setHover] = useState(null)
   if (!points.length) {
     return (
       <div className="flex h-52 items-center justify-center rounded-xl surface-2 border border-hair p-6 text-center text-sm text-secondary">
@@ -51,24 +52,51 @@ function ProgressionChart({ points, color, t }) {
   const last = points[points.length - 1]
   const delta = first.secs - last.secs // > 0 = amélioration (temps qui baisse)
   const fmtDate = (d) => { const p = (d || '').split('-'); return p.length === 3 ? `${p[2]}/${p[1]}` : '' }
+  const hp = hover != null ? points[hover] : null
+  const hy = hp ? y(hp.secs) : 0
   return (
     <div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={t('Courbe de progression', 'Progression curve')}>
-        <defs>
-          <linearGradient id={`progFill-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={color} stopOpacity="0.20" />
-            <stop offset="1" stopColor={color} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        {[0, 0.5, 1].map((f) => (
-          <line key={f} x1={padX} x2={W - padX} y1={padT + f * plotH} y2={padT + f * plotH} stroke="var(--border)" strokeWidth="1" />
-        ))}
-        {points.length > 1 && <path d={area} fill={`url(#progFill-${color.replace('#', '')})`} />}
-        <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        {points.map((p, i) => (
-          <circle key={i} cx={x(i)} cy={y(p.secs)} r={i === points.length - 1 ? 5 : 3.5} fill={color} stroke="var(--surface)" strokeWidth="2" />
-        ))}
-      </svg>
+      <div className="relative">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={t('Courbe de progression', 'Progression curve')}>
+          <defs>
+            <linearGradient id={`progFill-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor={color} stopOpacity="0.20" />
+              <stop offset="1" stopColor={color} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {[0, 0.5, 1].map((f) => (
+            <line key={f} x1={padX} x2={W - padX} y1={padT + f * plotH} y2={padT + f * plotH} stroke="var(--border)" strokeWidth="1" />
+          ))}
+          {points.length > 1 && <path d={area} fill={`url(#progFill-${color.replace('#', '')})`} />}
+          <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {points.map((p, i) => (
+            <g key={i}>
+              <circle cx={x(i)} cy={y(p.secs)} r={hover === i ? 6 : i === points.length - 1 ? 5 : 3.5} fill={color} stroke="var(--surface)" strokeWidth="2" />
+              {/* zone de survol/tap élargie et invisible */}
+              <circle
+                cx={x(i)} cy={y(p.secs)} r="16" fill="transparent" pointerEvents="all" className="cursor-pointer"
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover(null)}
+                onFocus={() => setHover(i)}
+                onClick={() => setHover((h) => (h === i ? null : i))}
+              />
+            </g>
+          ))}
+        </svg>
+        {hp && (
+          <div
+            className="pointer-events-none absolute z-10 whitespace-nowrap rounded-lg surface border border-hair px-2.5 py-1 text-center shadow-card"
+            style={{
+              left: `${(x(hover) / W) * 100}%`,
+              top: `${(hy / H) * 100}%`,
+              transform: hy < H * 0.32 ? 'translate(-50%, 12px)' : 'translate(-50%, calc(-100% - 12px))',
+            }}
+          >
+            <div className="font-display text-sm font-black text-heading">{formatTime(hp.secs)}</div>
+            <div className="text-[11px] text-tertiary">{dmy(hp.date)}</div>
+          </div>
+        )}
+      </div>
       <div className="mt-2 flex items-center justify-between gap-2 text-xs">
         <span className="text-tertiary">{fmtDate(first.date)} · {formatTime(first.secs)}</span>
         {points.length > 1 && delta > 0.01 && (
