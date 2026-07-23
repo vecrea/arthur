@@ -62,56 +62,56 @@ export default function AthleteSheet({ profile }) {
 
   return (
     <div className="space-y-4">
-      {/* Barre d'actions (non imprimee) */}
-      <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
-        <div>
-          <h2 className="font-display text-xl font-extrabold text-navy-900">{tr('Ta fiche athlète', 'Your athlete sheet')}</h2>
-          <p className="text-sm text-slate-500">
-            {tr(
-              'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
-              'To send to US coaches. Fill in the fields, then export to PDF. (Follows the site language — switch to EN for coaches.)',
-            )}
-          </p>
+      <div className="panel overflow-hidden print-sheet mx-auto max-w-3xl">
+        {/* Barre d'actions (non imprimee) */}
+        <div className="no-print flex flex-wrap items-center justify-between gap-3 p-4">
+          <div>
+            <h2 className="font-display text-xl font-extrabold text-heading">{tr('Ta fiche athlète', 'Your athlete sheet')}</h2>
+            <p className="text-sm text-secondary">
+              {tr(
+                'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
+                'To send to US coaches. Fill in the fields, then export to PDF. (Follows the site language — switch to EN for coaches.)',
+              )}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => window.print()}
+              className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600"
+            >
+              {tr('Exporter / Imprimer (PDF)', 'Export / Print (PDF)')}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => window.print()}
-            className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600"
-          >
-            {tr('Exporter / Imprimer (PDF)', 'Export / Print (PDF)')}
-          </button>
-        </div>
-      </div>
 
-      {/* Panneau d'edition (non imprime) */}
-      <div className="no-print rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">{tr('Compléter ta fiche', 'Complete your sheet')}</p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {FIELDS.map((f) => (
-            <label key={f.key} className="block">
-              <span className="text-xs font-medium text-slate-500">{f.label[lang]}</span>
-              <input
-                value={extras[f.key]}
-                onChange={(e) => set(f.key, e.target.value)}
-                placeholder={f.ph[lang]}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20"
-              />
-            </label>
-          ))}
+        {/* Panneau d'edition (non imprime) */}
+        <div className="no-print border-t border-hair p-4">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-tertiary">{tr('Compléter ta fiche', 'Complete your sheet')}</p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {FIELDS.map((f) => (
+              <label key={f.key} className="block">
+                <span className="text-xs font-medium text-secondary">{f.label[lang]}</span>
+                <input
+                  value={extras[f.key]}
+                  onChange={(e) => set(f.key, e.target.value)}
+                  placeholder={f.ph[lang]}
+                  className="field mt-1"
+                />
+              </label>
+            ))}
+          </div>
+          <label className="mt-3 block">
+            <span className="text-xs font-medium text-secondary">{t.about}</span>
+            <textarea
+              value={extras.bio}
+              onChange={(e) => set('bio', e.target.value)}
+              rows={3}
+              className="field mt-1"
+            />
+          </label>
         </div>
-        <label className="mt-3 block">
-          <span className="text-xs font-medium text-slate-500">{t.about}</span>
-          <textarea
-            value={extras.bio}
-            onChange={(e) => set('bio', e.target.value)}
-            rows={3}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20"
-          />
-        </label>
-      </div>
 
-      {/* ---------- LA FICHE (imprimable) ---------- */}
-      <div className="print-sheet mx-auto max-w-3xl overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
+        {/* ---------- LA FICHE (bandeau navy imprimable) ---------- */}
         <div className="bg-gradient-to-r from-navy-900 to-navy-800 p-6 text-white print:bg-navy-900">
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -130,7 +130,7 @@ export default function AthleteSheet({ profile }) {
         <div className="grid gap-6 p-6 sm:grid-cols-2">
           {/* Academics + about */}
           <section>
-            <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600">{t.academics}</h3>
+            <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600 dark:text-flag-400">{t.academics}</h3>
             <dl className="space-y-1 text-sm">
               <Row k={t.school} val={lang === 'en' ? profile.currentGradeEn : profile.currentGrade} />
               <Row k={t.major} val={lang === 'en' ? profile.majorEn : profile.major} />
@@ -139,13 +139,13 @@ export default function AthleteSheet({ profile }) {
               <Row k={t.english} val={extras.english?.trim() ? extras.english : lang === 'en' ? profile.englishTestEn : profile.englishTest} />
             </dl>
 
-            <h3 className="mb-2 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600">{t.about}</h3>
-            <p className="text-sm leading-relaxed text-slate-700">{extras.bio}</p>
+            <h3 className="mb-2 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600 dark:text-flag-400">{t.about}</h3>
+            <p className="text-sm leading-relaxed text-primary">{extras.bio}</p>
           </section>
 
           {/* Swimming */}
           <section>
-            <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-pool-600">{t.swimming}</h3>
+            <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-accent">{t.swimming}</h3>
             <dl className="space-y-1 text-sm">
               <Row k={t.specialty} val={lang === 'en' ? profile.specialtyEn : profile.specialty} />
               <Row k={t.clubs} val={v(extras.homeClub)} />
@@ -153,11 +153,11 @@ export default function AthleteSheet({ profile }) {
               <Row k={t.camp} val={lang === 'en' ? profile.trainingCampEn : profile.trainingCampFr} />
             </dl>
 
-            <h3 className="mb-1 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-pool-600">{t.bestTimes}</h3>
-            <p className="mb-2 text-[11px] text-slate-400">{t.course}</p>
+            <h3 className="mb-1 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-accent">{t.bestTimes}</h3>
+            <p className="mb-2 text-[11px] text-tertiary">{t.course}</p>
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wide text-slate-400">
+                <tr className="text-left text-[11px] uppercase tracking-wide text-tertiary">
                   <th className="py-1 font-semibold">{t.event}</th>
                   <th className="py-1 font-semibold">{t.lcm}</th>
                   <th className="py-1 font-semibold">{t.scy}</th>
@@ -165,10 +165,10 @@ export default function AthleteSheet({ profile }) {
               </thead>
               <tbody>
                 {times.map((e) => (
-                  <tr key={e.key} className="border-t border-slate-100">
-                    <td className="py-1 font-semibold text-navy-900">{lang === 'en' ? e.labelEn : e.label}</td>
-                    <td className="py-1 tabular-nums text-slate-700">{formatTime(e.lcm)}</td>
-                    <td className="py-1 tabular-nums text-slate-500">≈ {formatTime(e.scy)}</td>
+                  <tr key={e.key} className="border-t border-hair">
+                    <td className="py-1 font-semibold text-heading">{lang === 'en' ? e.labelEn : e.label}</td>
+                    <td className="py-1 tabular-nums text-primary">{formatTime(e.lcm)}</td>
+                    <td className="py-1 tabular-nums text-secondary">≈ {formatTime(e.scy)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -176,13 +176,13 @@ export default function AthleteSheet({ profile }) {
           </section>
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 text-xs text-slate-400">
+        <div className="flex items-center justify-between border-t border-hair px-6 py-3 text-xs text-tertiary">
           <span>{t.video}: {v(extras.videoUrl)}</span>
-          <span>Party in the USA — Road to D1 · {t.footer}</span>
+          <span>Road to NCAA · {t.footer}</span>
         </div>
       </div>
 
-      <p className="no-print text-center text-xs text-slate-400">
+      <p className="no-print text-center text-xs text-tertiary">
         {tr(
           "Astuce : « Exporter » ouvre l'impression — choisis « Enregistrer en PDF » comme destination. Les temps en yards sont indicatifs (à confirmer).",
           'Tip: “Export” opens the print dialog — choose “Save as PDF” as the destination. Yards times are indicative (to confirm).',
@@ -195,8 +195,8 @@ export default function AthleteSheet({ profile }) {
 function Row({ k, val }) {
   return (
     <div className="flex justify-between gap-3">
-      <dt className="text-slate-400">{k}</dt>
-      <dd className="text-right font-medium text-navy-900">{val}</dd>
+      <dt className="text-tertiary">{k}</dt>
+      <dd className="text-right font-medium text-heading">{val}</dd>
     </div>
   )
 }

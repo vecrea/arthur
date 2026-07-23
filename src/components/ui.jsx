@@ -8,7 +8,7 @@ export function Dots({ value, max = 5, color = '#0ea5e9' }) {
         <span
           key={i}
           className="h-1.5 w-3 rounded-full"
-          style={{ background: i < value ? color : 'rgba(15,23,42,0.12)' }}
+          style={{ background: i < value ? color : 'var(--border-strong)' }}
         />
       ))}
     </span>
@@ -18,7 +18,7 @@ export function Dots({ value, max = 5, color = '#0ea5e9' }) {
 export function Stat({ label, value, color }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-xs font-medium text-slate-500">{label}</span>
+      <span className="text-xs font-medium text-secondary">{label}</span>
       <Dots value={value} color={color} />
     </div>
   )

@@ -28,41 +28,72 @@ function Wave() {
   )
 }
 
-export default function Header({ tab, setTab, favCount }) {
-  const { t, lang, setLang } = useLang()
+function Sun() {
   return (
-    <header className="no-print border-b border-slate-200 bg-white/95 shadow-[0_1px_2px_rgba(15,23,42,0.04)] backdrop-blur">
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  )
+}
+
+function Moon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+    </svg>
+  )
+}
+
+export default function Header({ tab, setTab, favCount, theme, setTheme }) {
+  const { t, lang, setLang } = useLang()
+  const dark = theme === 'dark'
+  return (
+    <header className="no-print topbar sticky top-0 z-30">
       <div className="mx-auto max-w-6xl px-5">
-        {/* Marque + langue */}
+        {/* Marque + langue + thème */}
         <div className="flex items-center justify-between gap-4 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-900 text-white shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-sm ring-1 ring-white/10" style={{ background: 'linear-gradient(135deg,#0e88d3,#0b1524)' }}>
               <Wave />
             </div>
             <div className="leading-tight">
-              <div className="font-display text-[19px] font-extrabold tracking-tight text-navy-900">
-                Road to <span className="text-pool-600">NCAA</span>
+              <div className="font-display text-[19px] font-extrabold tracking-tight text-heading">
+                Road to <span className="text-pool-500">NCAA</span>
               </div>
-              <div className="text-[11px] font-medium text-slate-400">
+              <div className="text-[11px] font-medium text-tertiary">
                 {t('Recrutement natation universitaire · USA', 'US college swimming recruiting')}
               </div>
             </div>
           </div>
 
-          <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs font-semibold">
-            {['fr', 'en'].map((lg) => (
-              <button
-                key={lg}
-                onClick={() => setLang(lg)}
-                aria-label={lg === 'fr' ? 'Français' : 'English'}
-                className={
-                  'rounded-md px-2.5 py-1 transition ' +
-                  (lang === lg ? 'bg-navy-900 text-white shadow-sm' : 'text-slate-500 hover:text-navy-900')
-                }
-              >
-                {lg.toUpperCase()}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            {/* Bascule thème clair / sombre */}
+            <button
+              onClick={() => setTheme(dark ? 'light' : 'dark')}
+              aria-label={dark ? t('Passer en clair', 'Switch to light') : t('Passer en sombre', 'Switch to dark')}
+              title={dark ? t('Mode clair', 'Light mode') : t('Mode sombre', 'Dark mode')}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-hair text-secondary transition hover:text-heading surface-2"
+            >
+              {dark ? <Sun /> : <Moon />}
+            </button>
+
+            {/* Bascule langue */}
+            <div className="inline-flex rounded-lg border border-hair surface-2 p-0.5 text-xs font-semibold">
+              {['fr', 'en'].map((lg) => (
+                <button
+                  key={lg}
+                  onClick={() => setLang(lg)}
+                  aria-label={lg === 'fr' ? 'Français' : 'English'}
+                  className={
+                    'rounded-md px-2.5 py-1 transition ' +
+                    (lang === lg ? 'pill-active shadow-sm' : 'text-secondary hover:text-heading')
+                  }
+                >
+                  {lg.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -77,17 +108,14 @@ export default function Header({ tab, setTab, favCount }) {
                 className={
                   'rounded-md px-3 py-1.5 text-sm font-medium transition ' +
                   (active
-                    ? 'bg-navy-900 text-white'
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-navy-900')
+                    ? 'pill-active'
+                    : 'text-secondary hover:text-heading')
                 }
               >
                 {t(item.label, item.labelEn)}
                 {item.key === 'favorites' && favCount > 0 && (
                   <span
-                    className={
-                      'ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold ' +
-                      (active ? 'bg-white/20 text-white' : 'bg-navy-900 text-white')
-                    }
+                    className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-pool-500 px-1 text-[10px] font-bold text-white"
                   >
                     {favCount}
                   </span>

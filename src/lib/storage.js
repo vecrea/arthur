@@ -155,6 +155,28 @@ export function saveGoals(arr) {
   }
 }
 
+// --- Thème clair / sombre ---
+const THEME_KEY = 'pitusa.theme.v1'
+
+export function loadTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY)
+    if (saved === 'dark' || saved === 'light') return saved
+    // Premier chargement : on respecte la préférence système.
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  } catch {
+    return 'light'
+  }
+}
+
+export function saveTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme)
+  } catch {
+    /* ignore */
+  }
+}
+
 // --- Checklist des démarches (cases cochées) ---
 const CHECKLIST_KEY = 'pitusa.checklist.v1'
 

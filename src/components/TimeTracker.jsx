@@ -91,123 +91,121 @@ export default function TimeTracker({ profile }) {
     return map
   }, [times])
 
-  const inputCls = 'rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20'
-
   return (
-    <div className="space-y-5">
-      {/* Formulaire d'ajout */}
-      <div className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-slate-900/5">
-        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Mes chronos', 'My times')}</h2>
-        <p className="text-sm text-slate-500">
-          {t(
-            'Enregistre tes courses et suis ta progression vers la D1. Tout reste chez toi (navigateur).',
-            'Log your races and track your progression toward D1. Everything stays on your device (browser).',
-          )}
-        </p>
+    <div className="space-y-4">
+      <div className="panel overflow-hidden">
+        {/* Formulaire d'ajout */}
+        <div className="p-5">
+          <h2 className="font-display text-xl font-extrabold text-heading">{t('Mes chronos', 'My times')}</h2>
+          <p className="text-sm text-secondary">
+            {t(
+              'Enregistre tes courses et suis ta progression vers la D1. Tout reste chez toi (navigateur).',
+              'Log your races and track your progression toward D1. Everything stays on your device (browser).',
+            )}
+          </p>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
-          <select value={eventKey} onChange={(e) => setEventKey(e.target.value)} className={inputCls + ' lg:col-span-2'}>
-            {EVENT_GROUPS.map((g) => (
-              <optgroup key={g.stroke} label={t(g.stroke, STROKE_EN[g.stroke])}>
-                {g.items.map((e) => (
-                  <option key={e.key} value={e.key}>{t(e.label, e.labelEn)}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-          <select value={course} onChange={(e) => setCourse(e.target.value)} className={inputCls}>
-            <option value="LCM">50 m (LCM)</option>
-            <option value="SCM">25 m (SCM)</option>
-            <option value="SCY">Yards (SCY)</option>
-          </select>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
-          <input
-            value={timeStr}
-            onChange={(e) => setTimeStr(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && add()}
-            placeholder="27.46 / 1:07.39"
-            className={inputCls}
-            inputMode="decimal"
-          />
-          <button onClick={add} className="rounded-xl bg-pool-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-pool-600">
-            {t('+ Ajouter', '+ Add')}
-          </button>
-        </div>
-        <input
-          value={meet}
-          onChange={(e) => setMeet(e.target.value)}
-          placeholder={t('Compétition (optionnel) — ex : Championnats de Belgique', 'Meet (optional) — e.g. Belgian Championships')}
-          className={inputCls + ' mt-2 w-full'}
-        />
-        {err && <p className="mt-2 text-xs font-semibold text-flag-600">{err}</p>}
-      </div>
-
-      {/* Import SwimCloud (copier-coller) */}
-      <div className="rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
-        <button
-          onClick={() => setScOpen((o) => !o)}
-          className="flex w-full items-center justify-between px-5 py-3 text-left"
-        >
-          <span className="font-display text-sm font-extrabold text-navy-900">{t('Importer mes temps (SwimCloud, SwimRankings…)', 'Import my times (SwimCloud, SwimRankings…)')}</span>
-          <span className={'text-slate-400 transition ' + (scOpen ? 'rotate-180' : '')}>⌄</span>
-        </button>
-        {scOpen && (
-          <div className="space-y-3 border-t border-slate-100 px-5 py-4">
-            <p className="text-xs text-slate-500">
-              {t(
-                'Ces sites n’ont pas d’API publique : on importe par copier-coller. 1) Ouvre ton profil (SwimCloud, SwimRankings…) → 2) copie ton tableau de meilleurs temps → 3) colle-le ci-dessous. Marche aussi avec un CSV. À refaire quand tu veux pour te resynchroniser.',
-                'These sites have no public API: import is via copy-paste. 1) Open your profile (SwimCloud, SwimRankings…) → 2) copy your best-times table → 3) paste it below. Works with a CSV too. Redo it anytime to resync.',
-              )}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <input
-                value={scUrl}
-                onChange={(e) => setScUrl(e.target.value)}
-                placeholder="https://www.swimcloud.com/swimmer/........"
-                className={inputCls + ' min-w-0 flex-1'}
-              />
-              {scUrl.trim() && (
-                <a
-                  href={scUrl.trim()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl bg-navy-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-navy-800"
-                >
-                  {t('Ouvrir mon profil ↗', 'Open my profile ↗')}
-                </a>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500">{t('Bassin de ces temps :', 'Course of these times:')}</span>
-              <select value={scCourse} onChange={(e) => setScCourse(e.target.value)} className={inputCls}>
-                <option value="LCM">50 m (LCM)</option>
-                <option value="SCM">25 m (SCM)</option>
-                <option value="SCY">Yards (SCY)</option>
-              </select>
-              <span className="text-[11px] text-slate-400">{t('(détecté par ligne si SwimCloud l’indique)', '(auto-detected per line when SwimCloud shows it)')}</span>
-            </div>
-            <textarea
-              value={scPaste}
-              onChange={(e) => setScPaste(e.target.value)}
-              rows={5}
-              placeholder={t('Colle ici ton tableau de meilleurs temps… ex : 100 Free  57.80  …', 'Paste your best-times table here… e.g. 100 Free  57.80  …')}
-              className={inputCls + ' w-full font-mono text-xs'}
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
+            <select value={eventKey} onChange={(e) => setEventKey(e.target.value)} className="field lg:col-span-2">
+              {EVENT_GROUPS.map((g) => (
+                <optgroup key={g.stroke} label={t(g.stroke, STROKE_EN[g.stroke])}>
+                  {g.items.map((e) => (
+                    <option key={e.key} value={e.key}>{t(e.label, e.labelEn)}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <select value={course} onChange={(e) => setCourse(e.target.value)} className="field">
+              <option value="LCM">50 m (LCM)</option>
+              <option value="SCM">25 m (SCM)</option>
+              <option value="SCY">Yards (SCY)</option>
+            </select>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="field" />
+            <input
+              value={timeStr}
+              onChange={(e) => setTimeStr(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && add()}
+              placeholder="27.46 / 1:07.39"
+              className="field"
+              inputMode="decimal"
             />
-            <div className="flex flex-wrap items-center gap-3">
-              <button onClick={importSwimcloud} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-700">
-                {t('Importer', 'Import')}
-              </button>
-              {scMsg && <span className="text-xs font-semibold text-slate-600">{scMsg}</span>}
-            </div>
+            <button onClick={add} className="rounded-xl bg-pool-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-pool-600">
+              {t('+ Ajouter', '+ Add')}
+            </button>
           </div>
-        )}
-      </div>
+          <input
+            value={meet}
+            onChange={(e) => setMeet(e.target.value)}
+            placeholder={t('Compétition (optionnel) — ex : Championnats de Belgique', 'Meet (optional) — e.g. Belgian Championships')}
+            className="field mt-2 w-full"
+          />
+          {err && <p className="mt-2 text-xs font-semibold text-flag-600 dark:text-flag-400">{err}</p>}
+        </div>
 
-      {/* Une case par épreuve (nage × distance), groupée par nage */}
-      <div className="space-y-4">
+        {/* Import SwimCloud (copier-coller) */}
+        <div className="border-t border-hair">
+          <button
+            onClick={() => setScOpen((o) => !o)}
+            className="flex w-full items-center justify-between px-5 py-3 text-left"
+          >
+            <span className="font-display text-sm font-extrabold text-heading">{t('Importer mes temps (SwimCloud, SwimRankings…)', 'Import my times (SwimCloud, SwimRankings…)')}</span>
+            <span className={'text-tertiary transition ' + (scOpen ? 'rotate-180' : '')}>⌄</span>
+          </button>
+          {scOpen && (
+            <div className="space-y-3 border-t border-hair px-5 py-4">
+              <p className="text-xs text-secondary">
+                {t(
+                  'Ces sites n’ont pas d’API publique : on importe par copier-coller. 1) Ouvre ton profil (SwimCloud, SwimRankings…) → 2) copie ton tableau de meilleurs temps → 3) colle-le ci-dessous. Marche aussi avec un CSV. À refaire quand tu veux pour te resynchroniser.',
+                  'These sites have no public API: import is via copy-paste. 1) Open your profile (SwimCloud, SwimRankings…) → 2) copy your best-times table → 3) paste it below. Works with a CSV too. Redo it anytime to resync.',
+                )}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <input
+                  value={scUrl}
+                  onChange={(e) => setScUrl(e.target.value)}
+                  placeholder="https://www.swimcloud.com/swimmer/........"
+                  className="field min-w-0 flex-1"
+                />
+                {scUrl.trim() && (
+                  <a
+                    href={scUrl.trim()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-xl bg-navy-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-navy-800"
+                  >
+                    {t('Ouvrir mon profil ↗', 'Open my profile ↗')}
+                  </a>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-secondary">{t('Bassin de ces temps :', 'Course of these times:')}</span>
+                <select value={scCourse} onChange={(e) => setScCourse(e.target.value)} className="field">
+                  <option value="LCM">50 m (LCM)</option>
+                  <option value="SCM">25 m (SCM)</option>
+                  <option value="SCY">Yards (SCY)</option>
+                </select>
+                <span className="text-[11px] text-tertiary">{t('(détecté par ligne si SwimCloud l’indique)', '(auto-detected per line when SwimCloud shows it)')}</span>
+              </div>
+              <textarea
+                value={scPaste}
+                onChange={(e) => setScPaste(e.target.value)}
+                rows={5}
+                placeholder={t('Colle ici ton tableau de meilleurs temps… ex : 100 Free  57.80  …', 'Paste your best-times table here… e.g. 100 Free  57.80  …')}
+                className="field w-full font-mono text-xs"
+              />
+              <div className="flex flex-wrap items-center gap-3">
+                <button onClick={importSwimcloud} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-700">
+                  {t('Importer', 'Import')}
+                </button>
+                {scMsg && <span className="text-xs font-semibold text-primary">{scMsg}</span>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Une case par épreuve (nage × distance), groupée par nage */}
         {EVENT_GROUPS.map((g) => (
-          <div key={g.stroke} className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
-            <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-slate-500">{t(g.stroke, STROKE_EN[g.stroke])}</h3>
+          <div key={g.stroke} className="border-t border-hair p-4 sm:p-5">
+            <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-secondary">{t(g.stroke, STROKE_EN[g.stroke])}</h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {g.items.map((e) => {
                 const list = byEvent[e.key]
@@ -221,12 +219,12 @@ export default function TimeTracker({ profile }) {
                     title={t(`Choisir « ${e.label} » dans le formulaire`, `Select “${e.labelEn}” in the form`)}
                     className={
                       'cursor-pointer rounded-xl border p-3 transition ' +
-                      (selected ? 'border-pool-500 ring-2 ring-pool-500/20 ' : 'border-slate-200 hover:border-pool-300 ') +
-                      (best ? 'bg-white' : 'bg-slate-50/60')
+                      (selected ? 'border-pool-500 ring-2 ring-pool-500/20 ' : 'border-hair hover:border-pool-300 ') +
+                      (best ? 'surface' : 'surface-2')
                     }
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-display font-extrabold text-navy-900">{t(e.label, e.labelEn)}</span>
+                      <span className="font-display font-extrabold text-heading">{t(e.label, e.labelEn)}</span>
                       {best && (
                         <span className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: LEVELS[lvl].color }}>
                           {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
@@ -237,21 +235,21 @@ export default function TimeTracker({ profile }) {
                     {best ? (
                       <>
                         <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
-                          <span className="font-display text-xl font-black text-navy-900">{formatTime(best.seconds)}</span>
-                          <span className="text-[10px] font-bold uppercase text-slate-400">{best.course}</span>
-                          {best.course !== 'SCY' && <span className="text-xs text-pool-600">→ {formatTime(best.scy)} SCY</span>}
+                          <span className="font-display text-xl font-black text-heading">{formatTime(best.seconds)}</span>
+                          <span className="text-[10px] font-bold uppercase text-tertiary">{best.course}</span>
+                          {best.course !== 'SCY' && <span className="text-xs text-accent">→ {formatTime(best.scy)} SCY</span>}
                         </div>
-                        <ul className="mt-2 space-y-1 border-t border-slate-100 pt-2">
+                        <ul className="mt-2 space-y-1 border-t border-hair pt-2">
                           {[...list].reverse().map((it) => (
                             <li key={it.id} className="flex items-center justify-between gap-2 text-xs">
-                              <span className="min-w-0 truncate text-slate-600">
-                                <span className="font-semibold text-navy-900">{formatTime(it.seconds)}</span>
-                                <span className="ml-1 text-[9px] font-bold uppercase text-slate-400">{it.course}</span>
-                                <span className="ml-1.5 text-slate-400">{it.date}{it.meet ? ` · ${it.meet}` : ''}</span>
+                              <span className="min-w-0 truncate text-primary">
+                                <span className="font-semibold text-heading">{formatTime(it.seconds)}</span>
+                                <span className="ml-1 text-[9px] font-bold uppercase text-tertiary">{it.course}</span>
+                                <span className="ml-1.5 text-tertiary">{it.date}{it.meet ? ` · ${it.meet}` : ''}</span>
                               </span>
                               <button
                                 onClick={(ev) => { ev.stopPropagation(); remove(it.id) }}
-                                className="shrink-0 text-slate-300 transition hover:text-flag-500"
+                                className="shrink-0 text-tertiary transition hover:text-flag-500"
                                 title={t('Supprimer', 'Delete')}
                                 aria-label={t('Supprimer', 'Delete')}
                               >
@@ -262,7 +260,7 @@ export default function TimeTracker({ profile }) {
                         </ul>
                       </>
                     ) : (
-                      <p className="mt-1 text-sm text-slate-300">{t('— pas de temps', '— no time')}</p>
+                      <p className="mt-1 text-sm text-tertiary">{t('— pas de temps', '— no time')}</p>
                     )}
                   </div>
                 )
@@ -272,7 +270,7 @@ export default function TimeTracker({ profile }) {
         ))}
       </div>
 
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
+      <p className="px-1 text-xs text-secondary">
         {t(
           'Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY) pour suivre ta trajectoire vers les repères de l’onglet « Recrutable ? ». Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.',
           'Tip: log your times in long course (50 m), short course (25 m) or yards — they’re all converted to yards (SCY) to track your trajectory toward the benchmarks in the “Recruitable?” tab. Click a box to pre-select it in the form; the big number is your record in that event.',

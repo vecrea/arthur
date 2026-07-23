@@ -30,10 +30,10 @@ function LevelBar({ scy, eventKey }) {
       </div>
       <div className="relative h-0">
         <div className="absolute -top-[18px] -translate-x-1/2" style={{ left: `${marker}%` }} title={t('Ta position', 'Your position')}>
-          <div className="mx-auto h-0 w-0 border-x-4 border-t-[6px] border-x-transparent border-t-navy-900" />
+          <div className="mx-auto h-0 w-0 border-x-4 border-t-[6px] border-x-transparent" style={{ borderTopColor: 'var(--heading)' }} />
         </div>
       </div>
-      <div className="mt-1 flex justify-between text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+      <div className="mt-1 flex justify-between text-[10px] font-semibold uppercase tracking-wide text-tertiary">
         <span>{t('Dév.', 'Dev.')}</span>
         <span>D2/D3</span>
         <span>D1</span>
@@ -61,9 +61,9 @@ export default function Recruitable({ profile }) {
   }).filter(Boolean)
 
   return (
-    <div className="space-y-5">
-      {/* Verdict global */}
-      <div className="overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5">
+    <div className="space-y-4">
+      <div className="panel overflow-hidden">
+        {/* Verdict global */}
         <div className="panel-dark p-5 text-white">
           <h2 className="font-display text-xl font-extrabold">{t('Suis-je recrutable ?', 'Am I recruitable?')}</h2>
           <p className="mt-1 text-sm text-white/80">
@@ -87,58 +87,58 @@ export default function Recruitable({ profile }) {
             </div>
           </div>
         </div>
+
+        {/* Détail par épreuve — lignes séparées par un filet */}
+        <div className="row-list border-t border-hair">
+          {rows.map(({ ev, lcm, scy, lvl, tg, gapLowD1, gapSolid }) => (
+            <div key={ev.key} className="p-4 sm:p-5">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="font-display text-lg font-extrabold text-heading">{t(ev.label, ev.labelEn)}</h3>
+                  <p className="text-xs text-secondary">{t(ev.stroke, STROKE_EN[ev.stroke])}</p>
+                </div>
+                <span className="rounded-full px-2.5 py-1 text-xs font-bold text-white" style={{ background: LEVELS[lvl].color }}>
+                  {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
+                </span>
+              </div>
+
+              <div className="mt-3 flex items-end gap-4">
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">{t('Ton temps (50 m)', 'Your time (50 m)')}</div>
+                  <div className="font-display text-xl font-black text-heading">{formatTime(lcm)}</div>
+                </div>
+                <div className="text-tertiary">→</div>
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">{t('Converti (yards)', 'Converted (yards)')}</div>
+                  <div className="font-display text-xl font-black text-accent">{formatTime(scy)}</div>
+                </div>
+              </div>
+
+              <LevelBar scy={scy} eventKey={ev.key} />
+
+              <div className="mt-3 space-y-1 text-sm">
+                {gapLowD1 <= 0 ? (
+                  <p className="font-semibold text-emerald-700 dark:text-emerald-400">{t('Déjà au niveau D1 sur cette épreuve.', 'Already at D1 level in this event.')}</p>
+                ) : (
+                  <p className="text-primary">
+                    <span className="font-semibold text-heading">−{gapLowD1.toFixed(2)} s</span> {t('pour atteindre la porte D1', 'to reach the D1 door')}
+                    <span className="text-tertiary"> (≈ {formatTime(tg.lowD1)} SCY)</span>
+                  </p>
+                )}
+                {gapSolid > 0 ? (
+                  <p className="text-secondary">
+                    −{gapSolid.toFixed(2)} s {t('pour une D1 solide', 'for a solid D1')} <span className="text-tertiary">(≈ {formatTime(tg.solidD1)} SCY)</span>
+                  </p>
+                ) : (
+                  <p className="text-secondary">{t('D1 solide atteinte', 'Solid D1 reached')}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Détail par épreuve */}
-      <div className="grid gap-3 lg:grid-cols-2">
-        {rows.map(({ ev, lcm, scy, lvl, tg, gapLowD1, gapSolid }) => (
-          <div key={ev.key} className="rounded-3xl bg-white p-4 shadow-card ring-1 ring-slate-900/5">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className="font-display text-lg font-extrabold text-navy-900">{t(ev.label, ev.labelEn)}</h3>
-                <p className="text-xs text-slate-500">{t(ev.stroke, STROKE_EN[ev.stroke])}</p>
-              </div>
-              <span className="rounded-full px-2.5 py-1 text-xs font-bold text-white" style={{ background: LEVELS[lvl].color }}>
-                {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
-              </span>
-            </div>
-
-            <div className="mt-3 flex items-end gap-4">
-              <div>
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Ton temps (50 m)', 'Your time (50 m)')}</div>
-                <div className="font-display text-xl font-black text-navy-900">{formatTime(lcm)}</div>
-              </div>
-              <div className="text-slate-300">→</div>
-              <div>
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Converti (yards)', 'Converted (yards)')}</div>
-                <div className="font-display text-xl font-black text-pool-600">{formatTime(scy)}</div>
-              </div>
-            </div>
-
-            <LevelBar scy={scy} eventKey={ev.key} />
-
-            <div className="mt-3 space-y-1 text-sm">
-              {gapLowD1 <= 0 ? (
-                <p className="font-semibold text-emerald-700">{t('Déjà au niveau D1 sur cette épreuve.', 'Already at D1 level in this event.')}</p>
-              ) : (
-                <p className="text-slate-700">
-                  <span className="font-semibold text-navy-900">−{gapLowD1.toFixed(2)} s</span> {t('pour atteindre la porte D1', 'to reach the D1 door')}
-                  <span className="text-slate-400"> (≈ {formatTime(tg.lowD1)} SCY)</span>
-                </p>
-              )}
-              {gapSolid > 0 ? (
-                <p className="text-slate-500">
-                  −{gapSolid.toFixed(2)} s {t('pour une D1 solide', 'for a solid D1')} <span className="text-slate-400">(≈ {formatTime(tg.solidD1)} SCY)</span>
-                </p>
-              ) : (
-                <p className="text-slate-500">{t('D1 solide atteinte', 'Solid D1 reached')}</p>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-900/5">
+      <p className="px-1 text-xs text-secondary">
         {t(
           'Repères indicatifs (hommes, temps SCY) pour situer ton niveau — ce ne sont pas des minima officiels. La conversion 50 m → yards est une approximation. Les coachs regardent aussi ta progression, ta marge et ton attitude : garde tes chronos à jour dans l’onglet « Mes chronos ».',
           'Indicative benchmarks (men, SCY times) to gauge your level — not official cut-offs. The 50 m → yards conversion is an approximation. Coaches also look at your progression, your margin and your attitude: keep your times up to date in the “My times” tab.',

@@ -2,6 +2,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
+/* La variante `dark:` suit notre attribut data-theme (bascule manuelle), pas le système. */
+@custom-variant dark (&:where([data-theme='dark'] *));
+
 @theme {
   --font-display: 'Archivo', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
@@ -28,14 +31,203 @@
   --shadow-panel: 0 10px 28px -10px rgb(11 21 36 / 0.40), 0 34px 68px -22px rgb(11 21 36 / 0.58);
 }
 
-/* Panneau sombre « premium » — dégradé marine + halos lumineux + liseré haut.
-   Remplace les classes bg-gradient-to-br from-navy-* pour donner de la profondeur. */
+/* ============================================================
+   Jetons sémantiques — bascule clair / sombre
+   Une seule source de vérité ; les composants n'utilisent que
+   ces variables via les utilitaires ci-dessous (surface, text-*, …).
+   ============================================================ */
+:root {
+  color-scheme: light;
+  --canvas: #eceff5;
+  --canvas-bg:
+    radial-gradient(60% 55% at 12% -8%, rgb(14 136 211 / 0.07) 0%, transparent 60%),
+    radial-gradient(48% 45% at 100% -2%, rgb(28 48 87 / 0.06) 0%, transparent 55%),
+    linear-gradient(180deg, #f7f9fc 0%, #eceff5 100%);
+  --surface: #ffffff;
+  --surface-2: #f5f8fc;
+  --surface-3: #eef2f8;
+  --text: #16213a;
+  --text-2: #55647c;
+  --text-3: #8794aa;
+  --heading: #101e33;
+  --border: rgb(15 23 42 / 0.08);
+  --border-strong: rgb(15 23 42 / 0.14);
+  --accent: #0a6bb0;
+  --accent-soft: rgb(14 136 211 / 0.10);
+  --field-bg: #ffffff;
+  --field-border: rgb(15 23 42 / 0.14);
+  --shadow-panel-soft: 0 1px 2px 0 rgb(16 24 40 / 0.04), 0 12px 34px -10px rgb(16 24 40 / 0.14);
+  --scroll-thumb: rgba(15, 23, 42, 0.16);
+  --scroll-thumb-hover: rgba(15, 23, 42, 0.28);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --canvas: #060a12;
+  --canvas-bg:
+    radial-gradient(62% 55% at 12% -8%, rgb(14 136 211 / 0.12) 0%, transparent 60%),
+    radial-gradient(52% 45% at 100% -2%, rgb(76 179 239 / 0.07) 0%, transparent 55%),
+    linear-gradient(180deg, #070c17 0%, #04070d 100%);
+  --surface: #0e1a2e;
+  --surface-2: #15233c;
+  --surface-3: #1c2d4a;
+  --text: #e7eef8;
+  --text-2: #9fb0c9;
+  --text-3: #6a7b96;
+  --heading: #f3f7fd;
+  --border: rgb(255 255 255 / 0.10);
+  --border-strong: rgb(255 255 255 / 0.16);
+  --accent: #52b6f2;
+  --accent-soft: rgb(82 182 242 / 0.14);
+  --field-bg: #0b1526;
+  --field-border: rgb(255 255 255 / 0.16);
+  --shadow-panel-soft: 0 1px 2px 0 rgb(0 0 0 / 0.30), 0 16px 40px -12px rgb(0 0 0 / 0.55);
+  --scroll-thumb: rgba(148, 163, 184, 0.22);
+  --scroll-thumb-hover: rgba(148, 163, 184, 0.38);
+}
+
+/* ============================================================
+   Utilitaires sémantiques (thème-conscients)
+   ============================================================ */
+@utility surface {
+  background-color: var(--surface);
+}
+@utility surface-2 {
+  background-color: var(--surface-2);
+}
+@utility surface-3 {
+  background-color: var(--surface-3);
+}
+@utility text-primary {
+  color: var(--text);
+}
+@utility text-secondary {
+  color: var(--text-2);
+}
+@utility text-tertiary {
+  color: var(--text-3);
+}
+@utility text-heading {
+  color: var(--heading);
+}
+@utility text-accent {
+  color: var(--accent);
+}
+@utility bg-accent-soft {
+  background-color: var(--accent-soft);
+}
+@utility border-hair {
+  border-color: var(--border);
+}
+@utility border-hair-strong {
+  border-color: var(--border-strong);
+}
+
+/* Panneau unique par onglet : une seule surface, coins arrondis, filet + ombre douce. */
+@utility panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-panel-soft);
+}
+
+/* Sections séparées par de fins filets à l'intérieur d'un panneau (pas de boîtes). */
+@utility divide-hair {
+  & > * + * {
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* Lignes de liste séparées par un filet + surbrillance au survol. */
+@utility row-list {
+  & > * {
+    border-top: 1px solid var(--border);
+  }
+  & > *:first-child {
+    border-top: 0;
+  }
+}
+
+/* Champ de formulaire thème-conscient. */
+@utility field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--field-border);
+  background-color: var(--field-bg);
+  color: var(--text);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  &:focus {
+    border-color: var(--color-pool-500);
+    box-shadow: 0 0 0 3px rgb(14 136 211 / 0.20);
+  }
+  &::placeholder {
+    color: var(--text-3);
+  }
+}
+
+/* Pastille « active » qui s'inverse selon le thème (foncée en clair, claire en sombre). */
+@utility pill-active {
+  background-color: var(--heading);
+  color: var(--surface);
+}
+
+/* Barre de navigation translucide, collante en haut. */
+@utility topbar {
+  background-color: color-mix(in srgb, var(--surface) 82%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+}
+
+/* Panneau sombre « premium » — dégradé marine + halos lumineux + liseré haut. */
 @utility panel-dark {
   background:
     radial-gradient(120% 140% at 100% 0%, rgb(14 136 211 / 0.30) 0%, transparent 46%),
     radial-gradient(120% 140% at 0% 100%, rgb(209 151 31 / 0.16) 0%, transparent 44%),
     linear-gradient(135deg, #0b1524 0%, #101e33 52%, #1c3057 100%);
   box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.10);
+}
+
+/* Apparition douce au changement d'onglet (rejouée via key={tab}). */
+@utility animate-tab {
+  animation: tab-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tab-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Léger décalage en cascade des sections d'un panneau. */
+@keyframes sec-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@utility stagger {
+  & > * {
+    animation: sec-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  & > *:nth-child(1) { animation-delay: 0.02s; }
+  & > *:nth-child(2) { animation-delay: 0.07s; }
+  & > *:nth-child(3) { animation-delay: 0.12s; }
+  & > *:nth-child(4) { animation-delay: 0.17s; }
+  & > *:nth-child(5) { animation-delay: 0.22s; }
+  & > *:nth-child(6) { animation-delay: 0.27s; }
 }
 
 html {
@@ -45,22 +237,38 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  /* Canevas clair « premium » — halos colorés discrets + dégradé de fond */
-  background:
-    radial-gradient(60% 55% at 12% -8%, rgb(14 136 211 / 0.07) 0%, transparent 60%),
-    radial-gradient(48% 45% at 100% -2%, rgb(28 48 87 / 0.06) 0%, transparent 55%),
-    linear-gradient(180deg, #f7f9fc 0%, #eceff5 100%);
+  background: var(--canvas-bg);
+  background-color: var(--canvas);
   background-attachment: fixed;
-  color: #0f172a;
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Transition douce des surfaces lors de la bascule de thème. */
+.panel,
+.surface,
+.surface-2,
+.field {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-tab,
+  .stagger > * {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* Petite barre de defilement discrete */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.16); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.28); }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
 
 /* ---------- Impression / export PDF de la fiche athlete ---------- */
 @page {
@@ -68,6 +276,22 @@ body {
 }
 
 @media print {
+  /* À l'impression, on force toujours le thème clair (encre foncée sur blanc),
+     quel que soit le thème à l'écran — sinon la fiche s'imprimerait illisible. */
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --canvas: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #ffffff;
+    --surface-3: #f1f5f9;
+    --text: #0f172a;
+    --text-2: #334155;
+    --text-3: #475569;
+    --heading: #0b1524;
+    --border: rgb(15 23 42 / 0.15);
+    --accent: #0a6bb0;
+  }
   .no-print {
     display: none !important;
   }
