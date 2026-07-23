@@ -1,31 +1,48 @@
-import { athleteLevel, LEVELS, EVENTS, formatTime } from '../lib/convert.js'
+import { athleteLevel, LEVELS } from '../lib/convert.js'
 import { CHECKLIST, ROADMAP } from '../data/checklist.js'
-import { loadChecklist, loadCoaches, loadTimes, loadGoals } from '../lib/storage.js'
+import { loadChecklist, loadCoaches, loadTimes, loadGoals, loadProfileExtras } from '../lib/storage.js'
 import { goalStatus } from '../lib/goals.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const ALL_IDS = CHECKLIST.flatMap((p) => p.items.map((i) => i.id))
-const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 
-// Cellule-widget cliquable qui amène vers un onglet (pas une carte : une cellule du panneau).
-function Tile({ onClick, title, cta, children }) {
+// Petit intitulé de section.
+function GroupLabel({ children, action }) {
   return (
-    <button
-      onClick={onClick}
-      className="group surface flex flex-col p-5 text-left transition-colors hover:surface-2"
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{title}</span>
-      </div>
-      <div className="mt-1 flex-1">{children}</div>
-      <div className="mt-3 text-xs font-semibold text-accent">{cta} →</div>
-    </button>
+    <div className="flex items-center justify-between px-5 pt-4">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{children}</span>
+      {action}
+    </div>
   )
 }
 
-// Petit intitulé de groupe de sections.
-function GroupLabel({ children }) {
-  return <div className="px-5 pt-4 text-[11px] font-semibold uppercase tracking-wide text-tertiary">{children}</div>
+// Jauge circulaire « préparation » (part de dossier de recrutement complété).
+function ReadinessRing({ pct, t }) {
+  const R = 54
+  const C = 2 * Math.PI * R
+  const clamped = Math.max(0, Math.min(100, pct))
+  const offset = C * (1 - clamped / 100)
+  return (
+    <div className="relative mx-auto flex h-36 w-36 shrink-0 items-center justify-center sm:mx-0">
+      <svg viewBox="0 0 128 128" className="h-36 w-36 -rotate-90">
+        <circle cx="64" cy="64" r={R} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="11" />
+        <circle
+          cx="64" cy="64" r={R} fill="none" stroke="url(#ready)" strokeWidth="11" strokeLinecap="round"
+          strokeDasharray={C} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+        />
+        <defs>
+          <linearGradient id="ready" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#0e88d3" />
+            <stop offset="1" stopColor="#10b981" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div className="absolute flex flex-col items-center">
+        <span className="font-display text-4xl font-black text-white">{pct}%</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-white/60">{t('préparation', 'ready')}</span>
+      </div>
+    </div>
+  )
 }
 
 export default function Dashboard({ profile, matches, favCount, setTab }) {
@@ -40,161 +57,139 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
   const days = Math.max(0, Math.ceil((target - today) / 86400000))
   const months = Math.round(days / 30.44)
 
-  // Démarches.
+  // Données locales.
   const done = loadChecklist()
   const doneCount = ALL_IDS.filter((id) => done.has(id)).length
-  const pct = Math.round((doneCount / ALL_IDS.length) * 100)
-
-  // Prochaine étape de la roadmap.
   const todayISO = today.toISOString().slice(0, 10)
   const nextMile = ROADMAP.find((m) => m.iso >= todayISO) || ROADMAP[ROADMAP.length - 1]
-
-  // Coachs.
   const coaches = loadCoaches()
-  const offers = coaches.filter((c) => c.status === 'offer').length
-  const active = coaches.filter((c) => ['emailed', 'replied', 'interested'].includes(c.status)).length
-
-  // Chronos : dernier enregistré.
   const times = loadTimes()
-  const lastEntry = times.length ? [...times].sort((a, b) => b.date.localeCompare(a.date))[0] : null
-  const lastEv = lastEntry ? EV_BY_KEY[lastEntry.eventKey] : null
-
-  // Objectifs.
   const goals = loadGoals()
   const goalsAchieved = goals.filter((g) => goalStatus(g, times, profile).achieved).length
-
+  const extras = loadProfileExtras()
   const top = (matches || []).slice(0, 3)
 
-  const gridCls = 'grid gap-px grid-cols-1 md:grid-cols-3'
-  const gridStyle = { background: 'var(--border)' }
+  // « Préparation » = part du dossier de recrutement déjà constitué dans l'app.
+  const signals = [
+    doneCount / ALL_IDS.length,
+    Math.min(times.length / 6, 1),
+    goals.length ? 1 : 0,
+    extras.average ? 1 : 0,
+    Math.min(favCount / 5, 1),
+    Math.min(coaches.length / 5, 1),
+  ]
+  const readiness = Math.round((100 * signals.reduce((a, b) => a + b, 0)) / signals.length)
+
+  // Prochaines actions : l'étape datée + les manques du dossier, priorisés.
+  const actions = [
+    {
+      key: 'mile',
+      title: `${t('Prochaine étape', 'Next step')} — ${t(nextMile.title, nextMile.titleEn)}`,
+      sub: t(nextMile.date, nextMile.dateEn),
+      tab: 'steps',
+    },
+  ]
+  if (times.length === 0) actions.push({ key: 'times', title: t('Enregistre tes premiers chronos', 'Log your first times'), sub: t('pour situer ton niveau réel', 'to gauge your real level'), tab: 'times' })
+  if (!extras.average) actions.push({ key: 'gpa', title: t('Calcule ton GPA', 'Compute your GPA'), sub: t('les coachs le demandent tôt', 'coaches ask for it early'), tab: 'gpa' })
+  if (favCount === 0) actions.push({ key: 'fav', title: t('Constitue ta shortlist de facs', 'Build your school shortlist'), sub: t('mets des favoris depuis le classement', 'star schools from the rankings'), tab: 'ranking' })
+  if (goals.length === 0) actions.push({ key: 'goals', title: t('Fixe un objectif de temps', 'Set a target time'), sub: t('un cap chiffré à viser', 'a concrete target to chase'), tab: 'goals' })
+  if (coaches.length === 0) actions.push({ key: 'coaches', title: t('Commence à contacter des coachs', 'Start reaching out to coaches'), sub: t('et suis tes échanges', 'and track your outreach'), tab: 'coaches' })
+  const shownActions = actions.slice(0, 4)
+
+  // Indicateurs clés.
+  const vitals = [
+    { key: 'lvl', label: t('Niveau', 'Level'), value: t(lvl.short, lvl.shortEn), tab: 'recruit', color: lvl.color },
+    { key: 'gpa', label: t('Moyenne', 'GPA'), value: extras.average ? extras.average.split(' ')[0] : '—', tab: 'gpa' },
+    { key: 'times', label: t('Chronos', 'Times'), value: times.length, tab: 'times' },
+    { key: 'goals', label: t('Objectifs', 'Goals'), value: goals.length ? `${goalsAchieved}/${goals.length}` : '—', tab: 'goals' },
+    { key: 'coaches', label: t('Coachs', 'Coaches'), value: coaches.length, tab: 'coaches' },
+    { key: 'fav', label: t('Favoris', 'Favorites'), value: favCount, tab: 'favorites' },
+  ]
 
   return (
     <div className="space-y-4">
       <div className="panel overflow-hidden">
-        {/* Hero : salutation + compte à rebours + niveau */}
-        <div className="panel-dark p-6 text-white">
-          <h2 className="font-display text-2xl font-black">{t('Salut', 'Hi')} {profile.name}</h2>
-          <p className="mt-1 text-sm text-white/80">{t('Voici où tu en es sur ta Road to D1.', 'Here’s where you stand on your Road to D1.')}</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Avant la rentrée', 'Until enrollment')}</div>
-              <div className="font-display text-3xl font-black text-spark-400">≈ {months} {t('mois', 'months')}</div>
-              <div className="text-xs text-white/70">{t('rentrée automne', 'fall')} {profile.usEntryYear}</div>
+        {/* Hero — cockpit : objectif, compte à rebours, jauge de préparation */}
+        <div className="panel-dark p-6 text-white sm:p-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-white/70">{t('Salut', 'Hi')} {profile.name}</div>
+              <h2 className="mt-1 font-display text-3xl font-black leading-tight sm:text-4xl">
+                {t('Cap sur la NCAA Division 1', 'Aiming for NCAA Division 1')}
+              </h2>
+              <p className="mt-2 text-sm text-white/70">
+                {t('Rentrée automne', 'Fall')} {profile.usEntryYear} · {t('niveau visé', 'target level')}{' '}
+                <span className="font-semibold text-white">{t(projected.short, projected.shortEn)}</span>
+              </p>
+              <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span className="font-display text-5xl font-black text-spark-400 sm:text-6xl">{months}</span>
+                <span className="text-sm text-white/70">{t('mois restants', 'months left')} · ≈ {days} {t('jours', 'days')}</span>
+              </div>
             </div>
-            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Niveau actuel', 'Current level')}</div>
-              <div className="mt-1 font-display text-xl font-black" style={{ color: lvl.color }}>{t(lvl.label, lvl.labelEn)}</div>
-            </div>
-            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Projection 2028', '2028 projection')}</div>
-              <div className="mt-1 font-display text-xl font-black" style={{ color: projected.color }}>{t(projected.label, projected.labelEn)}</div>
-            </div>
+            <ReadinessRing pct={readiness} t={t} />
           </div>
         </div>
 
-        {/* Démarches — barre de progression pleine largeur, mise en avant */}
-        <button
-          onClick={() => setTab('steps')}
-          className="block w-full border-t border-hair p-5 text-left transition-colors hover:surface-2"
-        >
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{t('Démarches — Road to 2028', 'Steps — Road to 2028')}</span>
-            <span className="text-xs font-semibold text-accent">{t('Continuer', 'Continue')} →</span>
-          </div>
-          <div className="mt-2 flex items-center gap-4">
-            <span className="font-display text-3xl font-black text-accent">{pct}%</span>
-            <div className="min-w-0 flex-1">
-              <div className="h-2.5 w-full overflow-hidden rounded-full surface-3">
-                <div className="h-full rounded-full bg-gradient-to-r from-pool-500 to-emerald-500" style={{ width: `${pct}%` }} />
-              </div>
-              <p className="mt-1.5 truncate text-xs text-secondary">
-                {t('Prochaine étape', 'Next step')} : <span className="font-semibold text-heading">{t(nextMile.date, nextMile.dateEn)}</span> — {t(nextMile.title, nextMile.titleEn)}
-              </p>
-            </div>
-            <span className="shrink-0 text-xs text-tertiary">{doneCount}/{ALL_IDS.length}</span>
-          </div>
-        </button>
-
-        {/* Groupe : progression natation */}
+        {/* Prochaines actions — ce qu'il faut faire maintenant */}
         <div className="border-t border-hair">
-          <GroupLabel>{t('Ta progression natation', 'Your swimming progress')}</GroupLabel>
-          <div className={'mt-3 ' + gridCls} style={gridStyle}>
-            <Tile onClick={() => setTab('recruit')} title={t('Recrutabilité', 'Recruitability')} cta={t('Voir le détail', 'See details')}>
-              <div className="mt-1 inline-block rounded-full px-3 py-1 font-display text-sm font-extrabold text-white" style={{ background: lvl.color }}>
-                {t(lvl.short, lvl.shortEn)}
-              </div>
-              <p className="mt-2 text-sm text-secondary">
-                {t('Objectif 2028', '2028 goal')} : <span className="font-semibold text-heading">{t(projected.short, projected.shortEn)}</span>
-              </p>
-            </Tile>
-
-            <Tile onClick={() => setTab('times')} title={t('Mes chronos', 'My times')} cta={t('Ajouter / voir', 'Add / view')}>
-              {lastEntry ? (
-                <>
-                  <div className="font-display text-2xl font-black text-heading">{times.length} <span className="text-sm font-semibold text-tertiary">{t('chronos', 'times')}</span></div>
-                  <p className="mt-1 text-sm text-secondary">
-                    {t('Dernier', 'Latest')} : <span className="font-semibold text-heading">{t(lastEv?.label, lastEv?.labelEn)}</span> {formatTime(lastEntry.seconds)} <span className="text-[10px] font-bold uppercase text-tertiary">{lastEntry.course}</span>
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-tertiary">{t('Aucun chrono enregistré.', 'No times logged yet.')}</p>
-              )}
-            </Tile>
-
-            <Tile onClick={() => setTab('goals')} title={t('Objectifs', 'Goals')} cta={t('Définir / suivre', 'Set / track')}>
-              {goals.length ? (
-                <>
-                  <div className="font-display text-2xl font-black text-heading">{goals.length} <span className="text-sm font-semibold text-tertiary">{t('objectif(s)', 'goal(s)')}</span></div>
-                  <p className="mt-1 text-sm text-secondary">{goalsAchieved} {t('atteint(s)', 'achieved')}</p>
-                </>
-              ) : (
-                <p className="text-sm text-tertiary">{t('Aucun objectif fixé.', 'No goals set.')}</p>
-              )}
-            </Tile>
+          <GroupLabel>{t('Prochaines actions', 'Next actions')}</GroupLabel>
+          <div className="row-list mt-3">
+            {shownActions.map((a, i) => (
+              <button
+                key={a.key}
+                onClick={() => setTab(a.tab)}
+                className="flex w-full items-center gap-4 p-4 text-left transition-colors hover:surface-2 sm:px-5"
+              >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full surface-3 font-display text-sm font-black text-accent">{i + 1}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-semibold text-heading">{a.title}</div>
+                  <div className="truncate text-xs text-secondary">{a.sub}</div>
+                </div>
+                <span className="shrink-0 text-tertiary">→</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Groupe : universités */}
+        {/* Indicateurs clés */}
         <div className="border-t border-hair">
-          <GroupLabel>{t('Tes universités', 'Your schools')}</GroupLabel>
-          <div className={'mt-3 ' + gridCls} style={gridStyle}>
-            <Tile onClick={() => setTab('ranking')} title={t('Top facs pour toi', 'Your top schools')} cta={t('Voir le classement', 'See rankings')}>
-              <ul className="mt-1 space-y-1">
-                {top.map((u, i) => (
-                  <li key={u.id} className="flex items-center gap-2 text-sm">
-                    <span className="font-display text-base font-black text-accent">{u.match}</span>
-                    <span className="truncate font-semibold text-heading">{u.shortName}</span>
-                    <span className="ml-auto rounded px-1.5 text-[10px] font-bold text-white" style={{ background: i === 0 ? '#16a34a' : '#94a3b8' }}>{u.division}</span>
-                  </li>
-                ))}
-              </ul>
-            </Tile>
+          <GroupLabel>{t('Tes indicateurs', 'Your stats')}</GroupLabel>
+          <div className="mt-3 grid grid-cols-2 gap-px sm:grid-cols-3 lg:grid-cols-6" style={{ background: 'var(--border)' }}>
+            {vitals.map((v) => (
+              <button key={v.key} onClick={() => setTab(v.tab)} className="surface p-4 text-left transition-colors hover:surface-2">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{v.label}</div>
+                <div className="mt-1 truncate font-display text-2xl font-black text-heading" style={v.color ? { color: v.color } : undefined}>{v.value}</div>
+              </button>
+            ))}
+          </div>
+        </div>
 
-            <Tile onClick={() => setTab('favorites')} title={t('Mes favoris', 'My favorites')} cta={t('Comparer', 'Compare')}>
-              <div className="font-display text-3xl font-black text-spark-500">{favCount}</div>
-              <p className="mt-1 text-sm text-secondary">{favCount > 0 ? t('facs en shortlist', 'schools shortlisted') : t('Ajoute des facs en favoris.', 'Add schools to favorites.')}</p>
-            </Tile>
-
-            <Tile onClick={() => setTab('coaches')} title={t('Coachs', 'Coaches')} cta={t('Suivre', 'Track')}>
-              {coaches.length ? (
-                <>
-                  <div className="font-display text-2xl font-black text-heading">{coaches.length} <span className="text-sm font-semibold text-tertiary">{t('suivis', 'tracked')}</span></div>
-                  <p className="mt-1 text-sm text-secondary">
-                    {active} {t('en cours', 'in progress')} · {offers} {t('offre(s)', 'offer(s)')}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-tertiary">{t('Aucun coach suivi.', 'No coaches tracked yet.')}</p>
-              )}
-            </Tile>
+        {/* Shortlist */}
+        <div className="border-t border-hair">
+          <GroupLabel action={<button onClick={() => setTab('ranking')} className="text-xs font-semibold text-accent">{t('Voir le classement', 'See rankings')} →</button>}>
+            {t('Ta shortlist', 'Your shortlist')}
+          </GroupLabel>
+          <div className="row-list mt-3">
+            {top.map((u, i) => (
+              <button
+                key={u.id}
+                onClick={() => setTab('ranking')}
+                className="flex w-full items-center gap-3 p-3 text-left transition-colors hover:surface-2 sm:px-5"
+              >
+                <span className="w-9 shrink-0 text-center font-display text-lg font-black text-accent">{u.match}</span>
+                <span className="min-w-0 flex-1 truncate font-semibold text-heading">{u.shortName}</span>
+                <span className="hidden text-xs text-secondary sm:block">{u.city}, {u.state}</span>
+                <span className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold text-white" style={{ background: i === 0 ? '#16a34a' : '#94a3b8' }}>{u.division}</span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       <p className="px-1 text-xs text-secondary">
         {t(
-          'Ton tableau de bord se met à jour tout seul au fil de tes chronos, démarches et contacts. Clique une cellule pour aller à la section.',
-          'Your dashboard updates itself as you add times, steps and contacts. Click a cell to jump to that section.',
+          'Ta « préparation » mesure l’avancement de ton dossier dans l’app (démarches, chronos, GPA, shortlist, coachs) — pas une probabilité de recrutement. Tout se met à jour tout seul au fil de tes saisies.',
+          'Your “readiness” tracks how complete your recruiting file is in the app (steps, times, GPA, shortlist, coaches) — not a recruiting probability. Everything updates itself as you go.',
         )}
       </p>
     </div>
