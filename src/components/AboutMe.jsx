@@ -7,6 +7,11 @@ import { useLang } from '../lib/i18n.jsx'
 const KEY_EVENTS = ['50FR', '100FR', '50BK', '100BK']
 const EV = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 const EV_COLOR = { '50FR': '#0e88d3', '100FR': '#0a6bb0', '50BK': '#7c3aed', '100BK': '#6d28d9' }
+const COURSES = [
+  { v: 'LCM', label: 'Grand bassin', labelEn: 'Long course' },
+  { v: 'SCM', label: 'Petit bassin', labelEn: 'Short course' },
+]
+const dmy = (d) => (d ? d.split('-').reverse().join('/') : '') // 'YYYY-MM-DD' -> 'DD/MM/YYYY'
 
 // Lecture d'une éventuelle « vue coach » encodée dans l'URL (#coach=...).
 function parseCoachHash() {
@@ -45,7 +50,7 @@ function ProgressionChart({ points, color, t }) {
   const first = points[0]
   const last = points[points.length - 1]
   const delta = first.secs - last.secs // > 0 = amélioration (temps qui baisse)
-  const fmtDate = (d) => (d ? d.slice(5).replace('-', '/') : '')
+  const fmtDate = (d) => { const p = (d || '').split('-'); return p.length === 3 ? `${p[2]}/${p[1]}` : '' }
   return (
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={t('Courbe de progression', 'Progression curve')}>
@@ -83,12 +88,24 @@ export default function AboutMe({ profile }) {
   const [about, setAbout] = useState(() => loadAbout())
   const [editing, setEditing] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [selected, setSelected] = useState('50FR')
   const [contactOpen, setContactOpen] = useState(false)
 
   // Source des données : la vue coach lit l'URL ; sinon le stockage local.
   const A = isCoach ? coach.about || {} : about
-  const times = isCoach ? coach.times || [] : loadTimes()
+  const times = useMemo(() => (isCoach ? coach.times || [] : loadTimes()), [isCoach, coach])
+
+  // Bassin & épreuve par défaut : ceux qui contiennent le plus de temps.
+  const initCourse = times.filter((x) => x.course === 'SCM').length > times.filter((x) => x.course === 'LCM').length ? 'SCM' : 'LCM'
+  const [course, setCourse] = useState(initCourse)
+  const [selected, setSelected] = useState(() => {
+    let best = '50FR'
+    let n = -1
+    for (const k of KEY_EVENTS) {
+      const c = times.filter((x) => x.eventKey === k && x.course === initCourse).length
+      if (c > n) { n = c; best = k }
+    }
+    return best
+  })
 
   const age = Math.floor((Date.now() - new Date(profile.birthDate)) / (365.25 * 864e5))
   const defaultMsg = t(
@@ -118,17 +135,19 @@ export default function AboutMe({ profile }) {
 
   const igUrl = A.instagram ? `https://instagram.com/${String(A.instagram).replace(/^@/, '')}` : null
 
-  // Points de progression de l'épreuve sélectionnée (temps tels qu'enregistrés).
+  // Points de progression : épreuve + bassin sélectionnés, uniquement les records successifs.
   const evObj = EV[selected]
-  const points = useMemo(
-    () =>
-      times
-        .filter((x) => x.eventKey === selected && x.date)
-        .map((x) => ({ date: x.date, secs: x.seconds }))
-        .filter((p) => !Number.isNaN(p.secs))
-        .sort((a, b) => a.date.localeCompare(b.date)),
-    [times, selected],
-  )
+  const points = useMemo(() => {
+    const raw = times
+      .filter((x) => x.eventKey === selected && x.course === course && x.date)
+      .map((x) => ({ date: x.date, secs: x.seconds }))
+      .filter((p) => !Number.isNaN(p.secs))
+      .sort((a, b) => a.date.localeCompare(b.date))
+    const out = []
+    let best = Infinity
+    for (const p of raw) if (p.secs < best) { best = p.secs; out.push(p) }
+    return out
+  }, [times, selected, course])
 
   const contactField = 'field'
 
@@ -193,13 +212,29 @@ export default function AboutMe({ profile }) {
 
       {/* 2 · Progression : temps clés à gauche, courbe à droite */}
       <div className="border-t border-hair p-5 sm:p-6">
-        <h3 className="mb-4 font-display text-lg font-extrabold text-heading">{t('Ma progression', 'My progression')}</h3>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="font-display text-lg font-extrabold text-heading">{t('Ma progression', 'My progression')}</h3>
+          <div className="inline-flex rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
+            {COURSES.map((c) => (
+              <button
+                key={c.v}
+                onClick={() => setCourse(c.v)}
+                className={'rounded-full px-3 py-1 transition ' + (course === c.v ? 'pill-active' : 'text-secondary hover:text-heading')}
+              >
+                {t(c.label, c.labelEn)}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="grid gap-5 md:grid-cols-[minmax(0,300px)_1fr]">
           {/* Meilleurs temps (cliquables → sélectionnent la courbe) */}
           <div className="flex flex-col gap-2">
             {KEY_EVENTS.map((k) => {
               const ev = EV[k]
-              const lcm = profile.times?.[k]
+              const evTimes = times.filter((x) => x.eventKey === k && x.course === course)
+              const chronoBest = evTimes.length ? evTimes.reduce((m, it) => (it.seconds < m.seconds ? it : m)) : null
+              const profileBest = course === 'LCM' ? profile.times?.[k] : null
+              const bestSecs = chronoBest ? chronoBest.seconds : profileBest != null ? profileBest : null
               const on = selected === k
               return (
                 <button
@@ -215,8 +250,8 @@ export default function AboutMe({ profile }) {
                     <div className="text-[11px] text-tertiary">{t(ev.stroke, STROKE_EN[ev.stroke])}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-display text-xl font-black" style={{ color: EV_COLOR[k] }}>{lcm != null ? formatTime(lcm) : '—'}</div>
-                    <div className="text-[11px] text-tertiary">{lcm != null ? t('grand bassin', 'long course') : t('à renseigner', 'to add')}</div>
+                    <div className="font-display text-xl font-black" style={{ color: EV_COLOR[k] }}>{bestSecs != null ? formatTime(bestSecs) : '—'}</div>
+                    <div className="text-[11px] text-tertiary">{chronoBest ? dmy(chronoBest.date) : bestSecs != null ? t('record', 'best') : t('à renseigner', 'to add')}</div>
                   </div>
                 </button>
               )

@@ -1,3 +1,5 @@
+import { SEED_TIMES } from '../data/seedTimes.js'
+
 // Persistance locale (favoris) dans le navigateur — pas de serveur, 100% chez toi.
 
 const KEY = 'pitusa.favorites.v1'
@@ -63,12 +65,18 @@ export function saveCoaches(arr) {
 const TIMES_KEY = 'pitusa.times.v1'
 
 export function loadTimes() {
+  let stored = []
   try {
     const raw = localStorage.getItem(TIMES_KEY)
-    return raw ? JSON.parse(raw) : []
+    stored = raw ? JSON.parse(raw) : []
   } catch {
-    return []
+    stored = []
   }
+  // Les temps « gravés » (SEED_TIMES) sont toujours présents ; on ajoute
+  // par-dessus les temps saisis via l'onglet Chronos (ids distincts).
+  const seedIds = new Set(SEED_TIMES.map((s) => s.id))
+  const userAdded = Array.isArray(stored) ? stored.filter((it) => it && !seedIds.has(it.id)) : []
+  return [...SEED_TIMES, ...userAdded]
 }
 
 export function saveTimes(arr) {
