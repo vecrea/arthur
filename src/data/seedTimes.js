@@ -31,4 +31,9 @@ export const SEED_TIMES = [
   { id: 'seed-200FR-lcm-2024-01-28', eventKey: '200FR', course: 'LCM', seconds: 158.47, date: '2024-01-28', meet: 'Meeting de Janus' },
   { id: 'seed-200FR-lcm-2025-02-16', eventKey: '200FR', course: 'LCM', seconds: 142.87, date: '2025-02-16', meet: 'Championnats FFBN Open' },
   { id: 'seed-200FR-lcm-2026-06-07', eventKey: '200FR', course: 'LCM', seconds: 131.44, date: '2026-06-07', meet: 'Meeting International de la Ville d’Ottignies' },
+
+  // 200 dos — petit bassin (25 m / SCM)
+  { id: 'seed-200BK-2024-11-23', eventKey: '200BK', course: 'SCM', seconds: 157.02, date: '2024-11-23', meet: 'Meeting de fin d’année' },
+  { id: 'seed-200BK-2025-04-20', eventKey: '200BK', course: 'SCM', seconds: 154.17, date: '2025-04-20', meet: 'Arena Spring Race — Braine-l’Alleud' },
+  { id: 'seed-200BK-2026-04-05', eventKey: '200BK', course: 'SCM', seconds: 143.68, date: '2026-04-05', meet: 'Arena Spring Race — Braine-l’Alleud' },
 ]
