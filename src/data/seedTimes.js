@@ -19,4 +19,10 @@ export const SEED_TIMES = [
   { id: 'seed-100BK-2024-11-23', eventKey: '100BK', course: 'SCM', seconds: 74.29, date: '2024-11-23', meet: 'Meeting de fin d’année' },
   { id: 'seed-100BK-2025-04-19', eventKey: '100BK', course: 'SCM', seconds: 70.76, date: '2025-04-19', meet: 'Arena Spring Race — Braine-l’Alleud' },
   { id: 'seed-100BK-2026-04-04', eventKey: '100BK', course: 'SCM', seconds: 66.2, date: '2026-04-04', meet: 'Arena Spring Race — Braine-l’Alleud' },
+
+  // 200 nage libre (crawl) — petit bassin (25 m / SCM)
+  { id: 'seed-200FR-2024-03-31', eventKey: '200FR', course: 'SCM', seconds: 145.83, date: '2024-03-31', meet: 'Funky Spring Race — Braine-l’Alleud' },
+  { id: 'seed-200FR-2024-11-22', eventKey: '200FR', course: 'SCM', seconds: 141.08, date: '2024-11-22', meet: 'Meeting de fin d’année' },
+  { id: 'seed-200FR-2025-04-20', eventKey: '200FR', course: 'SCM', seconds: 136.94, date: '2025-04-20', meet: 'Arena Spring Race — Braine-l’Alleud' },
+  { id: 'seed-200FR-2026-04-05', eventKey: '200FR', course: 'SCM', seconds: 131.27, date: '2026-04-05', meet: 'Arena Spring Race — Braine-l’Alleud' },
 ]

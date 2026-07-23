@@ -4,9 +4,9 @@ import { loadAbout, saveAbout, loadTimes } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 
 // Les 4 épreuves mises en avant : 50/100 nage libre + 50/100 dos.
-const KEY_EVENTS = ['50FR', '100FR', '50BK', '100BK']
+const KEY_EVENTS = ['50FR', '100FR', '200FR', '50BK', '100BK']
 const EV = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
-const EV_COLOR = { '50FR': '#0e88d3', '100FR': '#0a6bb0', '50BK': '#7c3aed', '100BK': '#6d28d9' }
+const EV_COLOR = { '50FR': '#0e88d3', '100FR': '#0a6bb0', '200FR': '#075985', '50BK': '#7c3aed', '100BK': '#6d28d9' }
 const COURSES = [
   { v: 'LCM', label: 'Grand bassin', labelEn: 'Long course' },
   { v: 'SCM', label: 'Petit bassin', labelEn: 'Short course' },
