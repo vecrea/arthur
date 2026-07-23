@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { EVENTS, formatTime, toScy, lcmToScy, STROKE_EN } from '../lib/convert.js'
+import { EVENTS, formatTime, STROKE_EN } from '../lib/convert.js'
 import { loadAbout, saveAbout, loadTimes } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 
@@ -19,7 +19,7 @@ function parseCoachHash() {
   }
 }
 
-// Petit graphe SVG de progression (temps convertis en yards SCY, plus rapide = plus haut).
+// Petit graphe SVG de progression (temps de course tels quels, plus rapide = plus haut).
 function ProgressionChart({ points, color, t }) {
   if (!points.length) {
     return (
@@ -34,17 +34,17 @@ function ProgressionChart({ points, color, t }) {
   const W = 600, H = 196, padX = 14, padT = 16, padB = 16
   const plotW = W - padX * 2
   const plotH = H - padT - padB
-  const vals = points.map((p) => p.scy)
+  const vals = points.map((p) => p.secs)
   let vmin = Math.min(...vals)
   let vmax = Math.max(...vals)
   if (vmax - vmin < 0.01) { vmin -= 0.5; vmax += 0.5 } // évite la division par 0 (points égaux)
   const x = (i) => (points.length === 1 ? padX + plotW / 2 : padX + (i * plotW) / (points.length - 1))
   const y = (v) => padT + ((v - vmin) / (vmax - vmin)) * plotH // vmin (plus rapide) en haut
-  const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.scy).toFixed(1)}`).join(' ')
+  const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.secs).toFixed(1)}`).join(' ')
   const area = `${line} L${x(points.length - 1).toFixed(1)},${padT + plotH} L${x(0).toFixed(1)},${padT + plotH} Z`
   const first = points[0]
   const last = points[points.length - 1]
-  const delta = first.scy - last.scy // > 0 = amélioration (temps qui baisse)
+  const delta = first.secs - last.secs // > 0 = amélioration (temps qui baisse)
   const fmtDate = (d) => (d ? d.slice(5).replace('-', '/') : '')
   return (
     <div>
@@ -61,15 +61,15 @@ function ProgressionChart({ points, color, t }) {
         {points.length > 1 && <path d={area} fill={`url(#progFill-${color.replace('#', '')})`} />}
         <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {points.map((p, i) => (
-          <circle key={i} cx={x(i)} cy={y(p.scy)} r={i === points.length - 1 ? 5 : 3.5} fill={color} stroke="var(--surface)" strokeWidth="2" />
+          <circle key={i} cx={x(i)} cy={y(p.secs)} r={i === points.length - 1 ? 5 : 3.5} fill={color} stroke="var(--surface)" strokeWidth="2" />
         ))}
       </svg>
       <div className="mt-2 flex items-center justify-between gap-2 text-xs">
-        <span className="text-tertiary">{fmtDate(first.date)} · {formatTime(first.scy)}</span>
+        <span className="text-tertiary">{fmtDate(first.date)} · {formatTime(first.secs)}</span>
         {points.length > 1 && delta > 0.01 && (
           <span className="rounded-full px-2 py-0.5 text-[11px] font-bold text-white" style={{ background: color }}>−{delta.toFixed(2)} s</span>
         )}
-        <span className="font-semibold text-heading">{fmtDate(last.date)} · {formatTime(last.scy)} SCY</span>
+        <span className="font-semibold text-heading">{fmtDate(last.date)} · {formatTime(last.secs)}</span>
       </div>
     </div>
   )
@@ -118,16 +118,16 @@ export default function AboutMe({ profile }) {
 
   const igUrl = A.instagram ? `https://instagram.com/${String(A.instagram).replace(/^@/, '')}` : null
 
-  // Points de progression de l'épreuve sélectionnée (chronos convertis en SCY).
+  // Points de progression de l'épreuve sélectionnée (temps tels qu'enregistrés).
   const evObj = EV[selected]
   const points = useMemo(
     () =>
       times
         .filter((x) => x.eventKey === selected && x.date)
-        .map((x) => ({ date: x.date, scy: toScy(x.seconds, evObj.distance, x.course) }))
-        .filter((p) => !Number.isNaN(p.scy))
+        .map((x) => ({ date: x.date, secs: x.seconds }))
+        .filter((p) => !Number.isNaN(p.secs))
         .sort((a, b) => a.date.localeCompare(b.date)),
-    [times, selected, evObj],
+    [times, selected],
   )
 
   const contactField = 'field'
@@ -200,7 +200,6 @@ export default function AboutMe({ profile }) {
             {KEY_EVENTS.map((k) => {
               const ev = EV[k]
               const lcm = profile.times?.[k]
-              const scy = lcm != null ? lcmToScy(lcm, ev.distance) : null
               const on = selected === k
               return (
                 <button
@@ -217,7 +216,7 @@ export default function AboutMe({ profile }) {
                   </div>
                   <div className="text-right">
                     <div className="font-display text-xl font-black" style={{ color: EV_COLOR[k] }}>{lcm != null ? formatTime(lcm) : '—'}</div>
-                    <div className="text-[11px] text-tertiary">{scy != null ? `${formatTime(scy)} SCY` : t('à renseigner', 'to add')}</div>
+                    <div className="text-[11px] text-tertiary">{lcm != null ? t('grand bassin', 'long course') : t('à renseigner', 'to add')}</div>
                   </div>
                 </button>
               )
@@ -228,7 +227,7 @@ export default function AboutMe({ profile }) {
           <div className="min-w-0">
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold text-heading">{t(evObj.label, evObj.labelEn)}</span>
-              <span className="text-[11px] text-tertiary">{t('temps convertis en yards (SCY)', 'times converted to yards (SCY)')}</span>
+              <span className="text-[11px] text-tertiary">{t('temps de course · plus rapide en haut', 'race time · faster at top')}</span>
             </div>
             <ProgressionChart points={points} color={EV_COLOR[selected]} t={t} />
           </div>
