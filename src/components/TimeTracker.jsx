@@ -91,6 +91,8 @@ export default function TimeTracker({ profile }) {
     return map
   }, [times])
 
+  const [showAll, setShowAll] = useState(false)
+
   return (
     <div className="space-y-4">
       <div className="panel overflow-hidden">
@@ -202,12 +204,24 @@ export default function TimeTracker({ profile }) {
           )}
         </div>
 
+        {/* Barre : titre + filtre des épreuves affichées */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-hair px-5 py-3">
+          <h3 className="font-display text-sm font-extrabold text-heading">{t('Mes temps par épreuve', 'My times by event')}</h3>
+          <div className="inline-flex rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
+            <button onClick={() => setShowAll(false)} className={'rounded-full px-3 py-1 transition ' + (!showAll ? 'pill-active' : 'text-secondary hover:text-heading')}>{t('Avec temps', 'With times')}</button>
+            <button onClick={() => setShowAll(true)} className={'rounded-full px-3 py-1 transition ' + (showAll ? 'pill-active' : 'text-secondary hover:text-heading')}>{t('Toutes', 'All')}</button>
+          </div>
+        </div>
+
         {/* Une case par épreuve (nage × distance), groupée par nage */}
-        {EVENT_GROUPS.map((g) => (
+        {EVENT_GROUPS.map((g) => {
+          const items = showAll ? g.items : g.items.filter((e) => byEvent[e.key])
+          if (!items.length) return null
+          return (
           <div key={g.stroke} className="border-t border-hair p-4 sm:p-5">
             <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-secondary">{t(g.stroke, STROKE_EN[g.stroke])}</h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {g.items.map((e) => {
+              {items.map((e) => {
                 const list = byEvent[e.key]
                 const selected = e.key === eventKey
                 const best = list ? list.reduce((m, it) => (it.scy < m.scy ? it : m), list[0]) : null
@@ -237,7 +251,6 @@ export default function TimeTracker({ profile }) {
                         <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
                           <span className="font-display text-xl font-black text-heading">{formatTime(best.seconds)}</span>
                           <span className="text-[10px] font-bold uppercase text-tertiary">{best.course}</span>
-                          {best.course !== 'SCY' && <span className="text-xs text-accent">→ {formatTime(best.scy)} SCY</span>}
                         </div>
                         <ul className="mt-2 space-y-1 border-t border-hair pt-2">
                           {[...list].reverse().map((it) => (
@@ -267,13 +280,14 @@ export default function TimeTracker({ profile }) {
               })}
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
 
       <p className="px-1 text-xs text-secondary">
         {t(
-          'Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY) pour suivre ta trajectoire vers les repères de l’onglet « Recrutable ? ». Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.',
-          'Tip: log your times in long course (50 m), short course (25 m) or yards — they’re all converted to yards (SCY) to track your trajectory toward the benchmarks in the “Recruitable?” tab. Click a box to pre-select it in the form; the big number is your record in that event.',
+          'Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards. Par défaut on n’affiche que les épreuves où tu as un temps — bascule sur « Toutes » pour les voir toutes. Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record.',
+          'Tip: log your times in long course (50 m), short course (25 m) or yards. By default only events with a time are shown — switch to “All” to see them all. Click a box to pre-select it in the form; the big number is your record.',
         )}
       </p>
     </div>
