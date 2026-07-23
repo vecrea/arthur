@@ -20,7 +20,7 @@ const TABS = [
 // Petit monogramme « vagues » (natation) — pas d'emoji, sobre.
 function Wave() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 8c1.6-1.7 3.2-1.7 4.8 0S11 9.7 12.6 8s3.2-1.7 4.8 0S20.6 9.7 22.2 8" />
       <path d="M3 13c1.6-1.7 3.2-1.7 4.8 0S11 14.7 12.6 13s3.2-1.7 4.8 0S20.6 14.7 22.2 13" />
       <path d="M3 18c1.6-1.7 3.2-1.7 4.8 0S11 19.7 12.6 18s3.2-1.7 4.8 0S20.6 19.7 22.2 18" />
@@ -52,22 +52,23 @@ export default function Header({ tab, setTab, favCount, theme, setTheme }) {
     <header className="no-print topbar sticky top-0 z-30">
       <div className="mx-auto px-5 lg:px-8 xl:px-12">
         {/* Marque + langue + thème */}
-        <div className="flex items-center justify-between gap-4 py-3.5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-sm ring-1 ring-white/10" style={{ background: 'linear-gradient(135deg,#0e88d3,#0b1524)' }}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-4">
+          <div aria-hidden="true" />
+          <div className="flex items-center gap-3 justify-self-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-sm ring-1 ring-white/10" style={{ background: 'linear-gradient(135deg,#0e88d3,#0b1524)' }}>
               <Wave />
             </div>
             <div className="leading-tight">
-              <div className="font-display text-[19px] font-extrabold tracking-tight text-heading">
+              <div className="font-display text-2xl font-extrabold tracking-tight text-heading sm:text-3xl">
                 Road to <span className="text-pool-500">NCAA</span>
               </div>
-              <div className="text-[11px] font-medium text-tertiary">
+              <div className="text-[11px] font-medium text-tertiary sm:text-xs">
                 {t('Recrutement natation universitaire · USA', 'US college swimming recruiting')}
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-self-end">
             {/* Bascule thème clair / sombre */}
             <button
               onClick={() => setTheme(dark ? 'light' : 'dark')}
@@ -98,7 +99,7 @@ export default function Header({ tab, setTab, favCount, theme, setTheme }) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex flex-wrap gap-1 pb-2.5">
+        <nav className="flex flex-wrap justify-center gap-1 pb-2.5">
           {TABS.map((item) => {
             const active = tab === item.key
             return (
