@@ -5,3 +5,6 @@ dist-ssr
 *.local
 .DS_Store
 .vite
+
+# Temp verification scripts (local only)
+scripts/

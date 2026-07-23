@@ -162,8 +162,8 @@ export default function App() {
             '⚠️ Indicative data (MVP). The university selection, costs and swim-program strength are a first basis to verify against official 2025-26 rosters/sites. Next step: enrichment via College Scorecard (official US data) + steps tracking and AI.',
           )}
         </div>
-        <p className="mt-3 text-center text-xs text-white/70">
-          Party in the USA — Road to D1 · {t('fait pour', 'made for')} {profile.name} 🏊‍♂️🇺🇸
+        <p className="mt-3 text-center text-xs text-slate-400">
+          Road to NCAA · {t('fait pour', 'made for')} {profile.name}
         </p>
       </footer>
     </div>

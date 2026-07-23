@@ -3,19 +3,24 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --font-display: 'Archivo', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
 
-  --color-navy-950: #0a1633;
-  --color-navy-900: #0f1f48;
-  --color-navy-800: #16306e;
+  /* Encre / marine — structure, en-têtes, panneaux sombres */
+  --color-navy-950: #0b1524;
+  --color-navy-900: #101e33;
+  --color-navy-800: #1c3057;
+
+  /* Bleu accent — plus profond et sobre que le cyan d'origine */
   --color-pool-400: #38bdf8;
-  --color-pool-500: #0ea5e9;
-  --color-pool-600: #0284c7;
-  --color-spark-400: #fbbf24;
-  --color-spark-500: #f59e0b;
-  --color-flag-500: #e63946;
-  --color-flag-600: #c81f2c;
+  --color-pool-500: #0e88d3;
+  --color-pool-600: #0a6bb0;
+
+  /* Ambre / rouge — réservés aux statuts, teintes calmées */
+  --color-spark-400: #eab54b;
+  --color-spark-500: #d1971f;
+  --color-flag-500: #d94452;
+  --color-flag-600: #b7303c;
 }
 
 html {
@@ -25,17 +30,19 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(56, 189, 248, 0.12), transparent 60%),
-    radial-gradient(900px 500px at -10% 10%, rgba(230, 57, 70, 0.10), transparent 55%),
-    #0a1633;
+  /* Fond clair premium avec une légère profondeur */
+  background: linear-gradient(180deg, #f8fafc 0%, #eef1f6 100%);
+  background-attachment: fixed;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Petite barre de defilement discrete */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: rgba(15, 31, 72, 0.25); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.16); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.28); }
 
 /* ---------- Impression / export PDF de la fiche athlete ---------- */
 @page {
