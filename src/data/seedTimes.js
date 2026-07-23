@@ -12,4 +12,11 @@ export const SEED_TIMES = [
   { id: 'seed-50BK-2025-04-18', eventKey: '50BK', course: 'SCM', seconds: 33.4, date: '2025-04-18', meet: 'Arena Spring Race — Braine-l’Alleud' },
   { id: 'seed-50BK-2025-04-20', eventKey: '50BK', course: 'SCM', seconds: 32.62, date: '2025-04-20', meet: 'Arena Spring Race — Braine-l’Alleud' },
   { id: 'seed-50BK-2026-04-03', eventKey: '50BK', course: 'SCM', seconds: 30.39, date: '2026-04-03', meet: 'Arena Spring Race — Braine-l’Alleud' },
+
+  // 100 dos — petit bassin (25 m / SCM)
+  { id: 'seed-100BK-2023-04-08', eventKey: '100BK', course: 'SCM', seconds: 81.49, date: '2023-04-08', meet: 'Funky Spring Race' },
+  { id: 'seed-100BK-2024-03-30', eventKey: '100BK', course: 'SCM', seconds: 74.4, date: '2024-03-30', meet: 'Funky Spring Race — Braine-l’Alleud' },
+  { id: 'seed-100BK-2024-11-23', eventKey: '100BK', course: 'SCM', seconds: 74.29, date: '2024-11-23', meet: 'Meeting de fin d’année' },
+  { id: 'seed-100BK-2025-04-19', eventKey: '100BK', course: 'SCM', seconds: 70.76, date: '2025-04-19', meet: 'Arena Spring Race — Braine-l’Alleud' },
+  { id: 'seed-100BK-2026-04-04', eventKey: '100BK', course: 'SCM', seconds: 66.2, date: '2026-04-04', meet: 'Arena Spring Race — Braine-l’Alleud' },
 ]
