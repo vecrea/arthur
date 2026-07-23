@@ -155,6 +155,26 @@ export function saveGoals(arr) {
   }
 }
 
+// --- « Ma présentation » (à propos + instagram + contact) pour les coachs ---
+const ABOUT_KEY = 'pitusa.about.v1'
+
+export function loadAbout() {
+  try {
+    const raw = localStorage.getItem(ABOUT_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+export function saveAbout(obj) {
+  try {
+    localStorage.setItem(ABOUT_KEY, JSON.stringify(obj))
+  } catch {
+    /* ignore */
+  }
+}
+
 // --- Thème clair / sombre ---
 const THEME_KEY = 'pitusa.theme.v1'
 

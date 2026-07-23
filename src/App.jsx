@@ -14,6 +14,7 @@ import Goals from './components/Goals.jsx'
 import Coaches from './components/Coaches.jsx'
 import Steps from './components/Steps.jsx'
 import Ia from './components/Ia.jsx'
+import AboutMe from './components/AboutMe.jsx'
 import { profile } from './data/profile.js'
 import { universities } from './data/schools.js'
 import { computeMatches } from './lib/score.js'
@@ -92,7 +93,12 @@ export default function App() {
   const renderTab = () => {
     switch (tab) {
       case 'home':
-        return <Dashboard profile={profile} matches={matchesLoc} favCount={favorites.size} setTab={setTab} />
+        return (
+          <div className="space-y-4">
+            <Dashboard profile={profile} matches={matchesLoc} favCount={favorites.size} setTab={setTab} />
+            <AboutMe profile={profile} />
+          </div>
+        )
       case 'ranking':
         return (
           <section className="panel overflow-hidden">
