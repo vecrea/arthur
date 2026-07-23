@@ -43,54 +43,47 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
       <div className="flex items-start gap-4 p-4 sm:p-5">
         <ScorePill score={u.match} />
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <h3 className="truncate font-display text-lg font-extrabold text-heading">{u.shortName}</h3>
-              <p className="text-sm text-secondary">{u.city}, {u.state}</p>
-            </div>
-            <button
-              onClick={() => onToggleFav(u.id)}
-              aria-label={isFav ? t('Retirer des favoris', 'Remove from favorites') : t('Ajouter aux favoris', 'Add to favorites')}
-              className="shrink-0 text-2xl leading-none transition hover:scale-110"
-              title={isFav ? t('Retirer des favoris', 'Remove from favorites') : t('Ajouter aux favoris', 'Add to favorites')}
-            >
-              {isFav ? '⭐' : '☆'}
-            </button>
-          </div>
+        <div className="min-w-0 flex-1 xl:flex xl:items-start xl:gap-8">
+          {/* Identité */}
+          <div className="min-w-0 xl:w-72 xl:shrink-0">
+            <h3 className="truncate font-display text-lg font-extrabold text-heading">{u.shortName}</h3>
+            <p className="text-sm text-secondary">{u.city}, {u.state}</p>
 
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="rounded-md px-2 py-0.5 text-xs font-bold text-white" style={{ background: divColor(u.division) }}>
-              {u.division}
-            </span>
-            <span className="rounded-md surface-3 px-2 py-0.5 text-xs font-medium text-secondary">{u.conference}</span>
-            <TypeBadge type={u.type} />
-            <FitBadge fit={u.fit} />
-            <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">{fmtCost(u.costUSD)}</span>
-            {!u.curated && (
-              <span
-                className="rounded-md surface-3 px-2 py-0.5 text-xs font-semibold text-tertiary"
-                title={t('Fiche annuaire : infos de base, notes non évaluées en détail', 'Directory entry: basic info, notes not evaluated in detail')}
-              >
-                {t('Annuaire', 'Directory')}
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="rounded-md px-2 py-0.5 text-xs font-bold text-white" style={{ background: divColor(u.division) }}>
+                {u.division}
               </span>
-            )}
+              <span className="rounded-md surface-3 px-2 py-0.5 text-xs font-medium text-secondary">{u.conference}</span>
+              <TypeBadge type={u.type} />
+              <FitBadge fit={u.fit} />
+              <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">{fmtCost(u.costUSD)}</span>
+              {!u.curated && (
+                <span
+                  className="rounded-md surface-3 px-2 py-0.5 text-xs font-semibold text-tertiary"
+                  title={t('Fiche annuaire : infos de base, notes non évaluées en détail', 'Directory entry: basic info, notes not evaluated in detail')}
+                >
+                  {t('Annuaire', 'Directory')}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1.5">
+          {/* Notes visuelles */}
+          <div className="mt-3 grid max-w-sm grid-cols-2 gap-x-6 gap-y-1.5 xl:mt-0 xl:w-72 xl:shrink-0">
             <Stat label={t('Natation', 'Swimming')} value={u.swim} color="#0ea5e9" />
             <Stat label={t('Économie', 'Economics')} value={u.econ} color="#7c3aed" />
             <Stat label={t('Sport (ambiance)', 'Sports (vibe)')} value={u.athletics} color="#e63946" />
             <Stat label={t('Soleil', 'Sun')} value={u.sunshine} color="#f59e0b" />
           </div>
 
-          <div className="mt-3">
+          {/* Coach + liens */}
+          <div className="mt-3 xl:mt-0 xl:flex-1">
             {coaches && (
               <p className="mb-2 text-xs text-secondary">
                 {t('Head Coach', 'Head coach')} : <span className="font-semibold text-heading">{coaches.staff[0].name}</span>
               </p>
             )}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 xl:justify-end">
               <a
                 href={siteLink(u)}
                 target="_blank"
@@ -118,6 +111,16 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
             </div>
           </div>
         </div>
+
+        {/* Favori — toujours à droite de la ligne */}
+        <button
+          onClick={() => onToggleFav(u.id)}
+          aria-label={isFav ? t('Retirer des favoris', 'Remove from favorites') : t('Ajouter aux favoris', 'Add to favorites')}
+          className="shrink-0 text-2xl leading-none transition hover:scale-110"
+          title={isFav ? t('Retirer des favoris', 'Remove from favorites') : t('Ajouter aux favoris', 'Add to favorites')}
+        >
+          {isFav ? '⭐' : '☆'}
+        </button>
       </div>
 
       <button

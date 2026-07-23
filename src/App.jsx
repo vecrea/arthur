@@ -173,14 +173,14 @@ export default function App() {
     <div className="min-h-screen">
       <Header tab={tab} setTab={setTab} favCount={favorites.size} theme={theme} setTheme={setTheme} />
 
-      <main className="mx-auto max-w-6xl px-5 py-6">
+      <main className="mx-auto px-5 lg:px-8 xl:px-12 py-6">
         {/* key={tab} : le contenu se remonte à chaque onglet → l'animation se rejoue */}
         <div key={tab} className="animate-tab">
           {renderTab()}
         </div>
       </main>
 
-      <footer className="no-print mx-auto max-w-6xl px-5 pb-10">
+      <footer className="no-print mx-auto px-5 lg:px-8 xl:px-12 pb-10">
         <div className="px-1 text-xs text-secondary">
           {t(
             "Données indicatives (MVP). La sélection d'universités, les coûts et la force des programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine étape : enrichissement via College Scorecard (données officielles US) + suivi des démarches et IA.",
