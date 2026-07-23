@@ -29,6 +29,9 @@ const L = {
 const DEFAULT_BIO_EN =
   "16-year-old Belgian swimmer specializing in sprint freestyle and backstroke. National-level competitor (Belgian Championships), training at LSC under coach Mathieu Huberty. Recently completed a training camp at the Cercle des Nageurs de Marseille (sub-elite group) under coach Brian. Targeting Fall 2028 enrollment with a major in Economics — motivated, coachable, and committed to combining academic and athletic excellence in the US."
 
+const DEFAULT_BIO_FR =
+  "Nageur belge de 16 ans, spécialisé en sprint (nage libre & dos). Compétiteur de niveau national (Championnats de Belgique), je m'entraîne au LSC avec le coach Mathieu Huberty. J'ai récemment participé à un stage au Cercle des Nageurs de Marseille (groupe sous-élites) avec le coach Brian. Objectif : intégrer une université américaine (NCAA) à la rentrée 2028 en filière Économie — motivé, à l'écoute et déterminé à allier excellence scolaire et sportive aux États-Unis."
+
 const FIELDS = [
   { key: 'email', label: { en: 'Email', fr: 'Email' }, ph: { en: 'arthur@email.com', fr: 'arthur@email.com' } },
   { key: 'phone', label: { en: 'Phone', fr: 'Téléphone' }, ph: { en: '+32 ...', fr: '+32 ...' } },
@@ -43,11 +46,17 @@ const FIELDS = [
 
 export default function AthleteSheet({ profile }) {
   const { lang, t: tr } = useLang()
-  const [extras, setExtras] = useState(() => ({
-    email: '', phone: '', city: '', homeClub: 'LSC', coachName: 'Mathieu Huberty',
-    average: '', sat: '', english: '', videoUrl: '', bio: DEFAULT_BIO_EN,
-    ...loadProfileExtras(),
-  }))
+  const [extras, setExtras] = useState(() => {
+    const s = loadProfileExtras()
+    return {
+      email: '', phone: '', city: '', homeClub: 'LSC', coachName: 'Mathieu Huberty',
+      average: '', sat: '', english: '', videoUrl: '',
+      ...s,
+      // Message « à propos » distinct par langue (migration de l'ancien champ `bio` -> version anglaise).
+      bioFr: s.bioFr ?? DEFAULT_BIO_FR,
+      bioEn: s.bioEn ?? s.bio ?? DEFAULT_BIO_EN,
+    }
+  })
 
   useEffect(() => saveProfileExtras(extras), [extras])
   const set = (k, v) => setExtras((e) => ({ ...e, [k]: v }))
@@ -101,10 +110,10 @@ export default function AthleteSheet({ profile }) {
             ))}
           </div>
           <label className="mt-3 block">
-            <span className="text-xs font-medium text-secondary">{t.about}</span>
+            <span className="text-xs font-medium text-secondary">{t.about} — {tr('version française', 'English version')}</span>
             <textarea
-              value={extras.bio}
-              onChange={(e) => set('bio', e.target.value)}
+              value={lang === 'en' ? extras.bioEn : extras.bioFr}
+              onChange={(e) => set(lang === 'en' ? 'bioEn' : 'bioFr', e.target.value)}
               rows={3}
               className="field mt-1"
             />
@@ -140,7 +149,7 @@ export default function AthleteSheet({ profile }) {
             </dl>
 
             <h3 className="mb-2 mt-5 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600 dark:text-flag-400">{t.about}</h3>
-            <p className="text-sm leading-relaxed text-primary">{extras.bio}</p>
+            <p className="text-sm leading-relaxed text-primary">{lang === 'en' ? extras.bioEn : extras.bioFr}</p>
           </section>
 
           {/* Swimming */}
