@@ -146,7 +146,7 @@ export default function AboutMe({ profile }) {
     `Je m'appelle ${profile.name}, nageur belge de ${age} ans spécialisé en sprint (nage libre & dos). Je m'entraîne au ${profile.homeClub} avec ${profile.coach}, et j'ai récemment participé à un stage au Cercle des Nageurs de Marseille. Objectif : rejoindre un programme universitaire NCAA à la rentrée ${profile.usEntryYear} et progresser au plus haut niveau tout en étudiant l'économie.`,
     `My name is ${profile.name}, a 16-year-old Belgian swimmer specializing in sprint (freestyle & backstroke). I train at ${profile.homeClub} with ${profile.coach}, and recently attended a camp at Cercle des Nageurs de Marseille. Goal: join an NCAA college program in fall ${profile.usEntryYear} and reach the highest level while studying economics.`,
   )
-  const message = A.message || defaultMsg
+  const message = (lang === 'en' ? A.messageEn : A.messageFr) || defaultMsg
 
   const set = (patch) => {
     const next = { ...about, ...patch }
@@ -215,13 +215,21 @@ export default function AboutMe({ profile }) {
       {/* 1 · À propos de moi */}
       <div className="p-5 sm:p-6">
         {editing && !isCoach ? (
-          <textarea
-            value={about.message ?? ''}
-            onChange={(e) => set({ message: e.target.value })}
-            placeholder={defaultMsg}
-            rows={4}
-            className={contactField + ' leading-relaxed'}
-          />
+          <label className="block">
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-tertiary">
+              {t('Message — version française', 'Message — English version')}
+            </span>
+            <textarea
+              value={(lang === 'en' ? about.messageEn : about.messageFr) ?? ''}
+              onChange={(e) => set(lang === 'en' ? { messageEn: e.target.value } : { messageFr: e.target.value })}
+              placeholder={defaultMsg}
+              rows={4}
+              className={contactField + ' leading-relaxed'}
+            />
+            <span className="mt-1 block text-[11px] text-tertiary">
+              {t('Bascule en EN (en haut) pour écrire la version anglaise, affichée aux coachs anglophones.', 'Switch to FR (top) to write the French version shown when the page is in French.')}
+            </span>
+          </label>
         ) : (
           <p className="max-w-3xl whitespace-pre-line leading-relaxed text-primary">{message}</p>
         )}
