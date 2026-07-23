@@ -11,7 +11,12 @@ const COURSES = [
   { v: 'LCM', label: 'Grand bassin', labelEn: 'Long course' },
   { v: 'SCM', label: 'Petit bassin', labelEn: 'Short course' },
 ]
-const dmy = (d) => (d ? d.split('-').reverse().join('/') : '') // 'YYYY-MM-DD' -> 'DD/MM/YYYY'
+// 'YYYY-MM-DD' -> 'DD/MM/YYYY' (FR) ou 'MM/DD/YYYY' (US, si en=true)
+const dmy = (d, en) => {
+  if (!d) return ''
+  const [y, m, day] = d.split('-')
+  return en ? `${m}/${day}/${y}` : `${day}/${m}/${y}`
+}
 
 // Lecture d'une éventuelle « vue coach » encodée dans l'URL (#coach=...).
 function parseCoachHash() {
@@ -25,7 +30,7 @@ function parseCoachHash() {
 }
 
 // Petit graphe SVG de progression (temps de course tels quels, plus rapide = plus haut).
-function ProgressionChart({ points, color, t }) {
+function ProgressionChart({ points, color, t, lang }) {
   const [hover, setHover] = useState(null)
   if (!points.length) {
     return (
@@ -51,7 +56,8 @@ function ProgressionChart({ points, color, t }) {
   const first = points[0]
   const last = points[points.length - 1]
   const delta = first.secs - last.secs // > 0 = amélioration (temps qui baisse)
-  const fmtDate = (d) => { const p = (d || '').split('-'); return p.length === 3 ? `${p[2]}/${p[1]}` : '' }
+  const en = lang === 'en'
+  const fmtDate = (d) => { const p = (d || '').split('-'); return p.length === 3 ? (en ? `${p[1]}/${p[2]}` : `${p[2]}/${p[1]}`) : '' }
   const hp = hover != null ? points[hover] : null
   const hy = hp ? y(hp.secs) : 0
   return (
@@ -93,7 +99,7 @@ function ProgressionChart({ points, color, t }) {
             }}
           >
             <div className="font-display text-sm font-black text-heading">{formatTime(hp.secs)}</div>
-            <div className="text-[11px] text-tertiary">{dmy(hp.date)}</div>
+            <div className="text-[11px] text-tertiary">{dmy(hp.date, en)}</div>
           </div>
         )}
       </div>
@@ -279,7 +285,7 @@ export default function AboutMe({ profile }) {
                   </div>
                   <div className="text-right">
                     <div className="font-display text-xl font-black" style={{ color: EV_COLOR[k] }}>{bestSecs != null ? formatTime(bestSecs) : '—'}</div>
-                    <div className="text-[11px] text-tertiary">{chronoBest ? dmy(chronoBest.date) : bestSecs != null ? t('record', 'best') : t('à renseigner', 'to add')}</div>
+                    <div className="text-[11px] text-tertiary">{chronoBest ? dmy(chronoBest.date, lang === 'en') : bestSecs != null ? t('record', 'best') : t('à renseigner', 'to add')}</div>
                   </div>
                 </button>
               )
@@ -292,7 +298,7 @@ export default function AboutMe({ profile }) {
               <span className="text-sm font-semibold text-heading">{t(evObj.label, evObj.labelEn)}</span>
               <span className="text-[11px] text-tertiary">{t('temps de course · plus rapide en haut', 'race time · faster at top')}</span>
             </div>
-            <ProgressionChart points={points} color={EV_COLOR[selected]} t={t} />
+            <ProgressionChart points={points} color={EV_COLOR[selected]} t={t} lang={lang} />
           </div>
         </div>
       </div>
