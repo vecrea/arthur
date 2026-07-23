@@ -20,8 +20,15 @@ for (const e of EVENTS) {
 
 const todayISO = () => new Date().toISOString().slice(0, 10)
 
+// 'YYYY-MM-DD' -> 'DD/MM/YYYY' (FR) ou 'MM/DD/YYYY' (US)
+const fmtDMY = (d, en) => {
+  if (!d) return ''
+  const [y, m, day] = d.split('-')
+  return en ? `${m}/${day}/${y}` : `${day}/${m}/${y}`
+}
+
 export default function TimeTracker({ profile }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [times, setTimes] = useState(() => loadTimes())
   useEffect(() => saveTimes(times), [times])
 
@@ -232,49 +239,57 @@ export default function TimeTracker({ profile }) {
                     onClick={() => setEventKey(e.key)}
                     title={t(`Choisir « ${e.label} » dans le formulaire`, `Select “${e.labelEn}” in the form`)}
                     className={
-                      'cursor-pointer rounded-xl border p-3 transition ' +
-                      (selected ? 'border-pool-500 ring-2 ring-pool-500/20 ' : 'border-hair hover:border-pool-300 ') +
+                      'cursor-pointer overflow-hidden rounded-2xl border transition ' +
+                      (selected ? 'border-pool-500 ring-2 ring-pool-500/20 ' : 'border-hair hover:border-pool-300 hover:shadow-card ') +
                       (best ? 'surface' : 'surface-2')
                     }
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-display font-extrabold text-heading">{t(e.label, e.labelEn)}</span>
-                      {best && (
-                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: LEVELS[lvl].color }}>
-                          {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
-                        </span>
+                    {/* liseré coloré = niveau de recrutement de l'épreuve */}
+                    <div className="h-1.5 w-full" style={{ background: best ? LEVELS[lvl].color : 'var(--border)' }} />
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="font-display text-base font-extrabold text-heading">{t(e.label, e.labelEn)}</span>
+                        {best && (
+                          <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: LEVELS[lvl].color }}>
+                            {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
+                          </span>
+                        )}
+                      </div>
+
+                      {best ? (
+                        <>
+                          <div className="mt-2 flex items-baseline gap-2">
+                            <span className="font-display text-2xl font-black text-heading">{formatTime(best.seconds)}</span>
+                            <span className="rounded-md surface-3 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary">{best.course}</span>
+                            <span className="ml-auto text-[11px] text-tertiary">{list.length} {t('temps', 'times')}</span>
+                          </div>
+                          <ul className="mt-3 space-y-0.5 border-t border-hair pt-2.5">
+                            {[...list].reverse().map((it) => {
+                              const isBest = it.id === best.id
+                              return (
+                                <li key={it.id} className={'flex items-center justify-between gap-2 rounded-lg px-2 py-1 text-xs ' + (isBest ? 'bg-accent-soft' : '')}>
+                                  <span className="min-w-0 truncate">
+                                    <span className={'font-bold ' + (isBest ? 'text-accent' : 'text-heading')}>{formatTime(it.seconds)}</span>
+                                    <span className="ml-1 text-[9px] font-bold uppercase text-tertiary">{it.course}</span>
+                                    <span className="ml-1.5 text-tertiary">{fmtDMY(it.date, lang === 'en')}{it.meet ? ` · ${it.meet}` : ''}</span>
+                                  </span>
+                                  <button
+                                    onClick={(ev) => { ev.stopPropagation(); remove(it.id) }}
+                                    className="shrink-0 text-tertiary transition hover:text-flag-500"
+                                    title={t('Supprimer', 'Delete')}
+                                    aria-label={t('Supprimer', 'Delete')}
+                                  >
+                                    ✕
+                                  </button>
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        </>
+                      ) : (
+                        <p className="mt-2 text-sm text-tertiary">{t('— pas de temps', '— no time')}</p>
                       )}
                     </div>
-
-                    {best ? (
-                      <>
-                        <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
-                          <span className="font-display text-xl font-black text-heading">{formatTime(best.seconds)}</span>
-                          <span className="text-[10px] font-bold uppercase text-tertiary">{best.course}</span>
-                        </div>
-                        <ul className="mt-2 space-y-1 border-t border-hair pt-2">
-                          {[...list].reverse().map((it) => (
-                            <li key={it.id} className="flex items-center justify-between gap-2 text-xs">
-                              <span className="min-w-0 truncate text-primary">
-                                <span className="font-semibold text-heading">{formatTime(it.seconds)}</span>
-                                <span className="ml-1 text-[9px] font-bold uppercase text-tertiary">{it.course}</span>
-                                <span className="ml-1.5 text-tertiary">{it.date}{it.meet ? ` · ${it.meet}` : ''}</span>
-                              </span>
-                              <button
-                                onClick={(ev) => { ev.stopPropagation(); remove(it.id) }}
-                                className="shrink-0 text-tertiary transition hover:text-flag-500"
-                                title={t('Supprimer', 'Delete')}
-                                aria-label={t('Supprimer', 'Delete')}
-                              >
-                                ✕
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    ) : (
-                      <p className="mt-1 text-sm text-tertiary">{t('— pas de temps', '— no time')}</p>
-                    )}
                   </div>
                 )
               })}
