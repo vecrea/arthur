@@ -32,6 +32,13 @@ export function norm20(grade, scale) {
   return scale === '100' ? x / 5 : x
 }
 
+// Une note saisie est-elle dans le barème (0..20 ou 0..100) ?
+export function gradeInRange(grade, scale) {
+  const max = scale === '100' ? 100 : 20
+  const x = Number(grade)
+  return !(grade === '' || Number.isNaN(x) || x < 0 || x > max)
+}
+
 // Bande de conversion pour une note dans son échelle native.
 export function bandFor(grade, scale) {
   const g20 = norm20(grade, scale)
@@ -61,10 +68,12 @@ export function mentionKey(avg20) {
 // Moyenne pondérée depuis [{grade, weight}] et l'échelle de saisie.
 // -> { avgNative (dans l'échelle saisie), avg20, gpa, count }.
 export function computeGpa(subjects, scale = '20') {
+  const max = scale === '100' ? 100 : 20
   let sumW = 0, sumNative = 0, sum20 = 0, sumGpa = 0, n = 0
   for (const s of subjects || []) {
     const raw = Number(s.grade)
-    if (s.grade === '' || Number.isNaN(raw)) continue
+    // Ignore les notes vides ou hors barème (une faute de frappe ne doit pas fausser la moyenne).
+    if (s.grade === '' || Number.isNaN(raw) || raw < 0 || raw > max) continue
     const w = Number(s.weight) > 0 ? Number(s.weight) : 1
     const g20 = norm20(raw, scale)
     const band = GPA_BANDS.find((b) => g20 >= b.min) || GPA_BANDS[GPA_BANDS.length - 1]

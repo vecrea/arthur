@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { computeGpa, bandFor, gpaToLetter, mentionKey, GPA_BANDS } from '../lib/gpa.js'
+import { computeGpa, bandFor, gradeInRange, gpaToLetter, mentionKey, GPA_BANDS } from '../lib/gpa.js'
 import { loadGpaSubjects, saveGpaSubjects, loadGpaScale, saveGpaScale, loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 
@@ -19,6 +19,8 @@ export default function Gpa() {
 
   const isPct = scale === '100'
   const unit = isPct ? '%' : '/20'
+  const rangeLabel = isPct ? '0–100%' : '0–20'
+  const invalidCount = subjects.filter((s) => s.grade !== '' && !gradeInRange(s.grade, scale)).length
 
   const addRow = () => setSubjects((s) => [...s, blank()])
   const removeRow = (id) => setSubjects((s) => s.filter((x) => x.id !== id))
@@ -99,6 +101,15 @@ export default function Gpa() {
         </div>
       </div>
 
+      {invalidCount > 0 && (
+        <div className="rounded-xl bg-flag-100 p-3 text-sm font-semibold text-flag-600 ring-1 ring-flag-500/30">
+          {t(
+            `⚠️ ${invalidCount} note(s) hors barème (${rangeLabel}) — corrige-les, elles ne sont pas comptées dans la moyenne.`,
+            `⚠️ ${invalidCount} grade(s) out of range (${rangeLabel}) — fix them, they are not counted in the average.`,
+          )}
+        </div>
+      )}
+
       {/* Matières */}
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <div className="overflow-x-auto">
@@ -113,17 +124,20 @@ export default function Gpa() {
             </thead>
             <tbody>
               {subjects.map((s) => {
-                const band = s.grade !== '' ? bandFor(s.grade, scale) : null
+                const bad = s.grade !== '' && !gradeInRange(s.grade, scale)
+                const band = s.grade !== '' && !bad ? bandFor(s.grade, scale) : null
                 return (
                   <tr key={s.id} className="border-t border-slate-100">
                     <td className="px-3 py-1.5">
                       <input value={s.name} onChange={(e) => update(s.id, { name: e.target.value })} placeholder={t('ex. Mathématiques', 'e.g. Mathematics')} className={inputCls} />
                     </td>
                     <td className="px-3 py-1.5">
-                      <input type="number" min="0" max={isPct ? 100 : 20} step={isPct ? 1 : 0.1} value={s.grade} onChange={(e) => update(s.id, { grade: e.target.value })} placeholder={isPct ? '75' : '15'} className={inputCls} />
+                      <input type="number" min="0" max={isPct ? 100 : 20} step={isPct ? 1 : 0.1} value={s.grade} onChange={(e) => update(s.id, { grade: e.target.value })} placeholder={isPct ? '75' : '15'} className={inputCls + (bad ? ' border-flag-500 ring-1 ring-flag-500/30' : '')} />
                     </td>
                     <td className="px-3 py-1.5">
-                      {band ? (
+                      {bad ? (
+                        <span className="text-xs font-bold text-flag-600" title={t(`Hors barème (${rangeLabel})`, `Out of range (${rangeLabel})`)}>⚠︎ {t('hors barème', 'out of range')}</span>
+                      ) : band ? (
                         <span className="inline-flex items-center gap-1.5">
                           <span className="font-display font-extrabold text-navy-900">{band.gpa.toFixed(1)}</span>
                           <span className="rounded bg-slate-100 px-1.5 text-xs font-bold text-slate-600">{band.letter}</span>
