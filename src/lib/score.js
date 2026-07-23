@@ -16,9 +16,9 @@ function admissionRealism(adm) {
 }
 
 const FIT = {
-  safety: { key: 'safety', label: 'Réaliste', labelEn: 'Safety', color: '#16a34a', emoji: '✅' },
-  target: { key: 'target', label: 'Objectif', labelEn: 'Target', color: '#0ea5e9', emoji: '🎯' },
-  reach: { key: 'reach', label: 'Ambitieux', labelEn: 'Reach', color: '#f59e0b', emoji: '🔥' },
+  safety: { key: 'safety', label: 'Réaliste', labelEn: 'Safety', color: '#16a34a', emoji: '' },
+  target: { key: 'target', label: 'Objectif', labelEn: 'Target', color: '#0ea5e9', emoji: '' },
+  reach: { key: 'reach', label: 'Ambitieux', labelEn: 'Reach', color: '#f59e0b', emoji: '' },
 }
 
 function fitCategory(swimLevel, athLevel) {

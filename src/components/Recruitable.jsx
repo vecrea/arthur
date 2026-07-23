@@ -65,7 +65,7 @@ export default function Recruitable({ profile }) {
       {/* Verdict global */}
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <div className="bg-gradient-to-br from-navy-950 to-navy-800 p-5 text-white">
-          <h2 className="font-display text-xl font-extrabold">{t('🎯 Suis-je recrutable ?', '🎯 Am I recruitable?')}</h2>
+          <h2 className="font-display text-xl font-extrabold">{t('Suis-je recrutable ?', 'Am I recruitable?')}</h2>
           <p className="mt-1 text-sm text-white/80">
             {t(
               'Tes meilleurs temps (grand bassin) convertis en yards (SCY, le standard universitaire US), comparés aux repères de recrutement masculin.',
@@ -119,7 +119,7 @@ export default function Recruitable({ profile }) {
 
             <div className="mt-3 space-y-1 text-sm">
               {gapLowD1 <= 0 ? (
-                <p className="font-semibold text-emerald-700">{t('✅ Déjà au niveau D1 sur cette épreuve.', '✅ Already at D1 level in this event.')}</p>
+                <p className="font-semibold text-emerald-700">{t('Déjà au niveau D1 sur cette épreuve.', 'Already at D1 level in this event.')}</p>
               ) : (
                 <p className="text-slate-700">
                   <span className="font-semibold text-navy-900">−{gapLowD1.toFixed(2)} s</span> {t('pour atteindre la porte D1', 'to reach the D1 door')}
@@ -131,7 +131,7 @@ export default function Recruitable({ profile }) {
                   −{gapSolid.toFixed(2)} s {t('pour une D1 solide', 'for a solid D1')} <span className="text-slate-400">(≈ {formatTime(tg.solidD1)} SCY)</span>
                 </p>
               ) : (
-                <p className="text-slate-500">{t('D1 solide atteinte 🔥', 'Solid D1 reached 🔥')}</p>
+                <p className="text-slate-500">{t('D1 solide atteinte', 'Solid D1 reached')}</p>
               )}
             </div>
           </div>
@@ -140,8 +140,8 @@ export default function Recruitable({ profile }) {
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         {t(
-          '⚠️ Repères indicatifs (hommes, temps SCY) pour situer ton niveau — ce ne sont pas des minima officiels. La conversion 50 m → yards est une approximation. Les coachs regardent aussi ta progression, ta marge et ton attitude : garde tes chronos à jour dans l’onglet « Mes chronos » 📈.',
-          '⚠️ Indicative benchmarks (men, SCY times) to gauge your level — not official cut-offs. The 50 m → yards conversion is an approximation. Coaches also look at your progression, your margin and your attitude: keep your times up to date in the “My times” tab 📈.',
+          'Repères indicatifs (hommes, temps SCY) pour situer ton niveau — ce ne sont pas des minima officiels. La conversion 50 m → yards est une approximation. Les coachs regardent aussi ta progression, ta marge et ton attitude : garde tes chronos à jour dans l’onglet « Mes chronos ».',
+          'Indicative benchmarks (men, SCY times) to gauge your level — not official cut-offs. The 50 m → yards conversion is an approximation. Coaches also look at your progression, your margin and your attitude: keep your times up to date in the “My times” tab.',
         )}
       </p>
     </div>

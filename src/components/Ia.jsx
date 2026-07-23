@@ -23,7 +23,7 @@ export default function Ia() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('🤖 Assistant IA', '🤖 AI assistant')}</h2>
+        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Assistant IA', 'AI assistant')}</h2>
         <p className="mt-1 text-sm text-slate-500">
           {t(
             <>
@@ -52,7 +52,7 @@ export default function Ia() {
             </button>
           </div>
           <p className="mt-1 text-xs text-slate-400">
-            {t('🔒 Stockée uniquement dans ton navigateur. Crée une clé sur', '🔒 Stored only in your browser. Create a key at')}{' '}
+            {t('Stockée uniquement dans ton navigateur. Crée une clé sur', 'Stored only in your browser. Create a key at')}{' '}
             <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="font-medium text-pool-600 hover:underline">
               console.anthropic.com ↗
             </a>{' '}

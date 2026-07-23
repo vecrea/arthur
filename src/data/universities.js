@@ -46,7 +46,7 @@ export const universities = [
     sunshine: 5, econ: 4, athletics: 4, swim: 5, admission: 2,
     costUSD: 48000, scholarshipNote: 'Bourses sportives + facile d’accès académiquement',
     swimNote: 'Programme de sprint d’élite (encadrement renommé).',
-    highlights: ['Soleil quasi permanent ☀️', 'W. P. Carey (business)', 'Admission accessible'],
+    highlights: ['Soleil quasi permanent', 'W. P. Carey (business)', 'Admission accessible'],
   },
   {
     id: 'arizona', name: 'University of Arizona', shortName: 'Arizona (Wildcats)',
@@ -163,7 +163,7 @@ export const universities = [
     sunshine: 5, econ: 3, athletics: 3, swim: 3, admission: 2,
     costUSD: 35000, scholarshipNote: 'Bourses sportives possibles',
     swimNote: 'Programme D1 dans un cadre tropical unique.',
-    highlights: ['Soleil toute l’année 🌴', 'Coût modéré', 'Cadre incroyable'],
+    highlights: ['Soleil toute l’année', 'Coût modéré', 'Cadre incroyable'],
   },
   {
     id: 'ucsd', name: 'University of California, San Diego', shortName: 'UC San Diego (Tritons)',
@@ -228,7 +228,7 @@ export const universities = [
     sunshine: 5, econ: 2, athletics: 2, swim: 2, admission: 2,
     costUSD: 50000, scholarshipNote: 'Bourses sportives D2, très accueillant pour internationaux',
     swimNote: 'Programme D2 à forte proportion d’internationaux.',
-    highlights: ['Très international 🌍', 'Boca Raton ensoleillé', 'Petit & encadré'],
+    highlights: ['Très international', 'Boca Raton ensoleillé', 'Petit & encadré'],
   },
 
   // ---------------- Division 3 (pas de bourse sportive, mais aides au mérite) ----------------
@@ -266,7 +266,7 @@ export const universities = [
     sunshine: 5, econ: 3, athletics: 2, swim: 2, admission: 3,
     costUSD: 70000, scholarshipNote: 'Pas de bourse sportive (D3), aides au mérite possibles',
     swimNote: 'Programme D3 dans le sud ensoleillé de la Californie.',
-    highlights: ['Orange County ☀️', 'Campus moderne', 'Proche de LA'],
+    highlights: ['Orange County', 'Campus moderne', 'Proche de LA'],
   },
 ]
 

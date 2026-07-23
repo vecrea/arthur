@@ -47,10 +47,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <h3 className="truncate font-display text-lg font-extrabold text-navy-900">{u.shortName}</h3>
-              <p className="text-sm text-slate-500">
-                {u.sunshine >= 4 ? '☀️ ' : ''}
-                {u.city}, {u.state}
-              </p>
+              <p className="text-sm text-slate-500">{u.city}, {u.state}</p>
             </div>
             <button
               onClick={() => onToggleFav(u.id)}
@@ -90,7 +87,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
           <div className="mt-3">
             {coaches && (
               <p className="mb-2 text-xs text-slate-500">
-                🏊 {t('Head Coach', 'Head coach')} : <span className="font-semibold text-navy-900">{coaches.staff[0].name}</span>
+                {t('Head Coach', 'Head coach')} : <span className="font-semibold text-navy-900">{coaches.staff[0].name}</span>
               </p>
             )}
             <div className="flex flex-wrap gap-2">
@@ -100,7 +97,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-full bg-navy-900 px-3 py-1 text-xs font-semibold text-white transition hover:bg-navy-800"
               >
-                🌐 {t('Site officiel', 'Official site')} ↗
+                {t('Site officiel', 'Official site')} ↗
               </a>
               <a
                 href={coachsStaffLink(u)}
@@ -108,7 +105,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700"
               >
-                🏊 {t('Coachs natation', 'Swim coaches')} ↗
+                {t('Coachs natation', 'Swim coaches')} ↗
               </a>
               <a
                 href={NCSA_URL}
@@ -116,7 +113,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-full bg-pool-500 px-3 py-1 text-xs font-semibold text-white transition hover:bg-pool-600"
               >
-                🎯 NCSA Recruiting ↗
+                NCSA Recruiting ↗
               </a>
             </div>
           </div>
@@ -134,13 +131,13 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
       {open && (
         <div className="space-y-3 border-t border-slate-100 bg-slate-50/60 px-4 py-3 text-sm">
           <p className="text-slate-700">
-            <span className="font-semibold">🏊 {t('Natation', 'Swimming')} :</span> {u.swimNote}
+            <span className="font-semibold">{t('Natation', 'Swimming')} :</span> {u.swimNote}
           </p>
 
           {coaches && (
             <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
               <p className="mb-1 font-semibold text-navy-900">
-                🏊 {t('Staff natation', 'Swim staff')} <span className="font-normal text-slate-400">({t('vérifié', 'verified')} {COACHES_AS_OF})</span>
+                {t('Staff natation', 'Swim staff')} <span className="font-normal text-slate-400">({t('vérifié', 'verified')} {COACHES_AS_OF})</span>
               </p>
               <ul className="space-y-0.5">
                 {coaches.staff.map((c) => (
@@ -150,7 +147,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
                 ))}
               </ul>
               <p className="mt-2 text-xs text-slate-400">
-                {t('✉️ Emails directs rarement publics en D1 — contacte via le', '✉️ Direct emails are rarely public in D1 — reach out via the')}{' '}
+                {t('Emails directs rarement publics en D1 — contacte via le', 'Direct emails are rarely public in D1 — reach out via the')}{' '}
                 <a href={coachsStaffLink(u)} target="_blank" rel="noopener noreferrer" className="font-medium text-pool-600 hover:underline">
                   {t('staff / formulaire recrue', 'staff / recruit form')} ↗
                 </a>
@@ -160,7 +157,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
           )}
 
           <p className="text-slate-700">
-            <span className="font-semibold">💶 {t('Bourses', 'Scholarships')} :</span> {u.scholarshipNote}
+            <span className="font-semibold">{t('Bourses', 'Scholarships')} :</span> {u.scholarshipNote}
           </p>
 
           {(() => {
@@ -168,7 +165,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
             return (
               <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
                 <p className="font-semibold text-navy-900">
-                  💰 {t('Coût net estimé', 'Estimated net cost')} <span className="font-normal text-slate-400">({t('indicatif, intl', 'indicative, intl')})</span>
+                  {t('Coût net estimé', 'Estimated net cost')} <span className="font-normal text-slate-400">({t('indicatif, intl', 'indicative, intl')})</span>
                 </p>
                 <p className="mt-0.5 font-display text-lg font-extrabold text-emerald-700">{c.range}</p>
                 <p className="mt-0.5 text-xs text-slate-500">
@@ -201,7 +198,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
 
           <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-semibold text-navy-900">🤖 {t('Pourquoi cette fac ?', 'Why this school?')}</span>
+              <span className="font-semibold text-navy-900">{t('Pourquoi cette fac ?', 'Why this school?')}</span>
               <button
                 onClick={askWhy}
                 disabled={whyLoading}

@@ -40,10 +40,10 @@ export default function ProfileCard({ profile }) {
     reader.onload = () => {
       const res = importBackup(String(reader.result))
       if (res.ok) {
-        setBackupMsg(t(`✅ ${res.count} éléments importés. Rechargement…`, `✅ ${res.count} items imported. Reloading…`))
+        setBackupMsg(t(`${res.count} éléments importés. Rechargement…`, `${res.count} items imported. Reloading…`))
         setTimeout(() => location.reload(), 900)
       } else {
-        setBackupMsg(t('❌ Fichier invalide.', '❌ Invalid file.'))
+        setBackupMsg(t('Fichier invalide.', 'Invalid file.'))
       }
     }
     reader.readAsText(f)
@@ -69,11 +69,11 @@ export default function ProfileCard({ profile }) {
         </div>
 
         <div className="grid grid-cols-2 gap-2 p-4 sm:grid-cols-3">
-          <Info label={t('Nationalité', 'Nationality')} value={`🇧🇪 ${profile.nationality}`} />
+          <Info label={t('Nationalité', 'Nationality')} value={`${profile.nationality}`} />
           <Info label={t('Âge', 'Age')} value={`${age} ${t('ans', 'yrs')}`} />
           <Info label={t('Entrée fac visée', 'Target college entry')} value={`${t('Automne', 'Fall')} ${profile.usEntryYear}`} />
           <Info label={t('Classe actuelle', 'Current grade')} value={t(profile.currentGrade, profile.currentGradeEn)} />
-          <Info label={t('Études visées', 'Intended major')} value={`🎓 ${t(profile.major, profile.majorEn)}`} />
+          <Info label={t('Études visées', 'Intended major')} value={`${t(profile.major, profile.majorEn)}`} />
           <Info label={t('Anglais', 'English')} value={t(profile.englishTest, profile.englishTestEn)} />
         </div>
         <div className="grid grid-cols-1 gap-2 px-4 pb-4 sm:grid-cols-2">
@@ -85,7 +85,7 @@ export default function ProfileCard({ profile }) {
       {/* Temps & conversion */}
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-          <h3 className="font-display text-lg font-extrabold text-navy-900">{t('⏱️ Tes temps', '⏱️ Your times')}</h3>
+          <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Tes temps', 'Your times')}</h3>
           <span className="text-xs text-slate-400">{t('grand bassin → yards (US)', 'long course → yards (US)')}</span>
         </div>
         <div className="overflow-x-auto">
@@ -120,15 +120,15 @@ export default function ProfileCard({ profile }) {
         </div>
         <p className="border-t border-slate-100 px-4 py-3 text-xs text-slate-400">
           {t(
-            '⚠️ Conversion indicative (facteurs approchés, pas la table officielle USA Swimming). Elle situe ton niveau, mais le temps exact en yards doit être vérifié.',
-            '⚠️ Indicative conversion (approximate factors, not the official USA Swimming table). It places your level, but the exact yards time must be verified.',
+            'Conversion indicative (facteurs approchés, pas la table officielle USA Swimming). Elle situe ton niveau, mais le temps exact en yards doit être vérifié.',
+            'Indicative conversion (approximate factors, not the official USA Swimming table). It places your level, but the exact yards time must be verified.',
           )}
         </p>
       </div>
 
       {/* Roadmap */}
       <div className="rounded-2xl border border-pool-200 bg-pool-50/60 p-5">
-        <h3 className="font-display text-lg font-extrabold text-navy-900">{t('🛣️ Ta Road to D1', '🛣️ Your Road to D1')}</h3>
+        <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Ta Road to D1', 'Your Road to D1')}</h3>
         <p className="mt-1 text-sm text-slate-600">
           {t(
             <>
@@ -136,28 +136,28 @@ export default function ProfileCard({ profile }) {
               Avec <strong>2 ans</strong> jusqu'à la rentrée {profile.usEntryYear} et ton stage au CNM (Marseille), viser la{' '}
               <strong>D1</strong> est un objectif réaliste. Le classement te montre 3 catégories :{' '}
               <span className="font-semibold text-emerald-600">Réaliste</span>, <span className="font-semibold text-pool-600">Objectif</span> et{' '}
-              <span className="font-semibold text-spark-600">Ambitieux</span> 🔥.
+              <span className="font-semibold text-spark-600">Ambitieux</span>.
             </>,
             <>
               Your current times put you around the <strong>{lvl.labelEn}</strong> level on the US scale — a great starting point at {age}.
               With <strong>2 years</strong> until the {profile.usEntryYear} entry and your training camp at CNM (Marseille), aiming for{' '}
               <strong>D1</strong> is a realistic goal. The rankings show 3 categories:{' '}
               <span className="font-semibold text-emerald-600">Safety</span>, <span className="font-semibold text-pool-600">Target</span> and{' '}
-              <span className="font-semibold text-spark-600">Reach</span> 🔥.
+              <span className="font-semibold text-spark-600">Reach</span>.
             </>,
           )}
         </p>
         <p className="mt-2 text-xs text-slate-500">
           {t(
-            "💡 À venir (Phases 2 & 3) : suivi des démarches (NCAA, SAT/TOEFL), carnet de contacts coachs, et recommandations IA + générateur d'emails aux coachs.",
-            '💡 Coming soon (Phases 2 & 3): steps tracking (NCAA, SAT/TOEFL), coach contact book, and AI recommendations + coach email generator.',
+            "À venir (Phases 2 & 3) : suivi des démarches (NCAA, SAT/TOEFL), carnet de contacts coachs, et recommandations IA + générateur d'emails aux coachs.",
+            'Coming soon (Phases 2 & 3): steps tracking (NCAA, SAT/TOEFL), coach contact book, and AI recommendations + coach email generator.',
           )}
         </p>
       </div>
 
       {/* Sauvegarde & synchro entre appareils */}
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h3 className="font-display text-lg font-extrabold text-navy-900">{t('💾 Sauvegarde & synchro', '💾 Backup & sync')}</h3>
+        <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Sauvegarde & synchro', 'Backup & sync')}</h3>
         <p className="mt-1 text-sm text-slate-600">
           {t(
             'Tes données vivent dans ce navigateur. Exporte un fichier pour les sauvegarder ou les transférer (PC ↔ téléphone), puis importe-le sur l’autre appareil.',
@@ -166,18 +166,18 @@ export default function ProfileCard({ profile }) {
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button onClick={downloadBackup} className="rounded-full bg-navy-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-navy-800">
-            {t('⬇️ Exporter mes données', '⬇️ Export my data')}
+            {t('Exporter mes données', 'Export my data')}
           </button>
           <button onClick={() => fileRef.current?.click()} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">
-            {t('⬆️ Importer un fichier', '⬆️ Import a file')}
+            {t('Importer un fichier', 'Import a file')}
           </button>
           <input ref={fileRef} type="file" accept="application/json,.json" onChange={onImportFile} className="hidden" />
           {backupMsg && <span className="text-xs font-semibold text-emerald-700">{backupMsg}</span>}
         </div>
         <p className="mt-2 text-xs text-slate-400">
           {t(
-            '⚠️ L’import remplace les données de cet appareil par celles du fichier. Le fichier contient chronos, objectifs, favoris, contacts coachs et démarches.',
-            '⚠️ Import replaces this device’s data with the file’s. The file holds times, goals, favorites, coach contacts and steps.',
+            'L’import remplace les données de cet appareil par celles du fichier. Le fichier contient chronos, objectifs, favoris, contacts coachs et démarches.',
+            'Import replaces this device’s data with the file’s. The file holds times, goals, favorites, coach contacts and steps.',
           )}
         </p>
       </div>

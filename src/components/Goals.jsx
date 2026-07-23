@@ -58,7 +58,7 @@ export default function Goals({ profile }) {
     <div className="space-y-5">
       {/* Formulaire */}
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('🏁 Mes objectifs', '🏁 My goals')}</h2>
+        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Mes objectifs', 'My goals')}</h2>
         <p className="text-sm text-slate-500">
           {t(
             'Fixe un temps cible et une échéance par épreuve. L’app calcule l’écart avec ton meilleur temps et ta progression.',
@@ -100,8 +100,7 @@ export default function Goals({ profile }) {
       {/* Liste des objectifs */}
       {sorted.length === 0 ? (
         <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
-          <div className="text-4xl">🏁</div>
-          <p className="mt-3 font-semibold text-navy-900">{t('Aucun objectif pour l’instant', 'No goals yet')}</p>
+          <p className="font-semibold text-navy-900">{t('Aucun objectif pour l’instant', 'No goals yet')}</p>
           <p className="mt-1 text-sm text-slate-500">
             {t('Fixe ta première cible ci-dessus — par ex. passer sous 1:00 au 100 NL d’ici 2027.', 'Set your first target above — e.g. break 1:00 in the 100 Free by 2027.')}
           </p>
@@ -120,7 +119,7 @@ export default function Goals({ profile }) {
                     <p className="text-xs text-slate-500">{t(ev.stroke, STROKE_EN[ev.stroke])}</p>
                   </div>
                   {achieved ? (
-                    <span className="rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-bold text-white">{t('🎉 Atteint', '🎉 Achieved')}</span>
+                    <span className="rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-bold text-white">{t('Atteint', 'Achieved')}</span>
                   ) : (
                     daysLeft != null && (
                       <span className={'rounded-full px-2.5 py-1 text-xs font-bold ' + (daysLeft < 0 ? 'bg-flag-100 text-flag-600' : 'bg-slate-100 text-slate-600')}>
@@ -158,7 +157,7 @@ export default function Goals({ profile }) {
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <p className="text-sm">
                     {achieved ? (
-                      <span className="font-semibold text-emerald-700">{t('Objectif atteint 🎉', 'Goal reached 🎉')}</span>
+                      <span className="font-semibold text-emerald-700">{t('Objectif atteint', 'Goal reached')}</span>
                     ) : currentScy == null ? (
                       <span className="text-slate-400">{t('Enregistre un temps pour suivre.', 'Log a time to track.')}</span>
                     ) : (
@@ -177,8 +176,8 @@ export default function Goals({ profile }) {
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         {t(
-          '💡 Ton « record » combine tes chronos enregistrés et tes temps de profil (le plus rapide), converti en yards. Mets tes chronos à jour dans « Mes chronos » et la progression se recalcule.',
-          '💡 Your “best” combines your logged times and your profile times (the fastest), converted to yards. Update your times in “My times” and the progress recomputes.',
+          'Ton « record » combine tes chronos enregistrés et tes temps de profil (le plus rapide), converti en yards. Mets tes chronos à jour dans « Mes chronos » et la progression se recalcule.',
+          'Your “best” combines your logged times and your profile times (the fastest), converted to yards. Update your times in “My times” and the progress recomputes.',
         )}
       </p>
     </div>

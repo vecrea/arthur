@@ -95,9 +95,9 @@ export default function App() {
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <StatCard label={t('Meilleur match', 'Best match')} value={`${topMatch.match}`} sub={topMatch.shortName} accent="#16a34a" />
-              <StatCard label={t('✅ Réalistes', '✅ Safety')} value={counts.safety} sub={t('dans tes cordes', 'in your range')} accent="#16a34a" />
-              <StatCard label={t('🎯 Objectifs', '🎯 Targets')} value={counts.target} sub={t('à ta portée', 'within reach')} accent="#0ea5e9" />
-              <StatCard label={t('🔥 Ambitieux', '🔥 Reach')} value={counts.reach} sub={t('la Road to D1', 'the Road to D1')} accent="#f59e0b" />
+              <StatCard label={t('Réalistes', 'Safety')} value={counts.safety} sub={t('dans tes cordes', 'in your range')} accent="#16a34a" />
+              <StatCard label={t('Objectifs', 'Targets')} value={counts.target} sub={t('à ta portée', 'within reach')} accent="#0ea5e9" />
+              <StatCard label={t('Ambitieux', 'Reach')} value={counts.reach} sub={t('la Road to D1', 'the Road to D1')} accent="#f59e0b" />
             </div>
 
             <Filters filters={filters} setFilters={setFilters} count={filtered.length} />
@@ -122,8 +122,7 @@ export default function App() {
             ))}
             {favUnis.length === 0 && (
               <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200 lg:col-span-2">
-                <div className="text-4xl">⭐</div>
-                <p className="mt-3 font-semibold text-navy-900">{t('Pas encore de favoris', 'No favorites yet')}</p>
+                <p className="font-semibold text-navy-900">{t('Pas encore de favoris', 'No favorites yet')}</p>
                 <p className="mt-1 text-sm text-slate-500">
                   {t("Clique sur l'étoile d'une fac dans le classement pour la sauvegarder ici.", 'Click a school’s star in the rankings to save it here.')}
                 </p>
@@ -158,8 +157,8 @@ export default function App() {
       <footer className="no-print mx-auto max-w-6xl px-5 pb-10">
         <div className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
           {t(
-            "⚠️ Données indicatives (MVP). La sélection d'universités, les coûts et la force des programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine étape : enrichissement via College Scorecard (données officielles US) + suivi des démarches et IA.",
-            '⚠️ Indicative data (MVP). The university selection, costs and swim-program strength are a first basis to verify against official 2025-26 rosters/sites. Next step: enrichment via College Scorecard (official US data) + steps tracking and AI.',
+            "Données indicatives (MVP). La sélection d'universités, les coûts et la force des programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine étape : enrichissement via College Scorecard (données officielles US) + suivi des démarches et IA.",
+            'Indicative data (MVP). The university selection, costs and swim-program strength are a first basis to verify against official 2025-26 rosters/sites. Next step: enrichment via College Scorecard (official US data) + steps tracking and AI.',
           )}
         </div>
         <p className="mt-3 text-center text-xs text-slate-400">

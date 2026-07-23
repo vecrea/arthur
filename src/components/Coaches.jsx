@@ -6,12 +6,12 @@ import { buildCoachEmail } from '../lib/emailTemplate.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const STATUS = {
-  todo: { label: 'À contacter', labelEn: 'To contact', color: '#64748b', emoji: '⚪' },
-  emailed: { label: 'Email envoyé', labelEn: 'Email sent', color: '#0ea5e9', emoji: '📨' },
-  replied: { label: 'A répondu', labelEn: 'Replied', color: '#6366f1', emoji: '💬' },
-  interested: { label: 'Intéressé', labelEn: 'Interested', color: '#f59e0b', emoji: '🔥' },
-  offer: { label: 'Offre !', labelEn: 'Offer!', color: '#16a34a', emoji: '🎉' },
-  declined: { label: 'Décliné', labelEn: 'Declined', color: '#ef4444', emoji: '✖️' },
+  todo: { label: 'À contacter', labelEn: 'To contact', color: '#64748b', emoji: '' },
+  emailed: { label: 'Email envoyé', labelEn: 'Email sent', color: '#0ea5e9', emoji: '' },
+  replied: { label: 'A répondu', labelEn: 'Replied', color: '#6366f1', emoji: '' },
+  interested: { label: 'Intéressé', labelEn: 'Interested', color: '#f59e0b', emoji: '' },
+  offer: { label: 'Offre !', labelEn: 'Offer!', color: '#16a34a', emoji: '' },
+  declined: { label: 'Décliné', labelEn: 'Declined', color: '#ef4444', emoji: '' },
 }
 const ORDER = ['todo', 'emailed', 'replied', 'interested', 'offer', 'declined']
 
@@ -131,13 +131,13 @@ export default function Coaches({ unis, favorites, profile }) {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
         <div>
-          <h2 className="font-display text-xl font-extrabold text-navy-900">{t('📇 Contacts coachs', '📇 Coach contacts')}</h2>
+          <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Contacts coachs', 'Coach contacts')}</h2>
           <p className="text-sm text-slate-500">{t("Suis chaque coach que tu contactes, du premier email à l'offre.", 'Track every coach you contact, from first email to offer.')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {favorites.size > 0 && (
             <button onClick={importFavorites} className="rounded-full bg-spark-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-spark-400">
-              {t('⭐ Importer mes favoris', '⭐ Import my favorites')}
+              {t('Importer mes favoris', 'Import my favorites')}
             </button>
           )}
           <button
@@ -145,10 +145,10 @@ export default function Coaches({ unis, favorites, profile }) {
             className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow hover:bg-emerald-700"
             title={t(`Head & assistant coachs vérifiés (${COACHES_AS_OF}) de tes meilleures facs`, `Verified head & assistant coaches (${COACHES_AS_OF}) from your top schools`)}
           >
-            {t('🏊 Coachs vérifiés', '🏊 Verified coaches')}
+            {t('Coachs vérifiés', 'Verified coaches')}
           </button>
           <button onClick={() => setForm(blank())} className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600">
-            {t('➕ Ajouter un coach', '➕ Add a coach')}
+            {t('+ Ajouter un coach', '+ Add a coach')}
           </button>
         </div>
       </div>
@@ -156,16 +156,16 @@ export default function Coaches({ unis, favorites, profile }) {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label={t('Coachs suivis', 'Coaches tracked')} value={stats.total} accent="#0f1f48" />
-        <StatCard label={t('📨 En cours', '📨 In progress')} value={stats.active} accent="#0ea5e9" />
-        <StatCard label={t('💬 Réponses', '💬 Replies')} value={stats.replied} accent="#6366f1" />
-        <StatCard label={t('🎉 Offres', '🎉 Offers')} value={stats.offer} accent="#16a34a" />
+        <StatCard label={t('En cours', 'In progress')} value={stats.active} accent="#0ea5e9" />
+        <StatCard label={t('Réponses', 'Replies')} value={stats.replied} accent="#6366f1" />
+        <StatCard label={t('Offres', 'Offers')} value={stats.offer} accent="#16a34a" />
       </div>
 
       {/* Formulaire */}
       {form && (
         <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-pool-300">
           <p className="mb-3 font-display font-extrabold text-navy-900">
-            {form.id ? t('✏️ Modifier le contact', '✏️ Edit contact') : t('➕ Nouveau contact', '➕ New contact')}
+            {form.id ? t('Modifier le contact', 'Edit contact') : t('+ Nouveau contact', '+ New contact')}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block sm:col-span-2">
@@ -227,8 +227,7 @@ export default function Coaches({ unis, favorites, profile }) {
       {/* Liste */}
       {sorted.length === 0 && !form ? (
         <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
-          <div className="text-4xl">📇</div>
-          <p className="mt-3 font-semibold text-navy-900">{t("Aucun coach pour l'instant", 'No coaches yet')}</p>
+          <p className="font-semibold text-navy-900">{t("Aucun coach pour l'instant", 'No coaches yet')}</p>
           <p className="mt-1 text-sm text-slate-500">
             {t(
               'Clique sur « Ajouter un coach », ou « Importer mes favoris » pour partir de ta shortlist.',
@@ -262,9 +261,9 @@ export default function Coaches({ unis, favorites, profile }) {
 
                 {(c.contactedDate || c.nextFollowUp || c.notes) && (
                   <div className="mt-2 space-y-1 text-sm text-slate-600">
-                    {c.contactedDate && <div>📅 {t('Contacté le', 'Contacted on')} {c.contactedDate}</div>}
-                    {c.nextFollowUp && <div>🔔 {t('Relance prévue :', 'Follow-up planned:')} {c.nextFollowUp}</div>}
-                    {c.notes && <div className="text-slate-700">📝 {c.notes}</div>}
+                    {c.contactedDate && <div>{t('Contacté le', 'Contacted on')} {c.contactedDate}</div>}
+                    {c.nextFollowUp && <div>{t('Relance prévue :', 'Follow-up planned:')} {c.nextFollowUp}</div>}
+                    {c.notes && <div className="text-slate-700">{c.notes}</div>}
                   </div>
                 )}
 
@@ -290,7 +289,7 @@ export default function Coaches({ unis, favorites, profile }) {
                       className="rounded-full bg-pool-500 px-3 py-1 text-xs font-bold text-white transition hover:bg-pool-600"
                       title={t('Email pré-rempli, sans clé API', 'Pre-filled email, no API key')}
                     >
-                      {t('📝 Email (modèle)', '📝 Email (template)')}
+                      {t('Email (modèle)', 'Email (template)')}
                     </button>
                     <button
                       onClick={() => genEmail(c)}
@@ -298,7 +297,7 @@ export default function Coaches({ unis, favorites, profile }) {
                       className="rounded-full bg-navy-900 px-3 py-1 text-xs font-bold text-white transition hover:bg-navy-800 disabled:opacity-50"
                       title={t('Version IA (nécessite une clé API, onglet IA)', 'AI version (requires an API key, AI tab)')}
                     >
-                      {emailLoading === c.id ? t('Rédaction…', 'Drafting…') : t('✍️ IA', '✍️ AI')}
+                      {emailLoading === c.id ? t('Rédaction…', 'Drafting…') : t('IA', 'AI')}
                     </button>
                   </div>
                 </div>
@@ -314,7 +313,7 @@ export default function Coaches({ unis, favorites, profile }) {
                     />
                     <div className="mt-1 flex items-center gap-2">
                       <button onClick={() => copyEmail(c.id)} className="rounded-full bg-navy-900 px-3 py-1 text-xs font-bold text-white hover:bg-navy-800">
-                        {t('📋 Copier', '📋 Copy')}
+                        {t('Copier', 'Copy')}
                       </button>
                       <span className="text-xs text-slate-400">{t("Relis et personnalise avant d'envoyer.", 'Review and personalize before sending.')}</span>
                     </div>

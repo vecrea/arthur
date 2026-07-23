@@ -75,8 +75,8 @@ export default function TimeTracker({ profile }) {
     const dup = matched.length - added
     setScMsg(
       t(
-        `✅ ${added} temps importés${dup ? ` · ${dup} doublon(s) ignoré(s)` : ''}${skipped ? ` · ${skipped} épreuve(s) non suivie(s)` : ''}.`,
-        `✅ ${added} times imported${dup ? ` · ${dup} duplicate(s) skipped` : ''}${skipped ? ` · ${skipped} untracked event(s)` : ''}.`,
+        `${added} temps importés${dup ? ` · ${dup} doublon(s) ignoré(s)` : ''}${skipped ? ` · ${skipped} épreuve(s) non suivie(s)` : ''}.`,
+        `${added} times imported${dup ? ` · ${dup} duplicate(s) skipped` : ''}${skipped ? ` · ${skipped} untracked event(s)` : ''}.`,
       ),
     )
     setScPaste('')
@@ -97,7 +97,7 @@ export default function TimeTracker({ profile }) {
     <div className="space-y-5">
       {/* Formulaire d'ajout */}
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('⏱️ Mes chronos', '⏱️ My times')}</h2>
+        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Mes chronos', 'My times')}</h2>
         <p className="text-sm text-slate-500">
           {t(
             'Enregistre tes courses et suis ta progression vers la D1. Tout reste chez toi (navigateur).',
@@ -148,7 +148,7 @@ export default function TimeTracker({ profile }) {
           onClick={() => setScOpen((o) => !o)}
           className="flex w-full items-center justify-between px-5 py-3 text-left"
         >
-          <span className="font-display text-sm font-extrabold text-navy-900">{t('🔗 Importer mes temps (SwimCloud, SwimRankings…)', '🔗 Import my times (SwimCloud, SwimRankings…)')}</span>
+          <span className="font-display text-sm font-extrabold text-navy-900">{t('Importer mes temps (SwimCloud, SwimRankings…)', 'Import my times (SwimCloud, SwimRankings…)')}</span>
           <span className={'text-slate-400 transition ' + (scOpen ? 'rotate-180' : '')}>⌄</span>
         </button>
         {scOpen && (
@@ -274,8 +274,8 @@ export default function TimeTracker({ profile }) {
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         {t(
-          '💡 Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY) pour suivre ta trajectoire vers les repères de l’onglet « Recrutable ? ». Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.',
-          '💡 Tip: log your times in long course (50 m), short course (25 m) or yards — they’re all converted to yards (SCY) to track your trajectory toward the benchmarks in the “Recruitable?” tab. Click a box to pre-select it in the form; the big number is your record in that event.',
+          'Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards — ils sont tous convertis en yards (SCY) pour suivre ta trajectoire vers les repères de l’onglet « Recrutable ? ». Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record sur l’épreuve.',
+          'Tip: log your times in long course (50 m), short course (25 m) or yards — they’re all converted to yards (SCY) to track your trajectory toward the benchmarks in the “Recruitable?” tab. Click a box to pre-select it in the form; the big number is your record in that event.',
         )}
       </p>
     </div>

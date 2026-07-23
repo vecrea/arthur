@@ -49,7 +49,7 @@ export function TypeBadge({ type }) {
         (isPublic ? 'bg-sky-100 text-sky-700' : 'bg-violet-100 text-violet-700')
       }
     >
-      {isPublic ? '🏛️' : '🎓'} {isPublic ? t('Publique', 'Public') : t('Privée', 'Private')}
+      {isPublic ? '' : ''} {isPublic ? t('Publique', 'Public') : t('Privée', 'Private')}
     </span>
   )
 }

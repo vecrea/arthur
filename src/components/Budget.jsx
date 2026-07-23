@@ -51,7 +51,7 @@ export default function Budget({ schools, favorites }) {
   return (
     <div className="space-y-5">
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('💶 Budget sur 4 ans', '💶 4-year budget')}</h2>
+        <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Budget sur 4 ans', '4-year budget')}</h2>
         <p className="text-sm text-slate-500">
           {t(
             'Estimation du coût total en euros pour tes parents : scolarité nette (après bourse), vols Belgique↔US et visa. Ajuste les hypothèses.',
@@ -65,7 +65,7 @@ export default function Budget({ schools, favorites }) {
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t('Université', 'University')}</span>
             <select value={schoolId} onChange={(e) => pick(e.target.value)} className={inputCls + ' mt-1'}>
               {favList.length > 0 && (
-                <optgroup label={t('Mes favoris ⭐', 'My favorites ⭐')}>
+                <optgroup label={t('Mes favoris', 'My favorites')}>
                   {favList.map((u) => (
                     <option key={u.id} value={u.id}>{u.shortName} · {u.division}</option>
                   ))}
@@ -77,7 +77,7 @@ export default function Budget({ schools, favorites }) {
                 ))}
               </optgroup>
               <optgroup label={t('Autre', 'Other')}>
-                <option value="manual">{t('✏️ Saisie manuelle', '✏️ Manual entry')}</option>
+                <option value="manual">{t('Saisie manuelle', 'Manual entry')}</option>
               </optgroup>
             </select>
           </label>
@@ -153,8 +153,8 @@ export default function Budget({ schools, favorites }) {
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         {t(
-          '⚠️ Estimation indicative en euros. Le « coût annoncé » inclut généralement logement, repas et assurance santé ; les vols et le visa sont ajoutés en plus. Les bourses sportives en natation sont souvent partielles — confirme l’offre réelle avec le coach. Taux de change à ajuster le moment venu.',
-          '⚠️ Indicative estimate in euros. The “sticker cost” usually includes housing, meals and health insurance; flights and visa are added on top. Swimming athletic scholarships are often partial — confirm the real offer with the coach. Adjust the exchange rate when the time comes.',
+          'Estimation indicative en euros. Le « coût annoncé » inclut généralement logement, repas et assurance santé ; les vols et le visa sont ajoutés en plus. Les bourses sportives en natation sont souvent partielles — confirme l’offre réelle avec le coach. Taux de change à ajuster le moment venu.',
+          'Indicative estimate in euros. The “sticker cost” usually includes housing, meals and health insurance; flights and visa are added on top. Swimming athletic scholarships are often partial — confirm the real offer with the coach. Adjust the exchange rate when the time comes.',
         )}
       </p>
     </div>

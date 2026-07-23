@@ -41,7 +41,7 @@ export default function Gpa() {
     if (!result) return
     const extras = loadProfileExtras()
     saveProfileExtras({ ...extras, average: `${result.gpa.toFixed(2)} / 4.0 (${result.avgNative.toFixed(isPct ? 0 : 1)}${unit})` })
-    setMsg(t('✅ GPA copié dans « Ma fiche ».', '✅ GPA copied to “My sheet”.'))
+    setMsg(t('GPA copié dans « Ma fiche ».', 'GPA copied to “My sheet”.'))
     setTimeout(() => setMsg(''), 2500)
   }
 
@@ -52,7 +52,7 @@ export default function Gpa() {
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="font-display text-xl font-extrabold text-navy-900">{t('🎓 Notes → GPA', '🎓 Grades → GPA')}</h2>
+            <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Notes → GPA', 'Grades → GPA')}</h2>
             <p className="text-sm text-slate-500">
               {t(
                 'Entre tes matières et notes belges. L’app estime ton GPA américain (sur 4.0), la lettre et la mention — moyenne simple de tes matières.',
@@ -95,7 +95,7 @@ export default function Gpa() {
         </div>
         <div className="flex flex-wrap items-center gap-2 px-5 py-3">
           <button onClick={useInSheet} disabled={!result} className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-flag-600 disabled:opacity-50">
-            {t('📄 Utiliser dans ma fiche', '📄 Use in my athlete sheet')}
+            {t('Utiliser dans ma fiche', 'Use in my athlete sheet')}
           </button>
           {msg && <span className="text-sm font-semibold text-emerald-700">{msg}</span>}
         </div>
@@ -104,8 +104,8 @@ export default function Gpa() {
       {invalidCount > 0 && (
         <div className="rounded-xl bg-flag-100 p-3 text-sm font-semibold text-flag-600 ring-1 ring-flag-500/30">
           {t(
-            `⚠️ ${invalidCount} note(s) hors barème (${rangeLabel}) — corrige-les, elles ne sont pas comptées dans la moyenne.`,
-            `⚠️ ${invalidCount} grade(s) out of range (${rangeLabel}) — fix them, they are not counted in the average.`,
+            `${invalidCount} note(s) hors barème (${rangeLabel}) — corrige-les, elles ne sont pas comptées dans la moyenne.`,
+            `${invalidCount} grade(s) out of range (${rangeLabel}) — fix them, they are not counted in the average.`,
           )}
         </div>
       )}
@@ -136,7 +136,7 @@ export default function Gpa() {
                     </td>
                     <td className="px-3 py-1.5">
                       {bad ? (
-                        <span className="text-xs font-bold text-flag-600" title={t(`Hors barème (${rangeLabel})`, `Out of range (${rangeLabel})`)}>⚠︎ {t('hors barème', 'out of range')}</span>
+                        <span className="text-xs font-bold text-flag-600" title={t(`Hors barème (${rangeLabel})`, `Out of range (${rangeLabel})`)}>{t('hors barème', 'out of range')}</span>
                       ) : band ? (
                         <span className="inline-flex items-center gap-1.5">
                           <span className="font-display font-extrabold text-navy-900">{band.gpa.toFixed(1)}</span>
@@ -177,8 +177,8 @@ export default function Gpa() {
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         {t(
-          '⚠️ Conversion indicative : il n’existe pas de barème officiel unique (WES, NCAA Eligibility Center et chaque fac ont le leur). Utile pour te situer et remplir ta fiche, mais le GPA officiel sera recalculé par l’organisme d’évaluation à partir de tes relevés.',
-          '⚠️ Indicative conversion: there is no single official scale (WES, NCAA Eligibility Center and each school use their own). Useful to place yourself and fill your sheet, but the official GPA will be recomputed by the evaluator from your transcripts.',
+          'Conversion indicative : il n’existe pas de barème officiel unique (WES, NCAA Eligibility Center et chaque fac ont le leur). Utile pour te situer et remplir ta fiche, mais le GPA officiel sera recalculé par l’organisme d’évaluation à partir de tes relevés.',
+          'Indicative conversion: there is no single official scale (WES, NCAA Eligibility Center and each school use their own). Useful to place yourself and fill your sheet, but the official GPA will be recomputed by the evaluator from your transcripts.',
         )}
       </p>
     </div>

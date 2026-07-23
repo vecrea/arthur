@@ -12,7 +12,7 @@ export default function Compare({ unis, onToggleFav }) {
         <span className="rounded-md px-2 py-0.5 text-xs font-bold text-white" style={{ background: divColor(u.division) }}>{u.division}</span>
       ) },
     { label: 'Type', render: (u) => <TypeBadge type={u.type} /> },
-    { label: t('Lieu', 'Location'), render: (u) => <span className="text-sm text-slate-600">{u.sunshine >= 4 ? '☀️ ' : ''}{u.city}, {u.state}</span> },
+    { label: t('Lieu', 'Location'), render: (u) => <span className="text-sm text-slate-600">{u.sunshine >= 4 ? '' : ''}{u.city}, {u.state}</span> },
     { label: t('Natation', 'Swimming'), render: (u) => <Dots value={u.swim} color="#0ea5e9" /> },
     { label: t('Économie', 'Economics'), render: (u) => <Dots value={u.econ} color="#7c3aed" /> },
     { label: t('Ambiance sport', 'Sports vibe'), render: (u) => <Dots value={u.athletics} color="#e63946" /> },
@@ -25,8 +25,7 @@ export default function Compare({ unis, onToggleFav }) {
   if (unis.length === 0) {
     return (
       <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
-        <div className="text-4xl">⚖️</div>
-        <p className="mt-3 font-semibold text-navy-900">{t("Aucune fac à comparer pour l'instant", 'No schools to compare yet')}</p>
+        <p className="font-semibold text-navy-900">{t("Aucune fac à comparer pour l'instant", 'No schools to compare yet')}</p>
         <p className="mt-1 text-sm text-slate-500">
           {t(
             'Ajoute des universités à tes favoris (⭐) depuis le classement pour les comparer ici.',

@@ -11,7 +11,7 @@ function Roadmap() {
   const nextIdx = ROADMAP.findIndex((m) => m.iso >= today)
   return (
     <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-      <h3 className="font-display text-lg font-extrabold text-navy-900">{t('🗺️ Ta roadmap jusqu’à la rentrée 2028', '🗺️ Your roadmap to the 2028 start')}</h3>
+      <h3 className="font-display text-lg font-extrabold text-navy-900">{t('Ta roadmap jusqu’à la rentrée 2028', 'Your roadmap to the 2028 start')}</h3>
       <p className="text-sm text-slate-500">{t('Les grandes étapes datées, calées sur le calendrier NCAA et visa.', 'The key dated milestones, aligned with the NCAA and visa calendar.')}</p>
       <ol className="mt-4 space-y-0">
         {ROADMAP.map((m, i) => {
@@ -27,7 +27,7 @@ function Roadmap() {
                   (past ? 'bg-emerald-500 text-white ring-emerald-200' : current ? 'bg-spark-500 text-white ring-spark-300' : 'bg-slate-100 text-slate-500 ring-slate-200')
                 }
               >
-                {m.emoji}
+                {i + 1}
               </span>
               <div className={'min-w-0 flex-1 ' + (past ? 'opacity-60' : '')}>
                 <div className="flex flex-wrap items-center gap-2">
@@ -65,8 +65,8 @@ export default function Steps() {
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h2 className="font-display text-xl font-extrabold text-navy-900">{t('🗓️ Tes démarches — Road to 2028', '🗓️ Your steps — Road to 2028')}</h2>
-            <p className="text-sm text-slate-500">{t('NCAA, tests, candidatures, visa. Coche au fur et à mesure 💪', 'NCAA, tests, applications, visa. Check them off as you go 💪')}</p>
+            <h2 className="font-display text-xl font-extrabold text-navy-900">{t('Tes démarches — Road to 2028', 'Your steps — Road to 2028')}</h2>
+            <p className="text-sm text-slate-500">{t('NCAA, tests, candidatures, visa. Coche au fur et à mesure', 'NCAA, tests, applications, visa. Check them off as you go')}</p>
           </div>
           <div className="text-right">
             <div className="font-display text-3xl font-black text-pool-600">{pct}%</div>
@@ -134,8 +134,8 @@ export default function Steps() {
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         {t(
-          `⚠️ Guide indicatif (vérifié ${CHECKLIST_AS_OF}) pour un nageur international visant l'automne 2028. Les dates et frais changent — confirme toujours sur les liens officiels (NCAA, visa).`,
-          `⚠️ Indicative guide (verified ${CHECKLIST_AS_OF_EN}) for an international swimmer targeting fall 2028. Dates and fees change — always confirm on the official links (NCAA, visa).`,
+          `Guide indicatif (vérifié ${CHECKLIST_AS_OF}) pour un nageur international visant l'automne 2028. Les dates et frais changent — confirme toujours sur les liens officiels (NCAA, visa).`,
+          `Indicative guide (verified ${CHECKLIST_AS_OF_EN}) for an international swimmer targeting fall 2028. Dates and fees change — always confirm on the official links (NCAA, visa).`,
         )}
       </p>
     </div>

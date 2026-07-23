@@ -66,7 +66,7 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
       {/* Hero : salutation + compte à rebours + niveau */}
       <div className="overflow-hidden rounded-2xl shadow-sm ring-1 ring-slate-200">
         <div className="bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 p-6 text-white">
-          <h2 className="font-display text-2xl font-black">{t('Salut', 'Hi')} {profile.name} 👋</h2>
+          <h2 className="font-display text-2xl font-black">{t('Salut', 'Hi')} {profile.name}</h2>
           <p className="mt-1 text-sm text-white/80">{t('Voici où tu en es sur ta Road to D1.', 'Here’s where you stand on your Road to D1.')}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl bg-white/10 p-3">
@@ -88,7 +88,7 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
 
       {/* Widgets */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <Tile onClick={() => setTab('recruit')} icon="🎯" title={t('Recrutabilité', 'Recruitability')} cta={t('Voir le détail', 'See details')}>
+        <Tile onClick={() => setTab('recruit')} icon="" title={t('Recrutabilité', 'Recruitability')} cta={t('Voir le détail', 'See details')}>
           <div className="mt-1 inline-block rounded-full px-3 py-1 font-display text-sm font-extrabold text-white" style={{ background: lvl.color }}>
             {t(lvl.short, lvl.shortEn)}
           </div>
@@ -97,7 +97,7 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
           </p>
         </Tile>
 
-        <Tile onClick={() => setTab('steps')} icon="🗓️" title={t('Démarches', 'Steps')} cta={t('Continuer', 'Continue')}>
+        <Tile onClick={() => setTab('steps')} icon="" title={t('Démarches', 'Steps')} cta={t('Continuer', 'Continue')}>
           <div className="flex items-end gap-2">
             <span className="font-display text-3xl font-black text-pool-600">{pct}%</span>
             <span className="pb-1 text-xs text-slate-400">{doneCount}/{ALL_IDS.length}</span>
@@ -110,7 +110,7 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
           </p>
         </Tile>
 
-        <Tile onClick={() => setTab('times')} icon="⏱️" title={t('Mes chronos', 'My times')} cta={t('Ajouter / voir', 'Add / view')}>
+        <Tile onClick={() => setTab('times')} icon="" title={t('Mes chronos', 'My times')} cta={t('Ajouter / voir', 'Add / view')}>
           {lastEntry ? (
             <>
               <div className="font-display text-2xl font-black text-navy-900">{times.length} <span className="text-sm font-semibold text-slate-400">{t('chronos', 'times')}</span></div>
@@ -123,18 +123,18 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
           )}
         </Tile>
 
-        <Tile onClick={() => setTab('goals')} icon="🏁" title={t('Objectifs', 'Goals')} cta={t('Définir / suivre', 'Set / track')}>
+        <Tile onClick={() => setTab('goals')} icon="" title={t('Objectifs', 'Goals')} cta={t('Définir / suivre', 'Set / track')}>
           {goals.length ? (
             <>
               <div className="font-display text-2xl font-black text-navy-900">{goals.length} <span className="text-sm font-semibold text-slate-400">{t('objectif(s)', 'goal(s)')}</span></div>
-              <p className="mt-1 text-sm text-slate-500">🎉 {goalsAchieved} {t('atteint(s)', 'achieved')}</p>
+              <p className="mt-1 text-sm text-slate-500">{goalsAchieved} {t('atteint(s)', 'achieved')}</p>
             </>
           ) : (
             <p className="text-sm text-slate-400">{t('Aucun objectif fixé.', 'No goals set.')}</p>
           )}
         </Tile>
 
-        <Tile onClick={() => setTab('ranking')} icon="🏆" title={t('Top facs pour toi', 'Your top schools')} cta={t('Voir le classement', 'See rankings')}>
+        <Tile onClick={() => setTab('ranking')} icon="" title={t('Top facs pour toi', 'Your top schools')} cta={t('Voir le classement', 'See rankings')}>
           <ul className="mt-1 space-y-1">
             {top.map((u, i) => (
               <li key={u.id} className="flex items-center gap-2 text-sm">
@@ -146,17 +146,17 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
           </ul>
         </Tile>
 
-        <Tile onClick={() => setTab('favorites')} icon="⭐" title={t('Mes favoris', 'My favorites')} cta={t('Comparer', 'Compare')}>
+        <Tile onClick={() => setTab('favorites')} icon="" title={t('Mes favoris', 'My favorites')} cta={t('Comparer', 'Compare')}>
           <div className="font-display text-3xl font-black text-spark-500">{favCount}</div>
           <p className="mt-1 text-sm text-slate-500">{favCount > 0 ? t('facs en shortlist', 'schools shortlisted') : t('Ajoute des facs en favoris.', 'Add schools to favorites.')}</p>
         </Tile>
 
-        <Tile onClick={() => setTab('coaches')} icon="📇" title={t('Coachs', 'Coaches')} cta={t('Suivre', 'Track')}>
+        <Tile onClick={() => setTab('coaches')} icon="" title={t('Coachs', 'Coaches')} cta={t('Suivre', 'Track')}>
           {coaches.length ? (
             <>
               <div className="font-display text-2xl font-black text-navy-900">{coaches.length} <span className="text-sm font-semibold text-slate-400">{t('suivis', 'tracked')}</span></div>
               <p className="mt-1 text-sm text-slate-500">
-                📨 {active} {t('en cours', 'in progress')} · 🎉 {offers} {t('offre(s)', 'offer(s)')}
+                {active} {t('en cours', 'in progress')} · {offers} {t('offre(s)', 'offer(s)')}
               </p>
             </>
           ) : (
@@ -167,8 +167,8 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
 
       <p className="rounded-xl bg-white/80 p-4 text-xs text-slate-500 ring-1 ring-slate-200">
         {t(
-          '💡 Ton tableau de bord se met à jour tout seul au fil de tes chronos, démarches et contacts. Clique une carte pour aller à la section.',
-          '💡 Your dashboard updates itself as you add times, steps and contacts. Click a card to jump to that section.',
+          'Ton tableau de bord se met à jour tout seul au fil de tes chronos, démarches et contacts. Clique une carte pour aller à la section.',
+          'Your dashboard updates itself as you add times, steps and contacts. Click a card to jump to that section.',
         )}
       </p>
     </div>

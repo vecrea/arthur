@@ -53,7 +53,7 @@ Thank you very much for your time and consideration.
 
 Best regards,
 ${profile.name}${contactLine ? `\n${contactLine}` : ''}
-🇧🇪 Belgium`
+Belgium`
 
   return { subject, body }
 }

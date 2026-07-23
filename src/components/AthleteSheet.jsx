@@ -65,7 +65,7 @@ export default function AthleteSheet({ profile }) {
       {/* Barre d'actions (non imprimee) */}
       <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
         <div>
-          <h2 className="font-display text-xl font-extrabold text-navy-900">{tr('📄 Ta fiche athlète', '📄 Your athlete sheet')}</h2>
+          <h2 className="font-display text-xl font-extrabold text-navy-900">{tr('Ta fiche athlète', 'Your athlete sheet')}</h2>
           <p className="text-sm text-slate-500">
             {tr(
               'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
@@ -78,7 +78,7 @@ export default function AthleteSheet({ profile }) {
             onClick={() => window.print()}
             className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600"
           >
-            {tr('🖨️ Exporter / Imprimer (PDF)', '🖨️ Export / Print (PDF)')}
+            {tr('Exporter / Imprimer (PDF)', 'Export / Print (PDF)')}
           </button>
         </div>
       </div>
@@ -117,7 +117,7 @@ export default function AthleteSheet({ profile }) {
             <div>
               <h1 className="font-display text-3xl font-black leading-none">{profile.name}</h1>
               <p className="mt-1 text-white">
-                {t.classOf} {profile.usEntryYear} · {t.swimmer} · 🇧🇪 {t.from} {v(extras.city)}, Belgium
+                {t.classOf} {profile.usEntryYear} · {t.swimmer} · {t.from} {v(extras.city)}, Belgium
               </p>
             </div>
             <div className="text-right text-sm text-white">
@@ -184,8 +184,8 @@ export default function AthleteSheet({ profile }) {
 
       <p className="no-print text-center text-xs text-slate-400">
         {tr(
-          "💡 Astuce : « Exporter » ouvre l'impression — choisis « Enregistrer en PDF » comme destination. Les temps en yards sont indicatifs (à confirmer).",
-          '💡 Tip: “Export” opens the print dialog — choose “Save as PDF” as the destination. Yards times are indicative (to confirm).',
+          "Astuce : « Exporter » ouvre l'impression — choisis « Enregistrer en PDF » comme destination. Les temps en yards sont indicatifs (à confirmer).",
+          'Tip: “Export” opens the print dialog — choose “Save as PDF” as the destination. Yards times are indicative (to confirm).',
         )}
       </p>
     </div>

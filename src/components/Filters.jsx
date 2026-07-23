@@ -29,7 +29,7 @@ export default function Filters({ filters, setFilters, count }) {
           type="search"
           value={filters.search}
           onChange={(e) => set({ search: e.target.value })}
-          placeholder={t('🔎 Chercher une université, une ville, un état…', '🔎 Search a university, city, state…')}
+          placeholder={t('Chercher une université, une ville, un état…', 'Search a university, city, state…')}
           className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-pool-500 focus:ring-2 focus:ring-pool-500/20"
         />
 
@@ -55,8 +55,8 @@ export default function Filters({ filters, setFilters, count }) {
               onChange={(v) => set({ type: v })}
               options={[
                 { value: 'all', label: t('Toutes', 'All') },
-                { value: 'Publique', label: t('🏛️ Publique', '🏛️ Public') },
-                { value: 'Privée', label: t('🎓 Privée', '🎓 Private') },
+                { value: 'Publique', label: t('Publique', 'Public') },
+                { value: 'Privée', label: t('Privée', 'Private') },
               ]}
             />
           </div>
@@ -68,9 +68,9 @@ export default function Filters({ filters, setFilters, count }) {
               onChange={(v) => set({ fit: v })}
               options={[
                 { value: 'all', label: t('Tous', 'All') },
-                { value: 'safety', label: t('✅ Réaliste', '✅ Safety') },
-                { value: 'target', label: t('🎯 Objectif', '🎯 Target') },
-                { value: 'reach', label: t('🔥 Ambitieux', '🔥 Reach') },
+                { value: 'safety', label: t('Réaliste', 'Safety') },
+                { value: 'target', label: t('Objectif', 'Target') },
+                { value: 'reach', label: t('Ambitieux', 'Reach') },
               ]}
             />
           </div>
@@ -95,7 +95,7 @@ export default function Filters({ filters, setFilters, count }) {
               onChange={(e) => set({ sunnyOnly: e.target.checked })}
               className="h-4 w-4 rounded accent-spark-500"
             />
-            {t('☀️ Soleil ++', '☀️ Sunny ++')}
+            {t('Soleil ++', 'Sunny ++')}
           </label>
 
           <label
@@ -108,7 +108,7 @@ export default function Filters({ filters, setFilters, count }) {
               onChange={(e) => set({ curatedOnly: e.target.checked })}
               className="h-4 w-4 rounded accent-pool-500"
             />
-            {t('⭐ Curées', '⭐ Curated')}
+            {t('Curées', 'Curated')}
           </label>
         </div>
       </div>
