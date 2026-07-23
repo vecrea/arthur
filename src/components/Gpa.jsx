@@ -4,7 +4,7 @@ import { loadGpaSubjects, saveGpaSubjects, loadGpaScale, saveGpaScale, loadProfi
 import { useLang } from '../lib/i18n.jsx'
 
 const rid = () => 's' + Date.now() + Math.random().toString(36).slice(2, 6)
-const blank = () => ({ id: rid(), name: '', grade: '', weight: 1 })
+const blank = () => ({ id: rid(), name: '', grade: '' })
 
 export default function Gpa() {
   const { t } = useLang()
@@ -53,8 +53,8 @@ export default function Gpa() {
             <h2 className="font-display text-xl font-extrabold text-navy-900">{t('🎓 Notes → GPA', '🎓 Grades → GPA')}</h2>
             <p className="text-sm text-slate-500">
               {t(
-                'Entre tes matières et notes belges. L’app estime ton GPA américain (sur 4.0), la lettre et la mention. Le coefficient = poids de la matière (heures/semaine), 1 par défaut.',
-                'Enter your subjects and Belgian grades. The app estimates your US GPA (out of 4.0), the letter grade and the honor. The coefficient = subject weight (hours/week), default 1.',
+                'Entre tes matières et notes belges. L’app estime ton GPA américain (sur 4.0), la lettre et la mention — moyenne simple de tes matières.',
+                'Enter your subjects and Belgian grades. The app estimates your US GPA (out of 4.0), the letter grade and the honor — a simple average of your subjects.',
               )}
             </p>
           </div>
@@ -106,8 +106,7 @@ export default function Gpa() {
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-wide text-slate-400">
                 <th className="px-3 py-2 font-semibold">{t('Matière', 'Subject')}</th>
-                <th className="w-24 px-3 py-2 font-semibold">{t('Note', 'Grade')} {unit}</th>
-                <th className="w-20 px-3 py-2 font-semibold">{t('Coeff.', 'Weight')}</th>
+                <th className="w-28 px-3 py-2 font-semibold">{t('Note', 'Grade')} {unit}</th>
                 <th className="w-24 px-3 py-2 font-semibold">GPA</th>
                 <th className="w-8 px-3 py-2"></th>
               </tr>
@@ -122,9 +121,6 @@ export default function Gpa() {
                     </td>
                     <td className="px-3 py-1.5">
                       <input type="number" min="0" max={isPct ? 100 : 20} step={isPct ? 1 : 0.1} value={s.grade} onChange={(e) => update(s.id, { grade: e.target.value })} placeholder={isPct ? '75' : '15'} className={inputCls} />
-                    </td>
-                    <td className="px-3 py-1.5">
-                      <input type="number" min="1" step="1" value={s.weight} onChange={(e) => update(s.id, { weight: e.target.value })} className={inputCls} />
                     </td>
                     <td className="px-3 py-1.5">
                       {band ? (
