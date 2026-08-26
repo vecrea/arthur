@@ -1,4 +1,5 @@
 import { Dots, FitBadge, TypeBadge, divColor } from './ui.jsx'
+import { scholarshipPotential, capFirst } from '../lib/scholarship.js'
 import { useLang } from '../lib/i18n.jsx'
 
 export default function Compare({ unis, onToggleFav }) {
@@ -20,6 +21,15 @@ export default function Compare({ unis, onToggleFav }) {
     { label: t('Soleil', 'Sun'), render: (u) => <Dots value={u.sunshine} color="#f59e0b" /> },
     { label: t('Sélectivité', 'Selectivity'), render: (u) => <Dots value={u.admission} color="#475569" /> },
     { label: t('Coût (intl)', 'Cost (intl)'), render: (u) => <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{fmtCost(u.costUSD)}</span> },
+    { label: t('Bourse complète', 'Full ride'), render: (u) => {
+        const s = scholarshipPotential(u)
+        return (
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold" style={{ color: s.color }}>
+            <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: s.color }} />
+            {capFirst(t(s.label, s.labelEn))}
+          </span>
+        )
+      } },
     { label: t('Bourses', 'Scholarships'), render: (u) => <span className="text-xs text-secondary">{u.scholarshipNote}</span> },
   ]
 

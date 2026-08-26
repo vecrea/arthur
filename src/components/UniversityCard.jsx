@@ -4,6 +4,7 @@ import { NCSA_URL, siteLink } from '../data/universities.js'
 import { VERIFIED_COACHES, coachsStaffLink, COACHES_AS_OF } from '../data/coaches.js'
 import { explainFit, loadWhyCache, saveWhy, hasApiKey } from '../lib/ai.js'
 import { netCost } from '../lib/cost.js'
+import { scholarshipPotential, capFirst } from '../lib/scholarship.js'
 import { useLang } from '../lib/i18n.jsx'
 
 export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
@@ -66,6 +67,20 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
                 </span>
               )}
             </div>
+
+            {(() => {
+              const sch = scholarshipPotential(u)
+              return (
+                <span
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold"
+                  style={{ background: `${sch.color}1a`, color: sch.color }}
+                  title={lang === 'en' ? sch.noteEn : sch.note}
+                >
+                  <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: sch.color }} />
+                  {t('Bourse', 'Scholarship')} : {t(sch.label, sch.labelEn)}
+                </span>
+              )
+            })()}
           </div>
 
           {/* Notes visuelles */}
@@ -160,9 +175,22 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
             </div>
           )}
 
-          <p className="text-primary">
-            <span className="font-semibold">{t('Bourses', 'Scholarships')} :</span> {u.scholarshipNote}
-          </p>
+          {(() => {
+            const sch = scholarshipPotential(u)
+            return (
+              <div className="rounded-lg surface border border-hair p-3">
+                <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-heading">
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: sch.color }} />
+                  {t('Potentiel de bourse complète', 'Full-scholarship potential')} :{' '}
+                  <span style={{ color: sch.color }}>{capFirst(t(sch.label, sch.labelEn))}</span>
+                </p>
+                <p className="mt-1 text-sm text-secondary">{lang === 'en' ? sch.noteEn : sch.note}</p>
+                <p className="mt-2 text-xs text-tertiary">
+                  <span className="font-semibold text-secondary">{t('Bourses', 'Scholarships')} :</span> {u.scholarshipNote}
+                </p>
+              </div>
+            )
+          })()}
 
           {(() => {
             const c = netCost(u, lang)
