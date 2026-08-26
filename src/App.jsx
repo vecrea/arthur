@@ -70,6 +70,7 @@ export default function App() {
     })
     if (filters.sort === 'cost') list = [...list].sort((a, b) => a.costUSD - b.costUSD)
     else if (filters.sort === 'swim') list = [...list].sort((a, b) => b.swim - a.swim || b.match - a.match)
+    else if (filters.sort === 'finance') list = [...list].sort((a, b) => b.finance - a.finance || b.match - a.match)
     return list
   }, [matches, filters])
 

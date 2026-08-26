@@ -38,6 +38,7 @@ function normalize(d) {
     sizeLabel: '',
     sunshine: SUN[d.state] ?? 3,
     econ: 3,
+    finance: 3,
     athletics: 3,
     swim: SWIM_BY_DIV[div] ?? 2,
     admission: 3,

@@ -107,7 +107,7 @@ export function explainFit(profile, u) {
 - Objectif d'études : ${profile.major}. Veut du soleil et une bonne ambiance sportive.
 
 Université à évaluer : ${u.name} (${u.shortName}) — Division ${u.division}, conférence ${u.conference}, ${u.city} (${u.state}).
-Notes /5 : natation ${u.swim}, économie ${u.econ}, ambiance sportive ${u.athletics}, soleil ${u.sunshine}. Coût ~${Math.round(u.costUSD / 1000)}k$/an. Score de compatibilité : ${u.match}/100. Catégorie de recrutement : ${u.fit?.label}.
+Notes /5 : natation ${u.swim}, économie ${u.econ}, finance ${u.finance}, ambiance sportive ${u.athletics}, soleil ${u.sunshine}. Coût ~${Math.round(u.costUSD / 1000)}k$/an. Score de compatibilité : ${u.match}/100. Catégorie de recrutement : ${u.fit?.label}.
 
 Explique pourquoi cette fac correspond (ou pas) à Arthur, et donne un conseil.`
   return callClaude({ system, prompt, maxTokens: 500 })

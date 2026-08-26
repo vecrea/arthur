@@ -33,7 +33,9 @@ export function scoreUniversity(u, profile, fitLevel) {
   const p = profile.prefs
 
   const sport = 0.6 * (u.swim / 5) + 0.4 * (divisionAmbition[u.division] ?? 0.7)
-  const academic = 0.65 * (u.econ / 5) + 0.35 * admissionRealism(u.admission)
+  // Qualité académique = moyenne éco + finance (débouchés business) + réalisme d'admission.
+  const finance = u.finance ?? u.econ
+  const academic = 0.65 * ((u.econ + finance) / 10) + 0.35 * admissionRealism(u.admission)
 
   const sunW = p.sunshine ?? 3
   const athW = p.athleticsCulture ?? 3

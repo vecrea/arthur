@@ -82,6 +82,7 @@ export default function Filters({ filters, setFilters, count }) {
             options={[
               { value: 'match', label: t('Compatibilité', 'Match') },
               { value: 'swim', label: t('Natation', 'Swimming') },
+              { value: 'finance', label: t('Finance', 'Finance') },
               { value: 'cost', label: t('Coût', 'Cost') },
             ]}
           />

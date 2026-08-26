@@ -15,6 +15,7 @@ export default function Compare({ unis, onToggleFav }) {
     { label: t('Lieu', 'Location'), render: (u) => <span className="text-sm text-primary">{u.sunshine >= 4 ? '' : ''}{u.city}, {u.state}</span> },
     { label: t('Natation', 'Swimming'), render: (u) => <Dots value={u.swim} color="#0ea5e9" /> },
     { label: t('Économie', 'Economics'), render: (u) => <Dots value={u.econ} color="#7c3aed" /> },
+    { label: t('Finance', 'Finance'), render: (u) => <Dots value={u.finance} color="#16a34a" /> },
     { label: t('Ambiance sport', 'Sports vibe'), render: (u) => <Dots value={u.athletics} color="#e63946" /> },
     { label: t('Soleil', 'Sun'), render: (u) => <Dots value={u.sunshine} color="#f59e0b" /> },
     { label: t('Sélectivité', 'Selectivity'), render: (u) => <Dots value={u.admission} color="#475569" /> },

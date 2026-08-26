@@ -72,6 +72,7 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
           <div className="mt-3 grid max-w-sm grid-cols-2 gap-x-6 gap-y-1.5 xl:mt-0 xl:w-72 xl:shrink-0">
             <Stat label={t('Natation', 'Swimming')} value={u.swim} color="#0ea5e9" />
             <Stat label={t('Économie', 'Economics')} value={u.econ} color="#7c3aed" />
+            <Stat label={t('Finance', 'Finance')} value={u.finance} color="#16a34a" />
             <Stat label={t('Sport (ambiance)', 'Sports (vibe)')} value={u.athletics} color="#e63946" />
             <Stat label={t('Soleil', 'Sun')} value={u.sunshine} color="#f59e0b" />
           </div>
