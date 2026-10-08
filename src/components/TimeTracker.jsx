@@ -7,6 +7,14 @@ import { useLang } from '../lib/i18n.jsx'
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 const entryScy = (e) => toScy(e.seconds, EV_BY_KEY[e.eventKey].distance, e.course)
 
+// Distinction claire des bassins : couleur + libellé par type de bassin.
+const COURSE_ORDER = ['LCM', 'SCM', 'SCY']
+const COURSE_INFO = {
+  LCM: { short: '50 m', label: 'Grand bassin', labelEn: 'Long course', color: '#0e88d3' },
+  SCM: { short: '25 m', label: 'Petit bassin', labelEn: 'Short course', color: '#7c3aed' },
+  SCY: { short: 'yards', label: 'Yards', labelEn: 'Yards', color: '#d1971f' },
+}
+
 // Regroupe les épreuves par nage (pour les <optgroup> du sélecteur).
 const EVENT_GROUPS = []
 for (const e of EVENTS) {
@@ -231,8 +239,19 @@ export default function TimeTracker({ profile }) {
               {items.map((e) => {
                 const list = byEvent[e.key]
                 const selected = e.key === eventKey
-                const best = list ? list.reduce((m, it) => (it.scy < m.scy ? it : m), list[0]) : null
-                const lvl = best ? scyLevel(best.scy, e.key) : 0
+                // Record par bassin (dans un même bassin, le plus petit temps = le meilleur).
+                const byCourse = {}
+                for (const it of list || []) (byCourse[it.course] = byCourse[it.course] || []).push(it)
+                const records = COURSE_ORDER
+                  .map((cv) => {
+                    const arr = byCourse[cv]
+                    return arr && arr.length ? { course: cv, best: arr.reduce((m, it) => (it.seconds < m.seconds ? it : m), arr[0]) } : null
+                  })
+                  .filter(Boolean)
+                const bestIds = new Set(records.map((r) => r.best.id))
+                // Record « global » (meilleur niveau, tous bassins confondus) pour le liseré.
+                const overall = list ? list.reduce((m, it) => (it.scy < m.scy ? it : m), list[0]) : null
+                const overallLvl = overall ? scyLevel(overall.scy, e.key) : 0
                 return (
                   <div
                     key={e.key}
@@ -241,36 +260,53 @@ export default function TimeTracker({ profile }) {
                     className={
                       'cursor-pointer overflow-hidden rounded-2xl border transition ' +
                       (selected ? 'border-pool-500 ring-2 ring-pool-500/20 ' : 'border-hair hover:border-pool-300 hover:shadow-card ') +
-                      (best ? 'surface' : 'surface-2')
+                      (overall ? 'surface' : 'surface-2')
                     }
                   >
-                    {/* liseré coloré = niveau de recrutement de l'épreuve */}
-                    <div className="h-1.5 w-full" style={{ background: best ? LEVELS[lvl].color : 'var(--border)' }} />
+                    {/* liseré coloré = niveau de recrutement de l'épreuve (meilleur bassin) */}
+                    <div className="h-1.5 w-full" style={{ background: overall ? LEVELS[overallLvl].color : 'var(--border)' }} />
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-2">
                         <span className="font-display text-base font-extrabold text-heading">{t(e.label, e.labelEn)}</span>
-                        {best && (
-                          <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: LEVELS[lvl].color }}>
-                            {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
+                        {overall && (
+                          <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: LEVELS[overallLvl].color }}>
+                            {t(LEVELS[overallLvl].short, LEVELS[overallLvl].shortEn)}
                           </span>
                         )}
                       </div>
 
-                      {best ? (
+                      {overall ? (
                         <>
-                          <div className="mt-2 flex items-baseline gap-2">
-                            <span className="font-display text-2xl font-black text-heading">{formatTime(best.seconds)}</span>
-                            <span className="rounded-md surface-3 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary">{best.course}</span>
-                            <span className="ml-auto text-[11px] text-tertiary">{list.length} {t('temps', 'times')}</span>
+                          {/* Record par bassin — distinction claire Grand bassin / Petit bassin */}
+                          <div className="mt-3 space-y-1.5">
+                            {records.map((r) => {
+                              const ci = COURSE_INFO[r.course] || COURSE_INFO.LCM
+                              const lvl = scyLevel(entryScy(r.best), e.key)
+                              return (
+                                <div key={r.course} className="flex items-center gap-2">
+                                  <span className="inline-flex w-14 shrink-0 justify-center rounded-md py-0.5 text-[10px] font-extrabold text-white" style={{ background: ci.color }}>
+                                    {ci.short}
+                                  </span>
+                                  <span className="truncate text-xs font-medium text-secondary">{t(ci.label, ci.labelEn)}</span>
+                                  <span className="ml-auto font-display text-lg font-black tabular-nums text-heading">{formatTime(r.best.seconds)}</span>
+                                  <span className="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold text-white" style={{ background: LEVELS[lvl].color }}>
+                                    {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
+                                  </span>
+                                </div>
+                              )
+                            })}
                           </div>
+
+                          {/* Historique complet — pastille de bassin colorée sur chaque ligne */}
                           <ul className="mt-3 space-y-0.5 border-t border-hair pt-2.5">
                             {[...list].reverse().map((it) => {
-                              const isBest = it.id === best.id
+                              const ci = COURSE_INFO[it.course] || COURSE_INFO.LCM
+                              const isBest = bestIds.has(it.id)
                               return (
                                 <li key={it.id} className={'flex items-center justify-between gap-2 rounded-lg px-2 py-1 text-xs ' + (isBest ? 'bg-accent-soft' : '')}>
                                   <span className="min-w-0 truncate">
+                                    <span className="mr-1.5 inline-block w-11 rounded text-center text-[9px] font-bold text-white" style={{ background: ci.color }}>{ci.short}</span>
                                     <span className={'font-bold ' + (isBest ? 'text-accent' : 'text-heading')}>{formatTime(it.seconds)}</span>
-                                    <span className="ml-1 text-[9px] font-bold uppercase text-tertiary">{it.course}</span>
                                     <span className="ml-1.5 text-tertiary">{fmtDMY(it.date, lang === 'en')}{it.meet ? ` · ${it.meet}` : ''}</span>
                                   </span>
                                   <button
@@ -301,8 +337,8 @@ export default function TimeTracker({ profile }) {
 
       <p className="px-1 text-xs text-secondary">
         {t(
-          'Astuce : note tes temps en grand bassin (50 m), petit bassin (25 m) ou yards. Par défaut on n’affiche que les épreuves où tu as un temps — bascule sur « Toutes » pour les voir toutes. Clique sur une case pour la pré-sélectionner dans le formulaire ; le gros chiffre est ton record.',
-          'Tip: log your times in long course (50 m), short course (25 m) or yards. By default only events with a time are shown — switch to “All” to see them all. Click a box to pre-select it in the form; the big number is your record.',
+          'Astuce : chaque épreuve affiche ton record par bassin — Grand bassin (50 m, bleu) et Petit bassin (25 m, violet) sont séparés car non comparables directement. Par défaut on n’affiche que les épreuves où tu as un temps — bascule sur « Toutes » pour les voir toutes. Clique sur une case pour la pré-sélectionner dans le formulaire.',
+          'Tip: each event shows your record per course — Long course (50 m, blue) and Short course (25 m, purple) are kept separate since they’re not directly comparable. By default only events with a time are shown — switch to “All” to see them all. Click a box to pre-select it in the form.',
         )}
       </p>
     </div>
