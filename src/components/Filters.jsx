@@ -18,7 +18,7 @@ function Segment({ options, value, onChange }) {
   )
 }
 
-export default function Filters({ filters, setFilters, count }) {
+export default function Filters({ filters, setFilters, count, conferences = [] }) {
   const { t } = useLang()
   const set = (patch) => setFilters((f) => ({ ...f, ...patch }))
 
@@ -45,6 +45,21 @@ export default function Filters({ filters, setFilters, count }) {
               { value: 'D3', label: 'D3' },
             ]}
           />
+        </div>
+
+        <div>
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-tertiary">{t('Conférence', 'Conference')}</p>
+          <select
+            value={filters.conference}
+            onChange={(e) => set({ conference: e.target.value })}
+            className="field w-auto py-1.5"
+            aria-label={t('Conférence', 'Conference')}
+          >
+            <option value="all">{t('Toutes', 'All')}</option>
+            {conferences.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </div>
 
         <div>

@@ -19,6 +19,30 @@ const PARTIAL = { key: 'partial', color: '#f59e0b' }
 const MERIT = { key: 'merit', color: '#94a3b8' }
 
 export function scholarshipPotential(u) {
+  const conf = (u.conference || '').toLowerCase()
+
+  // ---- Académie militaire : scolarité couverte, mais engagement de service ----
+  if (/army|navy|air force/i.test(u.shortName || '')) {
+    return {
+      ...HIGH,
+      label: 'scolarité couverte',
+      labelEn: 'tuition covered',
+      note: 'Académie militaire : pas de frais de scolarité, mais engagement de service après le diplôme. Cas très particulier.',
+      noteEn: 'Service academy: no tuition fees, but a service commitment after graduation. Very specific case.',
+    }
+  }
+
+  // ---- Ivy League : aucune bourse sportive, uniquement de l'aide au besoin ----
+  if (conf.includes('ivy')) {
+    return {
+      ...MERIT,
+      label: 'aide au besoin (Ivy)',
+      labelEn: 'need-based (Ivy)',
+      note: 'Les facs Ivy n’offrent pas de bourse sportive : seulement de l’aide financière selon les revenus familiaux (need-based).',
+      noteEn: 'Ivy schools offer no athletic scholarship: only need-based financial aid tied to family income.',
+    }
+  }
+
   // ---- Division 3 : pas de bourse sportive, tout passe par le mérite ----
   if (u.division === 'D3') {
     // Facs sélectives / cotées → aides au mérite fortes, financement quasi complet possible.
