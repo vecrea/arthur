@@ -107,6 +107,14 @@ export default function TimeTracker({ profile }) {
   }, [times])
 
   const [showAll, setShowAll] = useState(false)
+  const [courseFilter, setCourseFilter] = useState('all')
+
+  const poolOptions = [
+    { value: 'all', label: t('Tous bassins', 'All pools'), dot: null },
+    { value: 'LCM', label: t('Grand bassin', 'Long course'), dot: COURSE_INFO.LCM.color },
+    { value: 'SCM', label: t('Petit bassin', 'Short course'), dot: COURSE_INFO.SCM.color },
+  ]
+  if (times.some((it) => it.course === 'SCY')) poolOptions.push({ value: 'SCY', label: t('Yards', 'Yards'), dot: COURSE_INFO.SCY.color })
 
   return (
     <div className="space-y-4">
@@ -219,25 +227,50 @@ export default function TimeTracker({ profile }) {
           )}
         </div>
 
-        {/* Barre : titre + filtre des épreuves affichées */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-hair px-5 py-3">
+        {/* Barre : titre + filtre bassin + filtre des épreuves affichées */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hair px-5 py-3">
           <h3 className="font-display text-sm font-extrabold text-heading">{t('Mes temps par épreuve', 'My times by event')}</h3>
-          <div className="inline-flex rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
-            <button onClick={() => setShowAll(false)} className={'rounded-full px-3 py-1 transition ' + (!showAll ? 'pill-active' : 'text-secondary hover:text-heading')}>{t('Avec temps', 'With times')}</button>
-            <button onClick={() => setShowAll(true)} className={'rounded-full px-3 py-1 transition ' + (showAll ? 'pill-active' : 'text-secondary hover:text-heading')}>{t('Toutes', 'All')}</button>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Filtre par bassin */}
+            <div className="inline-flex flex-wrap rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
+              {poolOptions.map((o) => (
+                <button
+                  key={o.value}
+                  onClick={() => setCourseFilter(o.value)}
+                  className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1 transition ' + (courseFilter === o.value ? 'pill-active' : 'text-secondary hover:text-heading')}
+                >
+                  {o.dot && <span className="h-2 w-2 rounded-full" style={{ background: o.dot }} />}
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            {/* Épreuves affichées */}
+            <div className="inline-flex rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
+              <button onClick={() => setShowAll(false)} className={'rounded-full px-3 py-1 transition ' + (!showAll ? 'pill-active' : 'text-secondary hover:text-heading')}>{t('Avec temps', 'With times')}</button>
+              <button onClick={() => setShowAll(true)} className={'rounded-full px-3 py-1 transition ' + (showAll ? 'pill-active' : 'text-secondary hover:text-heading')}>{t('Toutes', 'All')}</button>
+            </div>
           </div>
         </div>
 
         {/* Une case par épreuve (nage × distance), groupée par nage */}
         {EVENT_GROUPS.map((g) => {
-          const items = showAll ? g.items : g.items.filter((e) => byEvent[e.key])
+          const items = showAll
+            ? g.items
+            : g.items.filter((e) => {
+                const l = byEvent[e.key]
+                return l && (courseFilter === 'all' || l.some((it) => it.course === courseFilter))
+              })
           if (!items.length) return null
           return (
           <div key={g.stroke} className="border-t border-hair p-4 sm:p-5">
             <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-secondary">{t(g.stroke, STROKE_EN[g.stroke])}</h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((e) => {
-                const list = byEvent[e.key]
+                let list = byEvent[e.key]
+                if (courseFilter !== 'all' && list) {
+                  const f = list.filter((it) => it.course === courseFilter)
+                  list = f.length ? f : null
+                }
                 const selected = e.key === eventKey
                 // Record par bassin (dans un même bassin, le plus petit temps = le meilleur).
                 const byCourse = {}
