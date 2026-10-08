@@ -6,6 +6,13 @@ import { useLang } from '../lib/i18n.jsx'
 
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 
+// Distinction claire des bassins (couleur + libellé), comme l'onglet Chronos.
+const COURSE_INFO = {
+  LCM: { short: '50 m', label: 'Grand bassin', labelEn: 'Long course', color: '#0e88d3' },
+  SCM: { short: '25 m', label: 'Petit bassin', labelEn: 'Short course', color: '#7c3aed' },
+  SCY: { short: 'yards', label: 'Yards', labelEn: 'Yards', color: '#d1971f' },
+}
+
 // Épreuves groupées par nage (pour les <optgroup>).
 const EVENT_GROUPS = []
 for (const e of EVENTS) {
@@ -30,6 +37,7 @@ export default function Goals({ profile }) {
   const [timeStr, setTimeStr] = useState('')
   const [date, setDate] = useState('')
   const [err, setErr] = useState('')
+  const [courseFilter, setCourseFilter] = useState('all')
 
   const add = () => {
     const secs = parseTime(timeStr)
@@ -50,6 +58,14 @@ export default function Goals({ profile }) {
     () => [...goals].sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999')),
     [goals],
   )
+
+  const poolOptions = [
+    { value: 'all', label: t('Tous bassins', 'All pools'), dot: null },
+    { value: 'LCM', label: t('Grand bassin', 'Long course'), dot: COURSE_INFO.LCM.color },
+    { value: 'SCM', label: t('Petit bassin', 'Short course'), dot: COURSE_INFO.SCM.color },
+  ]
+  if (goals.some((g) => g.course === 'SCY')) poolOptions.push({ value: 'SCY', label: t('Yards', 'Yards'), dot: COURSE_INFO.SCY.color })
+  const filtered = courseFilter === 'all' ? sorted : sorted.filter((g) => g.course === courseFilter)
 
   const today = todayISO()
 
@@ -97,8 +113,8 @@ export default function Goals({ profile }) {
           {err && <p className="mt-2 text-xs font-semibold text-flag-600 dark:text-flag-400">{err}</p>}
         </div>
 
-        {/* Liste des objectifs — lignes séparées par un filet */}
-        {sorted.length === 0 ? (
+        {/* Liste des objectifs — barre filtre bassin + lignes séparées par un filet */}
+        {goals.length === 0 ? (
           <div className="border-t border-hair p-10 text-center">
             <p className="font-semibold text-heading">{t('Aucun objectif pour l’instant', 'No goals yet')}</p>
             <p className="mt-1 text-sm text-secondary">
@@ -106,17 +122,40 @@ export default function Goals({ profile }) {
             </p>
           </div>
         ) : (
-          <div className="row-list border-t border-hair">
-            {sorted.map((goal) => {
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hair px-5 py-3">
+              <span className="text-xs font-semibold text-tertiary">{filtered.length} {t('objectif(s)', 'goal(s)')}</span>
+              <div className="inline-flex flex-wrap rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
+                {poolOptions.map((o) => (
+                  <button
+                    key={o.value}
+                    onClick={() => setCourseFilter(o.value)}
+                    className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1 transition ' + (courseFilter === o.value ? 'pill-active' : 'text-secondary hover:text-heading')}
+                  >
+                    {o.dot && <span className="h-2 w-2 rounded-full" style={{ background: o.dot }} />}
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {filtered.length === 0 ? (
+            <p className="border-t border-hair p-8 text-center text-sm text-secondary">{t('Aucun objectif dans ce bassin.', 'No goals in this pool.')}</p>
+            ) : (
+            <div className="row-list border-t border-hair">
+            {filtered.map((goal) => {
               const ev = EV_BY_KEY[goal.eventKey]
+              const ci = COURSE_INFO[goal.course] || COURSE_INFO.LCM
               const { targetScy, currentScy, achieved, gap, pct } = goalStatus(goal, times, profile)
               const daysLeft = goal.date ? Math.ceil((new Date(goal.date) - new Date(today)) / 86400000) : null
               return (
                 <div key={goal.id} className="p-4 sm:p-5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-display text-lg font-extrabold text-heading">{t(ev.label, ev.labelEn)}</h3>
-                      <p className="text-xs text-secondary">{t(ev.stroke, STROKE_EN[ev.stroke])}</p>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-display text-lg font-extrabold text-heading">{t(ev.label, ev.labelEn)}</h3>
+                        <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-extrabold text-white" style={{ background: ci.color }}>{ci.short}</span>
+                      </div>
+                      <p className="text-xs text-secondary">{t(ev.stroke, STROKE_EN[ev.stroke])} · {t(ci.label, ci.labelEn)}</p>
                     </div>
                     {achieved ? (
                       <span className="rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-bold text-white">{t('Atteint', 'Achieved')}</span>
@@ -133,7 +172,7 @@ export default function Goals({ profile }) {
                     <div>
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">{t('Cible', 'Target')}</div>
                       <div className="font-display text-xl font-black text-heading">
-                        {formatTime(goal.seconds)} <span className="text-[10px] font-bold uppercase text-tertiary">{goal.course}</span>
+                        {formatTime(goal.seconds)}
                         {goal.course !== 'SCY' && <span className="ml-1 text-xs text-accent">→ {formatTime(targetScy)} SCY</span>}
                       </div>
                     </div>
@@ -171,7 +210,9 @@ export default function Goals({ profile }) {
                 </div>
               )
             })}
-          </div>
+            </div>
+            )}
+          </>
         )}
       </div>
 
