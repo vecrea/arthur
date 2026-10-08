@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from './components/Header.jsx'
-import Filters from './components/Filters.jsx'
+import Filters, { MAJOR_CONFERENCES } from './components/Filters.jsx'
 import UniversityCard from './components/UniversityCard.jsx'
 import ProfileCard from './components/ProfileCard.jsx'
 import Compare from './components/Compare.jsx'
@@ -48,12 +48,6 @@ export default function App() {
 
   const matches = useMemo(() => computeMatches(profile, universities), [])
 
-  // Conférences présentes (pour le filtre), triées alphabétiquement.
-  const conferences = useMemo(
-    () => [...new Set(universities.map((u) => u.conference))].filter((c) => c && c !== '—').sort((a, b) => a.localeCompare(b)),
-    [],
-  )
-
   const toggleFav = (id) =>
     setFavorites((prev) => {
       const next = new Set(prev)
@@ -65,7 +59,8 @@ export default function App() {
     const q = filters.search.trim().toLowerCase()
     let list = matches.filter((u) => {
       if (filters.division !== 'all' && u.division !== filters.division) return false
-      if (filters.conference !== 'all' && u.conference !== filters.conference) return false
+      if (filters.conference === 'other' && MAJOR_CONFERENCES.includes(u.conference)) return false
+      if (filters.conference !== 'all' && filters.conference !== 'other' && u.conference !== filters.conference) return false
       if (filters.type !== 'all' && u.type !== filters.type) return false
       if (filters.fit !== 'all' && u.fit.key !== filters.fit) return false
       if (filters.sunnyOnly && u.sunshine < 4) return false
@@ -121,7 +116,7 @@ export default function App() {
 
             {/* Filtres */}
             <div className="border-t border-hair p-4 sm:p-5">
-              <Filters filters={filters} setFilters={setFilters} count={filtered.length} conferences={conferences} />
+              <Filters filters={filters} setFilters={setFilters} count={filtered.length} />
             </div>
 
             {/* Liste des universités — lignes séparées par un filet */}

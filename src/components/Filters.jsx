@@ -2,6 +2,9 @@ import { useLang } from '../lib/i18n.jsx'
 
 const SEG = 'rounded-full px-3 py-1.5 text-sm font-semibold transition'
 
+// Grandes conférences mises en avant comme boutons ; le reste tombe dans « Autres ».
+export const MAJOR_CONFERENCES = ['SEC', 'ACC', 'Big Ten', 'Big 12', 'Ivy League']
+
 function Segment({ options, value, onChange }) {
   return (
     <div className="inline-flex flex-wrap gap-1 rounded-full surface-2 border border-hair p-1">
@@ -18,7 +21,7 @@ function Segment({ options, value, onChange }) {
   )
 }
 
-export default function Filters({ filters, setFilters, count, conferences = [] }) {
+export default function Filters({ filters, setFilters, count }) {
   const { t } = useLang()
   const set = (patch) => setFilters((f) => ({ ...f, ...patch }))
 
@@ -49,17 +52,19 @@ export default function Filters({ filters, setFilters, count, conferences = [] }
 
         <div>
           <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-tertiary">{t('Conférence', 'Conference')}</p>
-          <select
+          <Segment
             value={filters.conference}
-            onChange={(e) => set({ conference: e.target.value })}
-            className="field w-auto py-1.5"
-            aria-label={t('Conférence', 'Conference')}
-          >
-            <option value="all">{t('Toutes', 'All')}</option>
-            {conferences.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+            onChange={(v) => set({ conference: v })}
+            options={[
+              { value: 'all', label: t('Toutes', 'All') },
+              { value: 'SEC', label: 'SEC' },
+              { value: 'ACC', label: 'ACC' },
+              { value: 'Big Ten', label: 'Big Ten' },
+              { value: 'Big 12', label: 'Big 12' },
+              { value: 'Ivy League', label: 'Ivy League' },
+              { value: 'other', label: t('Autres', 'Others') },
+            ]}
+          />
         </div>
 
         <div>
