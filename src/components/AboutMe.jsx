@@ -343,16 +343,8 @@ export default function AboutMe({ profile, coachView = false }) {
                     <InstagramIcon /> Instagram
                   </a>
                 )}
-                {A.phone && (
-                  <a href={`tel:${A.phone}`} className="inline-flex items-center gap-2 rounded-full surface-2 border border-hair px-4 py-2 text-sm font-semibold text-primary transition hover:surface-3">
-                    <PhoneIcon /> {t('Appeler', 'Call')}
-                  </a>
-                )}
-                {A.email && (
-                  <a href={`mailto:${A.email}`} className="inline-flex items-center gap-2 rounded-full surface-2 border border-hair px-4 py-2 text-sm font-semibold text-primary transition hover:surface-3">
-                    <MailIcon /> Email
-                  </a>
-                )}
+                {A.phone && <CopyChip href={`tel:${A.phone}`} value={A.phone} icon={<PhoneIcon />} />}
+                {A.email && <CopyChip href={`mailto:${A.email}`} value={A.email} icon={<MailIcon />} />}
                 {!igUrl && !A.phone && !A.email && (
                   <p className="text-sm text-tertiary">{isCoach ? '' : t('Ajoute tes coordonnées via « Éditer ».', 'Add your contact details via “Edit”.')}</p>
                 )}
@@ -362,6 +354,32 @@ export default function AboutMe({ profile, coachView = false }) {
         )}
       </div>
     </div>
+  )
+}
+
+// Puce de contact : affiche la valeur, la copie au clic (« Copié ✓ »),
+// et garde mail/tél là où un gestionnaire existe.
+function CopyChip({ href, value, icon }) {
+  const { t } = useLang()
+  const [copied, setCopied] = useState(false)
+  return (
+    <a
+      href={href}
+      onClick={() => {
+        try {
+          navigator.clipboard?.writeText(value)
+          setCopied(true)
+          setTimeout(() => setCopied(false), 1600)
+        } catch {
+          /* ignore */
+        }
+      }}
+      title={t('Cliquer pour copier', 'Click to copy')}
+      className="inline-flex max-w-full items-center gap-2 rounded-full surface-2 border border-hair px-4 py-2 text-sm font-semibold text-primary transition hover:surface-3"
+    >
+      {icon}
+      <span className="max-w-[13rem] truncate">{copied ? t('Copié ✓', 'Copied ✓') : value}</span>
+    </a>
   )
 }
 

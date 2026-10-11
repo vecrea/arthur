@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import AboutMe from './AboutMe.jsx'
 import AthleteSheet from './AthleteSheet.jsx'
 import Icon from './Icons.jsx'
@@ -12,6 +12,33 @@ import { loadAbout, loadProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+// Puce de contact (en-tête) : affiche la valeur, la copie au clic (« Copié ✓ »),
+// et garde l'ouverture mail/tél là où un gestionnaire existe (mobile).
+function ContactChip({ href, value, icon }) {
+  const { t } = useLang()
+  const [copied, setCopied] = useState(false)
+  const onClick = () => {
+    try {
+      navigator.clipboard?.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
+    } catch {
+      /* ignore */
+    }
+  }
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      title={t('Cliquer pour copier', 'Click to copy')}
+      className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/20"
+    >
+      {icon}
+      <span className="max-w-[13rem] truncate">{copied ? t('Copié ✓', 'Copied ✓') : value}</span>
+    </a>
+  )
+}
 
 // Bloc d'action coach (carte, non imprimé) : icône + titre + contenu.
 function Block({ icon, title, subtitle, id, children }) {
@@ -120,16 +147,8 @@ export default function CoachView({ profile, theme, setTheme }) {
                     <InstagramIcon /> @{ig}
                   </a>
                 )}
-                {email && (
-                  <a href={`mailto:${email}`} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/20">
-                    <MailIcon /> Email
-                  </a>
-                )}
-                {phone && (
-                  <a href={`tel:${phone}`} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/20">
-                    <PhoneIcon /> {t('Appeler', 'Call')}
-                  </a>
-                )}
+                {email && <ContactChip href={`mailto:${email}`} value={email} icon={<MailIcon />} />}
+                {phone && <ContactChip href={`tel:${phone}`} value={phone} icon={<PhoneIcon />} />}
               </div>
             </div>
 
