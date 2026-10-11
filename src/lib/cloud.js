@@ -56,6 +56,8 @@ const ref = doc(db, DOC_COLLECTION, DOC_ID)
 let currentUser = null
 let loadedAt = 0 // ms de la version cloud actuellement appliquée en local
 let pushTimer = null
+let ready = false // vrai une fois le pull initial terminé (on ne pousse pas avant)
+let pendingLoginPush = false // une connexion est survenue avant la fin du pull
 
 // --- Lecture / écriture du « snapshot » localStorage -----------------------
 
@@ -72,8 +74,15 @@ function readLocalSnapshot() {
   return data
 }
 
+// Une valeur « triviale » = vide (rien d'intéressant à conserver).
+function isTrivial(v) {
+  return v == null || v === '' || v === '[]' || v === '{}' || v === 'null'
+}
+
 // Applique un snapshot cloud sur le localStorage. Renvoie true si quelque chose a changé.
-function applySnapshot(data) {
+// safe=true (pull initial) : ne JAMAIS écraser une donnée locale réelle par du vide venu
+// du cloud — protège contre une perte de données si le cloud a été amorcé vide ailleurs.
+function applySnapshot(data, { safe = false } = {}) {
   if (!data || typeof data !== 'object') return false
   let changed = false
   for (const k of SYNC_KEYS) {
@@ -81,10 +90,11 @@ function applySnapshot(data) {
     const incoming = data[k]
     if (typeof incoming !== 'string') continue
     try {
-      if (localStorage.getItem(k) !== incoming) {
-        _origSetItem(k, incoming) // écrit SANS re-déclencher de push
-        changed = true
-      }
+      const current = localStorage.getItem(k)
+      if (current === incoming) continue
+      if (safe && !isTrivial(current) && isTrivial(incoming)) continue // garde-fou anti-perte au 1er chargement
+      _origSetItem(k, incoming) // écrit SANS re-déclencher de push
+      changed = true
     } catch {
       /* ignore */
     }
@@ -190,11 +200,14 @@ export function onCloudState(cb) {
 export async function cloudInit() {
   installWriteHook()
 
-  // Suivi de l'état de connexion (maintient currentUser + amorce/pousse à la connexion).
+  // Suivi de l'état de connexion. On ne publie QU'APRÈS le pull initial, pour ne
+  // jamais écraser le cloud avec un état local pré-synchronisation.
   onAuthStateChanged(auth, (user) => {
     currentUser = user
     notify({ user })
-    if (user) pushNow() // à la connexion : on publie l'état local courant (amorce le cloud si vide)
+    if (!user) return
+    if (ready) pushNow() // connecté : on publie l'état local (après pull = sûr)
+    else pendingLoginPush = true
   })
 
   // Pull initial, borné dans le temps pour ne jamais bloquer l'affichage.
@@ -211,7 +224,7 @@ export async function cloudInit() {
       .then((snap) => {
         if (snap.exists()) {
           const d = snap.data()
-          applySnapshot(d.data || {})
+          applySnapshot(d.data || {}, { safe: true }) // garde-fou anti-perte au 1er chargement
           loadedAt = tsToMillis(d.updatedAt)
         }
       })
@@ -221,6 +234,12 @@ export async function cloudInit() {
         finish()
       })
   })
+
+  ready = true
+  if (currentUser && pendingLoginPush) {
+    pendingLoginPush = false
+    pushNow() // publie l'état local maintenant que le pull est terminé (sûr)
+  }
 
   installFocusPull()
 }
