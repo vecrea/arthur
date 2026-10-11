@@ -4,6 +4,7 @@ import { VERIFIED_COACHES, COACHES_AS_OF } from '../data/coaches.js'
 import { draftCoachEmail, hasApiKey } from '../lib/ai.js'
 import { buildCoachEmail } from '../lib/emailTemplate.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 const STATUS = {
   todo: { label: 'À contacter', labelEn: 'To contact', color: '#64748b', emoji: '' },
@@ -128,33 +129,34 @@ export default function Coaches({ unis, favorites, profile }) {
   const sorted = useMemo(() => [...contacts].sort((a, b) => ORDER.indexOf(a.status) - ORDER.indexOf(b.status)), [contacts])
 
   return (
-    <div className="panel overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
-        <div>
-          <h2 className="font-display text-xl font-extrabold text-heading">{t('Contacts coachs', 'Coach contacts')}</h2>
-          <p className="text-sm text-secondary">{t("Suis chaque coach que tu contactes, du premier email à l'offre.", 'Track every coach you contact, from first email to offer.')}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {favorites.size > 0 && (
-            <button onClick={importFavorites} className="rounded-full bg-spark-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-spark-400">
-              {t('Importer mes favoris', 'Import my favorites')}
+    <div className="space-y-4">
+      <PageHeader
+        icon="users"
+        title={t('Contacts coachs', 'Coach contacts')}
+        subtitle={t("Suis chaque coach que tu contactes, du premier email à l'offre.", 'Track every coach you contact, from first email to offer.')}
+        action={
+          <div className="flex flex-wrap gap-2">
+            {favorites.size > 0 && (
+              <button onClick={importFavorites} className="rounded-full bg-spark-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-spark-400">
+                {t('Importer mes favoris', 'Import my favorites')}
+              </button>
+            )}
+            <button
+              onClick={importVerified}
+              className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow hover:bg-emerald-700"
+              title={t(`Head & assistant coachs vérifiés (${COACHES_AS_OF}) de tes meilleures facs`, `Verified head & assistant coaches (${COACHES_AS_OF}) from your top schools`)}
+            >
+              {t('Coachs vérifiés', 'Verified coaches')}
             </button>
-          )}
-          <button
-            onClick={importVerified}
-            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow hover:bg-emerald-700"
-            title={t(`Head & assistant coachs vérifiés (${COACHES_AS_OF}) de tes meilleures facs`, `Verified head & assistant coaches (${COACHES_AS_OF}) from your top schools`)}
-          >
-            {t('Coachs vérifiés', 'Verified coaches')}
-          </button>
-          <button onClick={() => setForm(blank())} className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600">
-            {t('+ Ajouter un coach', '+ Add a coach')}
-          </button>
-        </div>
-      </div>
+            <button onClick={() => setForm(blank())} className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600">
+              {t('+ Ajouter un coach', '+ Add a coach')}
+            </button>
+          </div>
+        }
+      />
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-px border-t border-hair sm:grid-cols-4" style={{ background: 'var(--border)' }}>
+      {/* Stats — tuiles bento */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard label={t('Coachs suivis', 'Coaches tracked')} value={stats.total} accent="var(--heading)" />
         <StatCard label={t('En cours', 'In progress')} value={stats.active} accent="#0ea5e9" />
         <StatCard label={t('Réponses', 'Replies')} value={stats.replied} accent="#6366f1" />
@@ -163,7 +165,7 @@ export default function Coaches({ unis, favorites, profile }) {
 
       {/* Formulaire */}
       {form && (
-        <div className="border-t border-hair p-4 sm:p-5">
+        <section className="panel p-4 sm:p-5">
           <p className="mb-3 font-display font-extrabold text-heading">
             {form.id ? t('Modifier le contact', 'Edit contact') : t('+ Nouveau contact', '+ New contact')}
           </p>
@@ -221,12 +223,12 @@ export default function Coaches({ unis, favorites, profile }) {
               {t('Annuler', 'Cancel')}
             </button>
           </div>
-        </div>
+        </section>
       )}
 
       {/* Liste */}
       {sorted.length === 0 && !form ? (
-        <div className="border-t border-hair p-10 text-center">
+        <section className="panel p-10 text-center">
           <p className="font-semibold text-heading">{t("Aucun coach pour l'instant", 'No coaches yet')}</p>
           <p className="mt-1 text-sm text-secondary">
             {t(
@@ -234,13 +236,13 @@ export default function Coaches({ unis, favorites, profile }) {
               'Click “Add a coach”, or “Import my favorites” to start from your shortlist.',
             )}
           </p>
-        </div>
+        </section>
       ) : (
-        <div className="row-list border-t border-hair">
+        <div className="grid gap-4 sm:grid-cols-2">
           {sorted.map((c) => {
             const st = STATUS[c.status] ?? STATUS.todo
             return (
-              <article key={c.id} className="p-4 sm:p-5">
+              <article key={c.id} className="panel p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="truncate font-display text-lg font-extrabold text-heading">{c.school || t('Université ?', 'University?')}</h3>
@@ -345,7 +347,7 @@ function Field({ label, value, onChange, ph, type = 'text' }) {
 
 function StatCard({ label, value, accent }) {
   return (
-    <div className="surface p-4">
+    <div className="panel p-4 sm:p-5">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{label}</div>
       <div className="mt-1 font-display text-3xl font-black" style={{ color: accent }}>{value}</div>
     </div>

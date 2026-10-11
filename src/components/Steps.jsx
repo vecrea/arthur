@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CHECKLIST, CHECKLIST_AS_OF, CHECKLIST_AS_OF_EN, ROADMAP } from '../data/checklist.js'
 import { loadChecklist, saveChecklist } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 const ALL_IDS = CHECKLIST.flatMap((p) => p.items.map((i) => i.id))
 
@@ -10,7 +11,7 @@ function Roadmap() {
   const today = new Date().toISOString().slice(0, 10)
   const nextIdx = ROADMAP.findIndex((m) => m.iso >= today)
   return (
-    <div className="border-t border-hair p-5">
+    <section className="panel p-5">
       <h3 className="font-display text-lg font-extrabold text-heading">{t('Ta roadmap jusqu’à la rentrée 2028', 'Your roadmap to the 2028 start')}</h3>
       <p className="text-sm text-secondary">{t('Les grandes étapes datées, calées sur le calendrier NCAA et visa.', 'The key dated milestones, aligned with the NCAA and visa calendar.')}</p>
       <ol className="mt-4 space-y-0">
@@ -41,7 +42,7 @@ function Roadmap() {
           )
         })}
       </ol>
-    </div>
+    </section>
   )
 }
 
@@ -62,29 +63,31 @@ export default function Steps() {
 
   return (
     <div className="space-y-4">
-      <div className="panel overflow-hidden">
-      <div className="p-5">
-        <div className="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <h2 className="font-display text-xl font-extrabold text-heading">{t('Tes démarches — Road to 2028', 'Your steps — Road to 2028')}</h2>
-            <p className="text-sm text-secondary">{t('NCAA, tests, candidatures, visa. Coche au fur et à mesure', 'NCAA, tests, applications, visa. Check them off as you go')}</p>
+      <PageHeader
+        icon="steps"
+        title={t('Tes démarches — Road to 2028', 'Your steps — Road to 2028')}
+        subtitle={t('NCAA, tests, candidatures, visa. Coche au fur et à mesure', 'NCAA, tests, applications, visa. Check them off as you go')}
+      />
+
+      {/* Avancement global — carte sombre */}
+      <section className="panel-dark grain relative overflow-hidden p-5 text-white">
+        <div className="relative z-10">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="font-display text-4xl font-black tracking-tight text-spark-400">{pct}%</span>
+            <span className="text-sm text-white/70">{doneCount}/{ALL_IDS.length} {t('faites', 'done')}</span>
           </div>
-          <div className="text-right">
-            <div className="font-display text-3xl font-black text-accent">{pct}%</div>
-            <div className="text-xs text-tertiary">{doneCount}/{ALL_IDS.length} {t('faites', 'done')}</div>
+          <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-white/10">
+            <div className="h-full rounded-full bg-gradient-to-r from-pool-500 to-emerald-500 transition-all" style={{ width: `${pct}%` }} />
           </div>
         </div>
-        <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full surface-3">
-          <div className="h-full rounded-full bg-gradient-to-r from-pool-500 to-emerald-500 transition-all" style={{ width: `${pct}%` }} />
-        </div>
-      </div>
+      </section>
 
       <Roadmap />
 
       {CHECKLIST.map((phase) => {
         const phaseDone = phase.items.filter((i) => done.has(i.id)).length
         return (
-          <div key={phase.title} className="border-t border-hair">
+          <section key={phase.title} className="panel overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3">
               <h3 className="font-display font-extrabold text-heading">{t(phase.title, phase.titleEn)}</h3>
               <span className="text-xs font-semibold text-tertiary">{phaseDone}/{phase.items.length}</span>
@@ -129,11 +132,9 @@ export default function Steps() {
                 )
               })}
             </ul>
-          </div>
+          </section>
         )
       })}
-
-      </div>
 
       <p className="px-1 text-xs text-secondary">
         {t(
