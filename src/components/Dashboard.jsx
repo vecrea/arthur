@@ -10,7 +10,7 @@ const ALL_IDS = CHECKLIST.flatMap((p) => p.items.map((i) => i.id))
 function GroupLabel({ children, action }) {
   return (
     <div className="flex items-center justify-between px-5 pt-4">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{children}</span>
+      <span className="text-[11px] font-semibold uppercase tracking-wider text-tertiary">{children}</span>
       {action}
     </div>
   )
@@ -25,23 +25,42 @@ function ReadinessRing({ pct, t }) {
   return (
     <div className="relative mx-auto flex h-36 w-36 shrink-0 items-center justify-center sm:mx-0">
       <svg viewBox="0 0 128 128" className="h-36 w-36 -rotate-90">
-        <circle cx="64" cy="64" r={R} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="11" />
+        <circle cx="64" cy="64" r={R} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="11" />
         <circle
           cx="64" cy="64" r={R} fill="none" stroke="url(#ready)" strokeWidth="11" strokeLinecap="round"
-          strokeDasharray={C} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+          strokeDasharray={C} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.7s cubic-bezier(0.22,1,0.36,1)' }}
         />
         <defs>
           <linearGradient id="ready" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#0e88d3" />
+            <stop offset="0" stopColor="#38bdf8" />
             <stop offset="1" stopColor="#10b981" />
           </linearGradient>
         </defs>
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="font-display text-4xl font-black text-white">{pct}%</span>
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-white/60">{t('préparation', 'ready')}</span>
+        <span className="font-display text-4xl font-black tracking-tight text-white">{pct}%</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/55">{t('préparation', 'ready')}</span>
       </div>
     </div>
+  )
+}
+
+// Jeu d'icônes (inline, 2px, arrondies — cohérent avec le reste de l'app).
+function Icon({ name, className = 'h-4 w-4' }) {
+  const P = {
+    award: <><circle cx="12" cy="8" r="5" /><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5" /></>,
+    book: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>,
+    watch: <><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M9 2h6" /></>,
+    target: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></>,
+    users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+    star: <path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.4 6.2 20.9l1.1-6.5-4.7-4.6 6.5-.95z" />,
+    flag: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z" /><path d="M4 22V4" /></>,
+    arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
+  }
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill={name === 'star' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {P[name] || null}
+    </svg>
   )
 }
 
@@ -96,34 +115,46 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
   if (coaches.length === 0) actions.push({ key: 'coaches', title: t('Commence à contacter des coachs', 'Start reaching out to coaches'), sub: t('et suis tes échanges', 'and track your outreach'), tab: 'coaches' })
   const shownActions = actions.slice(0, 4)
 
-  // Indicateurs clés.
+  // Indicateurs clés (avec icône).
   const vitals = [
-    { key: 'lvl', label: t('Niveau', 'Level'), value: t(lvl.short, lvl.shortEn), tab: 'recruit', color: lvl.color },
-    { key: 'gpa', label: t('Moyenne', 'GPA'), value: extras.average ? extras.average.split(' ')[0] : '—', tab: 'gpa' },
-    { key: 'times', label: t('Chronos', 'Times'), value: times.length, tab: 'times' },
-    { key: 'goals', label: t('Objectifs', 'Goals'), value: goals.length ? `${goalsAchieved}/${goals.length}` : '—', tab: 'goals' },
-    { key: 'coaches', label: t('Coachs', 'Coaches'), value: coaches.length, tab: 'coaches' },
-    { key: 'fav', label: t('Favoris', 'Favorites'), value: favCount, tab: 'favorites' },
+    { key: 'lvl', icon: 'award', label: t('Niveau', 'Level'), value: t(lvl.short, lvl.shortEn), tab: 'recruit', color: lvl.color },
+    { key: 'gpa', icon: 'book', label: t('Moyenne', 'GPA'), value: extras.average ? extras.average.split(' ')[0] : '—', tab: 'gpa' },
+    { key: 'times', icon: 'watch', label: t('Chronos', 'Times'), value: times.length, tab: 'times' },
+    { key: 'goals', icon: 'target', label: t('Objectifs', 'Goals'), value: goals.length ? `${goalsAchieved}/${goals.length}` : '—', tab: 'goals' },
+    { key: 'coaches', icon: 'users', label: t('Coachs', 'Coaches'), value: coaches.length, tab: 'coaches' },
+    { key: 'fav', icon: 'star', label: t('Favoris', 'Favorites'), value: favCount, tab: 'favorites' },
   ]
 
   return (
     <div className="space-y-4">
       <div className="panel overflow-hidden">
         {/* Hero — cockpit : objectif, compte à rebours, jauge de préparation */}
-        <div className="panel-dark p-6 text-white sm:p-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="panel-dark grain relative overflow-hidden p-6 text-white sm:p-8">
+          <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <div className="text-sm font-medium text-white/70">{t('Salut', 'Hi')} {profile.name}</div>
-              <h2 className="mt-1 font-display text-3xl font-black leading-tight sm:text-4xl">
-                {t('Cap sur la NCAA Division 1', 'Aiming for NCAA Division 1')}
+              <div className="text-sm font-medium text-white/65">{t('Salut', 'Hi')} {profile.name}</div>
+              <h2 className="mt-1 font-display text-3xl font-black leading-[1.05] tracking-tight sm:text-[2.6rem]">
+                {t('Cap sur la ', 'Aiming for ')}<span className="text-pool-400">NCAA Division 1</span>
               </h2>
-              <p className="mt-2 text-sm text-white/70">
-                {t('Rentrée automne', 'Fall')} {profile.usEntryYear} · {t('niveau visé', 'target level')}{' '}
-                <span className="font-semibold text-white">{t(projected.short, projected.shortEn)}</span>
-              </p>
+
+              {/* Chips : rentrée + niveau actuel → objectif */}
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 ring-1 ring-white/15">
+                  {t('Rentrée', 'Fall')} {profile.usEntryYear}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-white" style={{ background: lvl.color }}>
+                  {t('Niveau', 'Level')} : {t(lvl.short, lvl.shortEn)}
+                </span>
+                <span className="text-white/40">→</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-white ring-1 ring-white/25" style={{ background: projected.color }}>
+                  {t('Objectif', 'Target')} : {t(projected.short, projected.shortEn)}
+                </span>
+              </div>
+
+              {/* Compte à rebours */}
               <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <span className="font-display text-5xl font-black text-spark-400 sm:text-6xl">{months}</span>
-                <span className="text-sm text-white/70">{t('mois restants', 'months left')} · ≈ {days} {t('jours', 'days')}</span>
+                <span className="font-display text-5xl font-black tracking-tight text-spark-400 sm:text-6xl">{months}</span>
+                <span className="text-sm text-white/65">{t('mois restants', 'months left')} · ≈ {days} {t('jours', 'days')}</span>
               </div>
             </div>
             <ReadinessRing pct={readiness} t={t} />
@@ -138,14 +169,18 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
               <button
                 key={a.key}
                 onClick={() => setTab(a.tab)}
-                className="flex w-full items-center gap-4 p-4 text-left transition-colors hover:surface-2 sm:px-5"
+                className="group flex w-full items-center gap-4 p-4 text-left transition-colors hover:surface-2 sm:px-5"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full surface-3 font-display text-sm font-black text-accent">{i + 1}</span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft font-display text-sm font-black text-accent ring-1 ring-[var(--accent)]/20 transition group-hover:scale-105">
+                  {i + 1}
+                </span>
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-semibold text-heading">{a.title}</div>
                   <div className="truncate text-xs text-secondary">{a.sub}</div>
                 </div>
-                <span className="shrink-0 text-tertiary">→</span>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-tertiary transition-all group-hover:bg-accent-soft group-hover:text-accent group-hover:translate-x-0.5">
+                  <Icon name="arrow" className="h-4 w-4" />
+                </span>
               </button>
             ))}
           </div>
@@ -156,9 +191,17 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
           <GroupLabel>{t('Tes indicateurs', 'Your stats')}</GroupLabel>
           <div className="mt-3 grid grid-cols-2 gap-px sm:grid-cols-3 lg:grid-cols-6" style={{ background: 'var(--border)' }}>
             {vitals.map((v) => (
-              <button key={v.key} onClick={() => setTab(v.tab)} className="surface p-4 text-left transition-colors hover:surface-2">
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{v.label}</div>
-                <div className="mt-1 truncate font-display text-2xl font-black text-heading" style={v.color ? { color: v.color } : undefined}>{v.value}</div>
+              <button key={v.key} onClick={() => setTab(v.tab)} className="group surface p-4 text-left transition-colors hover:surface-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-accent-soft text-accent transition group-hover:scale-110"
+                    style={v.color ? { color: v.color, background: `color-mix(in srgb, ${v.color} 14%, transparent)` } : undefined}
+                  >
+                    <Icon name={v.icon} className="h-3.5 w-3.5" />
+                  </span>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-tertiary">{v.label}</div>
+                </div>
+                <div className="mt-2 truncate font-display text-2xl font-black tracking-tight text-heading" style={v.color ? { color: v.color } : undefined}>{v.value}</div>
               </button>
             ))}
           </div>
@@ -166,7 +209,7 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
 
         {/* Shortlist */}
         <div className="border-t border-hair">
-          <GroupLabel action={<button onClick={() => setTab('ranking')} className="text-xs font-semibold text-accent">{t('Voir le classement', 'See rankings')} →</button>}>
+          <GroupLabel action={<button onClick={() => setTab('ranking')} className="text-xs font-semibold text-accent transition hover:underline">{t('Voir le classement', 'See rankings')} →</button>}>
             {t('Ta shortlist', 'Your shortlist')}
           </GroupLabel>
           <div className="row-list mt-3">
@@ -174,12 +217,23 @@ export default function Dashboard({ profile, matches, favCount, setTab }) {
               <button
                 key={u.id}
                 onClick={() => setTab('ranking')}
-                className="flex w-full items-center gap-3 p-3 text-left transition-colors hover:surface-2 sm:px-5"
+                className="group flex w-full items-center gap-3 p-3 text-left transition-colors hover:surface-2 sm:px-5"
               >
-                <span className="w-9 shrink-0 text-center font-display text-lg font-black text-accent">{u.match}</span>
-                <span className="min-w-0 flex-1 truncate font-semibold text-heading">{u.shortName}</span>
-                <span className="hidden text-xs text-secondary sm:block">{u.city}, {u.state}</span>
-                <span className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold text-white" style={{ background: i === 0 ? '#16a34a' : '#94a3b8' }}>{u.division}</span>
+                <span
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-sm font-black text-white shadow-sm"
+                  style={{ background: i === 0 ? 'linear-gradient(135deg,#f6c445,#d1971f)' : i === 1 ? 'linear-gradient(135deg,#cbd5e1,#94a3b8)' : 'linear-gradient(135deg,#e5b488,#b7794a)' }}
+                >
+                  {i + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-semibold text-heading">{u.shortName}</div>
+                  <div className="truncate text-xs text-secondary">{u.city}, {u.state}</div>
+                </div>
+                <span className="shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: i === 0 ? '#16a34a' : '#94a3b8' }}>{u.division}</span>
+                <span className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl bg-accent-soft">
+                  <span className="font-display text-lg font-black leading-none text-accent">{u.match}</span>
+                  <span className="text-[8px] font-semibold uppercase tracking-wide text-accent/70">match</span>
+                </span>
               </button>
             ))}
           </div>
