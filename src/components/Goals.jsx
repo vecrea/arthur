@@ -3,6 +3,7 @@ import { EVENTS, formatTime, parseTime, STROKE_EN } from '../lib/convert.js'
 import { loadGoals, saveGoals, loadTimes } from '../lib/storage.js'
 import { bestScyForEvent, goalStatus } from '../lib/goals.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 
@@ -71,18 +72,18 @@ export default function Goals({ profile }) {
 
   return (
     <div className="space-y-4">
-      <div className="panel overflow-hidden">
-        {/* Formulaire */}
-        <div className="p-5">
-          <h2 className="font-display text-xl font-extrabold text-heading">{t('Mes objectifs', 'My goals')}</h2>
-          <p className="text-sm text-secondary">
-            {t(
-              'Fixe un temps cible et une échéance par épreuve. L’app calcule l’écart avec ton meilleur temps et ta progression.',
-              'Set a target time and a deadline per event. The app tracks the gap to your best time and your progress.',
-            )}
-          </p>
+      <PageHeader
+        icon="target"
+        title={t('Mes objectifs', 'My goals')}
+        subtitle={t(
+          'Fixe un temps cible et une échéance par épreuve. L’app calcule l’écart avec ton meilleur temps et ta progression.',
+          'Set a target time and a deadline per event. The app tracks the gap to your best time and your progress.',
+        )}
+      />
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
+      {/* Formulaire — carte */}
+      <section className="panel p-5">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
             <select value={eventKey} onChange={(e) => setEventKey(e.target.value)} className="field lg:col-span-2">
               {EVENT_GROUPS.map((g) => (
                 <optgroup key={g.stroke} label={t(g.stroke, STROKE_EN[g.stroke])}>
@@ -111,44 +112,44 @@ export default function Goals({ profile }) {
             </button>
           </div>
           {err && <p className="mt-2 text-xs font-semibold text-flag-600 dark:text-flag-400">{err}</p>}
-        </div>
+      </section>
 
-        {/* Liste des objectifs — barre filtre bassin + lignes séparées par un filet */}
-        {goals.length === 0 ? (
-          <div className="border-t border-hair p-10 text-center">
-            <p className="font-semibold text-heading">{t('Aucun objectif pour l’instant', 'No goals yet')}</p>
-            <p className="mt-1 text-sm text-secondary">
-              {t('Fixe ta première cible ci-dessus — par ex. passer sous 1:00 au 100 NL d’ici 2027.', 'Set your first target above — e.g. break 1:00 in the 100 Free by 2027.')}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hair px-5 py-3">
-              <span className="text-xs font-semibold text-tertiary">{filtered.length} {t('objectif(s)', 'goal(s)')}</span>
-              <div className="inline-flex flex-wrap rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
-                {poolOptions.map((o) => (
-                  <button
-                    key={o.value}
-                    onClick={() => setCourseFilter(o.value)}
-                    className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1 transition ' + (courseFilter === o.value ? 'pill-active' : 'text-secondary hover:text-heading')}
-                  >
-                    {o.dot && <span className="h-2 w-2 rounded-full" style={{ background: o.dot }} />}
-                    {o.label}
-                  </button>
-                ))}
-              </div>
+      {/* Liste des objectifs — barre filtre bassin + grille de cartes */}
+      {goals.length === 0 ? (
+        <section className="panel p-10 text-center">
+          <p className="font-semibold text-heading">{t('Aucun objectif pour l’instant', 'No goals yet')}</p>
+          <p className="mt-1 text-sm text-secondary">
+            {t('Fixe ta première cible ci-dessus — par ex. passer sous 1:00 au 100 NL d’ici 2027.', 'Set your first target above — e.g. break 1:00 in the 100 Free by 2027.')}
+          </p>
+        </section>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+            <span className="text-xs font-semibold text-tertiary">{filtered.length} {t('objectif(s)', 'goal(s)')}</span>
+            <div className="inline-flex flex-wrap rounded-full surface-2 border border-hair p-1 text-xs font-semibold">
+              {poolOptions.map((o) => (
+                <button
+                  key={o.value}
+                  onClick={() => setCourseFilter(o.value)}
+                  className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1 transition ' + (courseFilter === o.value ? 'pill-active' : 'text-secondary hover:text-heading')}
+                >
+                  {o.dot && <span className="h-2 w-2 rounded-full" style={{ background: o.dot }} />}
+                  {o.label}
+                </button>
+              ))}
             </div>
-            {filtered.length === 0 ? (
-            <p className="border-t border-hair p-8 text-center text-sm text-secondary">{t('Aucun objectif dans ce bassin.', 'No goals in this pool.')}</p>
-            ) : (
-            <div className="row-list border-t border-hair">
+          </div>
+          {filtered.length === 0 ? (
+          <section className="panel p-10 text-center"><p className="text-sm text-secondary">{t('Aucun objectif dans ce bassin.', 'No goals in this pool.')}</p></section>
+          ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
             {filtered.map((goal) => {
               const ev = EV_BY_KEY[goal.eventKey]
               const ci = COURSE_INFO[goal.course] || COURSE_INFO.LCM
               const { targetScy, currentScy, achieved, gap, pct } = goalStatus(goal, times, profile)
               const daysLeft = goal.date ? Math.ceil((new Date(goal.date) - new Date(today)) / 86400000) : null
               return (
-                <div key={goal.id} className="p-4 sm:p-5">
+                <div key={goal.id} className="panel p-4 sm:p-5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-2">
@@ -214,7 +215,6 @@ export default function Goals({ profile }) {
             )}
           </>
         )}
-      </div>
 
       <p className="px-1 text-xs text-secondary">
         {t(

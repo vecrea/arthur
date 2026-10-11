@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { computeGpa, bandFor, gradeInRange, gpaToLetter, mentionKey, GPA_BANDS } from '../lib/gpa.js'
 import { loadGpaSubjects, saveGpaSubjects, loadGpaScale, saveGpaScale, loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 const rid = () => 's' + Date.now() + Math.random().toString(36).slice(2, 6)
 const blank = () => ({ id: rid(), name: '', grade: '' })
@@ -47,35 +48,31 @@ export default function Gpa() {
 
   return (
     <div className="space-y-4">
-      <div className="panel overflow-hidden">
-        {/* Intro + échelle */}
-        <div className="p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="font-display text-xl font-extrabold text-heading">{t('Notes → GPA', 'Grades → GPA')}</h2>
-              <p className="text-sm text-secondary">
-                {t(
-                  'Entre tes matières et notes belges. L’app estime ton GPA américain (sur 4.0), la lettre et la mention — moyenne simple de tes matières.',
-                  'Enter your subjects and Belgian grades. The app estimates your US GPA (out of 4.0), the letter grade and the honor — a simple average of your subjects.',
-                )}
-              </p>
-            </div>
-            <div>
-              <div className="mb-1 text-right text-[11px] font-semibold uppercase tracking-wide text-tertiary">{t('Échelle de tes notes', 'Your grade scale')}</div>
-              <div className="inline-flex rounded-full surface-2 border border-hair p-1 text-sm font-semibold">
-                {[['100', '%'], ['20', '/20']].map(([v, lab]) => (
-                  <button key={v} onClick={() => setScale(v)} className={'rounded-full px-4 py-1 transition ' + (scale === v ? 'pill-active' : 'text-secondary hover:text-heading')}>
-                    {lab}
-                  </button>
-                ))}
-              </div>
+      <PageHeader
+        icon="cap"
+        title={t('Notes → GPA', 'Grades → GPA')}
+        subtitle={t(
+          'Entre tes matières et notes belges. L’app estime ton GPA américain (sur 4.0), la lettre et la mention — moyenne simple de tes matières.',
+          'Enter your subjects and Belgian grades. The app estimates your US GPA (out of 4.0), the letter grade and the honor — a simple average of your subjects.',
+        )}
+        action={
+          <div>
+            <div className="mb-1 text-right text-[11px] font-semibold uppercase tracking-wide text-tertiary">{t('Échelle de tes notes', 'Your grade scale')}</div>
+            <div className="inline-flex rounded-full surface-2 border border-hair p-1 text-sm font-semibold">
+              {[['100', '%'], ['20', '/20']].map(([v, lab]) => (
+                <button key={v} onClick={() => setScale(v)} className={'rounded-full px-4 py-1 transition ' + (scale === v ? 'pill-active' : 'text-secondary hover:text-heading')}>
+                  {lab}
+                </button>
+              ))}
             </div>
           </div>
-        </div>
+        }
+      />
 
-        {/* Résultat */}
-        <div className="border-t border-hair">
-          <div className="grid gap-3 panel-dark p-5 text-white sm:grid-cols-4">
+      {/* Résultat — carte sombre */}
+      <section className="panel overflow-hidden">
+        <div className="panel-dark grain relative overflow-hidden p-5 text-white">
+          <div className="relative z-10 grid gap-3 sm:grid-cols-4">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('GPA estimé (US)', 'Estimated GPA (US)')}</div>
               <div className="font-display text-4xl font-black text-spark-400">{result ? result.gpa.toFixed(2) : '—'}<span className="text-lg text-white/50"> / 4.0</span></div>
@@ -93,27 +90,28 @@ export default function Gpa() {
               <div className="mt-1 text-sm font-bold">{result ? MENTIONS[mentionKey(result.avg20)] : '—'}</div>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2 px-5 py-3">
-            <button onClick={useInSheet} disabled={!result} className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-flag-600 disabled:opacity-50">
-              {t('Utiliser dans ma fiche', 'Use in my athlete sheet')}
-            </button>
-            {msg && <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{msg}</span>}
-          </div>
         </div>
+        <div className="flex flex-wrap items-center gap-2 px-5 py-3">
+          <button onClick={useInSheet} disabled={!result} className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-flag-600 disabled:opacity-50">
+            {t('Utiliser dans ma fiche', 'Use in my athlete sheet')}
+          </button>
+          {msg && <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{msg}</span>}
+        </div>
+      </section>
 
-        {invalidCount > 0 && (
-          <div className="border-t border-hair p-5">
+      {invalidCount > 0 && (
+        <section className="panel p-5">
             <div className="rounded-xl bg-flag-500/15 p-3 text-sm font-semibold text-flag-600 ring-1 ring-flag-500/30 dark:text-flag-400">
               {t(
                 `${invalidCount} note(s) hors barème (${rangeLabel}) — corrige-les, elles ne sont pas comptées dans la moyenne.`,
                 `${invalidCount} grade(s) out of range (${rangeLabel}) — fix them, they are not counted in the average.`,
               )}
             </div>
-          </div>
+        </section>
         )}
 
         {/* Matières */}
-        <div className="border-t border-hair">
+        <section className="panel overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -162,10 +160,10 @@ export default function Gpa() {
               {t('+ Ajouter une matière', '+ Add a subject')}
             </button>
           </div>
-        </div>
+        </section>
 
         {/* Barème */}
-        <div className="border-t border-hair p-5">
+        <section className="panel p-5">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Barème de conversion (indicatif)', 'Conversion scale (indicative)')}</p>
           <div className="flex flex-wrap gap-1.5">
             {GPA_BANDS.filter((b) => b.min > 0).map((b) => (
@@ -175,8 +173,7 @@ export default function Gpa() {
             ))}
             <span className="rounded-lg surface-3 border border-hair px-2.5 py-1 text-xs text-primary">&lt; {isPct ? '50%' : '10/20'} → <span className="font-bold">0.0</span> (F)</span>
           </div>
-        </div>
-      </div>
+        </section>
 
       <p className="px-1 text-xs text-secondary">
         {t(

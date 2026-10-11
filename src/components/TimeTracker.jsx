@@ -3,6 +3,7 @@ import { EVENTS, toScy, scyLevel, formatTime, parseTime, LEVELS, STROKE_EN } fro
 import { loadTimes, saveTimes, loadSwimcloudUrl, saveSwimcloudUrl } from '../lib/storage.js'
 import { parseSwimcloud } from '../lib/swimcloud.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 const EV_BY_KEY = Object.fromEntries(EVENTS.map((e) => [e.key, e]))
 const entryScy = (e) => toScy(e.seconds, EV_BY_KEY[e.eventKey].distance, e.course)
@@ -118,18 +119,18 @@ export default function TimeTracker({ profile }) {
 
   return (
     <div className="space-y-4">
-      <div className="panel overflow-hidden">
-        {/* Formulaire d'ajout */}
-        <div className="p-5">
-          <h2 className="font-display text-xl font-extrabold text-heading">{t('Mes chronos', 'My times')}</h2>
-          <p className="text-sm text-secondary">
-            {t(
-              'Enregistre tes courses et suis ta progression vers la D1. Tout reste chez toi (navigateur).',
-              'Log your races and track your progression toward D1. Everything stays on your device (browser).',
-            )}
-          </p>
+      <PageHeader
+        icon="watch"
+        title={t('Mes chronos', 'My times')}
+        subtitle={t(
+          'Enregistre tes courses et suis ta progression vers la D1. Tout reste chez toi (navigateur).',
+          'Log your races and track your progression toward D1. Everything stays on your device (browser).',
+        )}
+      />
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
+      {/* Formulaire d'ajout — carte */}
+      <section className="panel p-5">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
             <select value={eventKey} onChange={(e) => setEventKey(e.target.value)} className="field lg:col-span-2">
               {EVENT_GROUPS.map((g) => (
                 <optgroup key={g.stroke} label={t(g.stroke, STROKE_EN[g.stroke])}>
@@ -164,10 +165,10 @@ export default function TimeTracker({ profile }) {
             className="field mt-2 w-full"
           />
           {err && <p className="mt-2 text-xs font-semibold text-flag-600 dark:text-flag-400">{err}</p>}
-        </div>
+      </section>
 
-        {/* Import SwimCloud (copier-coller) */}
-        <div className="border-t border-hair">
+      {/* Import SwimCloud (copier-coller) — carte */}
+      <section className="panel overflow-hidden">
           <button
             onClick={() => setScOpen((o) => !o)}
             className="flex w-full items-center justify-between px-5 py-3 text-left"
@@ -225,10 +226,12 @@ export default function TimeTracker({ profile }) {
               </div>
             </div>
           )}
-        </div>
+      </section>
 
+      {/* Mes temps par épreuve — carte */}
+      <section className="panel overflow-hidden p-5">
         {/* Barre : titre + filtre bassin + filtre des épreuves affichées */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hair px-5 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="font-display text-sm font-extrabold text-heading">{t('Mes temps par épreuve', 'My times by event')}</h3>
           <div className="flex flex-wrap items-center gap-2">
             {/* Filtre par bassin */}
@@ -253,6 +256,7 @@ export default function TimeTracker({ profile }) {
         </div>
 
         {/* Une case par épreuve (nage × distance), groupée par nage */}
+        <div className="mt-4 space-y-6">
         {EVENT_GROUPS.map((g) => {
           const items = showAll
             ? g.items
@@ -262,7 +266,7 @@ export default function TimeTracker({ profile }) {
               })
           if (!items.length) return null
           return (
-          <div key={g.stroke} className="border-t border-hair p-4 sm:p-5">
+          <div key={g.stroke}>
             <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-secondary">{t(g.stroke, STROKE_EN[g.stroke])}</h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((e) => {
@@ -366,7 +370,8 @@ export default function TimeTracker({ profile }) {
           </div>
           )
         })}
-      </div>
+        </div>
+      </section>
 
       <p className="px-1 text-xs text-secondary">
         {t(
