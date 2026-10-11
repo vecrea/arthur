@@ -50,6 +50,8 @@ export default function CoachView({ profile }) {
   const target = new Date(`${profile.usEntryYear}-08-15`)
   const days = Math.max(0, Math.ceil((target - today) / 86400000))
   const months = Math.round(days / 30.44)
+  // Nombre de jours depuis le 10 juin 2013 (début de l'aventure).
+  const daysSwimming = Math.max(0, Math.floor((today - new Date('2013-06-10')) / 86400000))
 
   const times = useMemo(
     () => EVENTS.filter((ev) => profile.times?.[ev.key] != null).map((ev) => {
@@ -153,7 +155,7 @@ export default function CoachView({ profile }) {
         <div className="border-y border-white/10 bg-cyan-400/[0.04] py-4">
           <Marquee
             className="font-cine text-xl uppercase tracking-wide text-white/80 sm:text-2xl"
-            items={[`${t('Promo', 'Class of')} ${profile.usEntryYear}`, t('Nageur belge', 'Belgian swimmer'), 'Sprint Free & Back', 'NCAA Division 1', `${lang === 'en' ? proj.shortEn : proj.short}`, 'Road to USA']}
+            items={[`${t('Promo', 'Class of')} ${profile.usEntryYear}`, t('Nageur belge', 'Belgian swimmer'), 'Sprint Free & Back', 'NCAA Division 1', t('Objectif D1', 'D1 target'), 'Road to USA']}
           />
         </div>
 
@@ -163,15 +165,13 @@ export default function CoachView({ profile }) {
             <Stat text={String(age)} label={t('ans', 'years old')} />
             <Stat text={String(months)} label={t('mois avant la rentrée', 'months to enrollment')} count value={months} />
             {bestFree && <Stat value={bestFree.scy} decimals={2} label={`${t('meilleur', 'best')} ${t(bestFree.ev.label, bestFree.ev.labelEn)} · yards`} count />}
-            <Stat text={lang === 'en' ? proj.shortEn : proj.short} label={t('objectif 2028', '2028 target')} glow={proj.color} />
+            <Stat text="D1" label={t('objectif 2028', '2028 target')} glow="#38bdf8" />
           </div>
         </section>
 
         {/* ============ LE NAGEUR (présentation + progression) ============ */}
         <CineSection id="swimmer" eyebrow={t('Le nageur', 'The swimmer')} title={t('Qui est Arthur', 'Meet Arthur')}>
-          <div className="cine-about">
-            <AboutMe profile={profile} coachView />
-          </div>
+          <AboutMe profile={profile} coachView />
         </CineSection>
 
         {/* ============ LES TEMPS ============ */}
@@ -198,8 +198,16 @@ export default function CoachView({ profile }) {
               </h2>
             </Reveal>
             <Reveal delay={0.12}>
-              <p className="mx-auto mt-6 max-w-xl text-base text-white/60 sm:text-lg">
-                {t('Deux ans de travail, un cap clair : nager en Division 1.', 'Two years of work, one clear goal: swim in Division 1.')}
+              <div className="mt-10 flex flex-col items-center">
+                <span className="font-cine leading-none text-cyan-300 cine-glow" style={{ fontSize: 'clamp(3rem, 11vw, 7.5rem)' }}>
+                  <Counter value={daysSwimming} duration={2000} />
+                </span>
+                <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.32em] text-white/55">{t('jours sur le chemin', 'days in the making')}</div>
+              </div>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p className="mx-auto mt-7 max-w-xl text-base text-white/55 sm:text-lg">
+                {t('Un cap clair : nager en Division 1.', 'One clear goal: swim in Division 1.')}
               </p>
             </Reveal>
           </div>
@@ -208,7 +216,7 @@ export default function CoachView({ profile }) {
         {/* ============ FIT TOOL ============ */}
         <CineSection id="fit" eyebrow={t('Compatibilité', 'Fit')} title={t('À votre niveau ?', 'Does he fit?')}>
           <div className="cine-card p-5 sm:p-7">
-            <p className="mb-5 text-white/70">{t('Choisissez le niveau de votre programme (ou entrez vos temps de recrutement) — la comparaison est instantanée.', 'Pick your program’s level (or enter your recruiting cut times) — the comparison is instant.')}</p>
+            <p className="mb-5 text-white/80">{t('Choisissez le niveau de votre programme (ou entrez vos temps de recrutement) — la comparaison est instantanée.', 'Pick your program’s level (or enter your recruiting cut times) — the comparison is instant.')}</p>
             <FitTool profile={profile} />
           </div>
         </CineSection>

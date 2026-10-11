@@ -52,14 +52,21 @@ export function Counter({ value, duration = 1500, decimals = 0, prefix = '', suf
     io.observe(el)
     return () => io.disconnect()
   }, [value, duration])
-  return <span ref={ref} className={className}>{prefix}{disp.toFixed(decimals)}{suffix}</span>
+  const shown = decimals > 0 ? disp.toFixed(decimals) : Math.round(disp).toLocaleString('fr-FR')
+  return <span ref={ref} className={className}>{prefix}{shown}{suffix}</span>
 }
 
 // Bandeau défilant en boucle.
 export function Marquee({ items, duration = 28, className = '', sep = '✦' }) {
-  const seq = [...items, ...items]
+  // Chaque « moitié » doit dépasser la largeur de l'écran, sinon un trou sans
+  // texte apparaît en bout de bande sur grand écran. On répète donc les
+  // éléments, et on pose deux moitiés identiques pour une boucle (-50%) sans
+  // couture. La durée suit la longueur répétée → vitesse inchangée.
+  const REPEAT = 4
+  const half = Array.from({ length: REPEAT }, () => items).flat()
+  const seq = [...half, ...half]
   return (
-    <div className={'cine-marquee ' + className} style={{ '--cine-marquee-dur': `${duration}s` }}>
+    <div className={'cine-marquee ' + className} style={{ '--cine-marquee-dur': `${duration * REPEAT}s` }}>
       <div className="cine-marquee__track">
         {seq.map((it, i) => (
           <span key={i} className="mx-5 inline-flex items-center gap-5">
