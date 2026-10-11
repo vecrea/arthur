@@ -1,4 +1,5 @@
 import { useLang } from '../lib/i18n.jsx'
+import CloudSync from './CloudSync.jsx'
 
 const TABS = [
   { key: 'home', label: 'Tableau de bord', labelEn: 'Dashboard' },
@@ -69,6 +70,9 @@ export default function Header({ tab, setTab, favCount, theme, setTheme }) {
           </div>
 
           <div className="flex items-center gap-2 justify-self-end">
+            {/* Synchronisation cloud (connexion + statut) */}
+            <CloudSync />
+
             {/* Bascule thème clair / sombre */}
             <button
               onClick={() => setTheme(dark ? 'light' : 'dark')}

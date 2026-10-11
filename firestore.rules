@@ -1,0 +1,25 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore pour Road to NCAA.
+// À copier dans la console Firebase : Firestore Database → onglet « Règles » → Publier.
+//
+// Modèle « login » :
+//   - LECTURE publique du document de l'athlète (les coachs doivent voir la page ?coach).
+//   - ÉCRITURE réservée au propriétaire (ton compte, via son UID).
+//   - Tout le reste de la base est fermé.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Données synchronisées de l'athlète (chronos, objectifs, fiche, présentation, favoris…).
+    match /sync/athlete {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == "6hvjif4GR6Q5Ue0eNajvwVqeX8S2";
+    }
+
+    // Par défaut : rien d'autre n'est lisible ni modifiable.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
