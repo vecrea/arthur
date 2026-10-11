@@ -15,6 +15,7 @@ import Coaches from './components/Coaches.jsx'
 import Steps from './components/Steps.jsx'
 import Ia from './components/Ia.jsx'
 import AboutMe from './components/AboutMe.jsx'
+import CoachView from './components/CoachView.jsx'
 import { profile } from './data/profile.js'
 import { universities } from './data/schools.js'
 import { computeMatches } from './lib/score.js'
@@ -26,6 +27,14 @@ export default function App() {
   const { t, lang } = useLang()
   const [tab, setTab] = useState('home')
   const [theme, setTheme] = useState(() => loadTheme())
+  // Mode coach (lecture seule) : /?coach dans l'URL → page dédiée pour les coachs.
+  const coachMode = useMemo(() => {
+    try {
+      return new URLSearchParams(window.location.search).has('coach')
+    } catch {
+      return false
+    }
+  }, [])
   const [favorites, setFavorites] = useState(() => loadFavorites())
   const [filters, setFilters] = useState({
     search: '',
@@ -178,6 +187,9 @@ export default function App() {
         return null
     }
   }
+
+  // Vue coach : page autonome en lecture seule (pas de navigation ni d'édition).
+  if (coachMode) return <CoachView profile={profile} theme={theme} setTheme={setTheme} />
 
   return (
     <div className="min-h-screen">

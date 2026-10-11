@@ -44,7 +44,7 @@ const FIELDS = [
   { key: 'videoUrl', label: { en: 'Race video (URL)', fr: 'Vidéo (lien)' }, ph: { en: 'https://youtube.com/...', fr: 'https://youtube.com/...' } },
 ]
 
-export default function AthleteSheet({ profile }) {
+export default function AthleteSheet({ profile, coachView = false }) {
   const { lang, t: tr } = useLang()
   const [extras, setExtras] = useState(() => {
     const s = loadProfileExtras()
@@ -58,7 +58,7 @@ export default function AthleteSheet({ profile }) {
     }
   })
 
-  useEffect(() => saveProfileExtras(extras), [extras])
+  useEffect(() => { if (!coachView) saveProfileExtras(extras) }, [extras, coachView])
   const set = (k, v) => setExtras((e) => ({ ...e, [k]: v }))
   const t = L[lang]
   const v = (x) => (x && String(x).trim() ? x : t.notSet)
@@ -75,12 +75,14 @@ export default function AthleteSheet({ profile }) {
         {/* Barre d'actions (non imprimee) */}
         <div className="no-print flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
-            <h2 className="font-display text-xl font-extrabold text-heading">{tr('Ta fiche athlète', 'Your athlete sheet')}</h2>
+            <h2 className="font-display text-xl font-extrabold text-heading">{coachView ? tr('Fiche athlète', 'Athlete sheet') : tr('Ta fiche athlète', 'Your athlete sheet')}</h2>
             <p className="text-sm text-secondary">
-              {tr(
-                'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
-                'To send to US coaches. Fill in the fields, then export to PDF. (Follows the site language — switch to EN for coaches.)',
-              )}
+              {coachView
+                ? tr('Fiche de recrutement — télécharge-la en PDF.', 'Recruiting profile — download it as PDF.')
+                : tr(
+                    'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
+                    'To send to US coaches. Fill in the fields, then export to PDF. (Follows the site language — switch to EN for coaches.)',
+                  )}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -93,7 +95,8 @@ export default function AthleteSheet({ profile }) {
           </div>
         </div>
 
-        {/* Panneau d'edition (non imprime) */}
+        {/* Panneau d'edition (non imprime) — masqué en vue coach */}
+        {!coachView && (
         <div className="no-print border-t border-hair p-4">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-tertiary">{tr('Compléter ta fiche', 'Complete your sheet')}</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -119,6 +122,7 @@ export default function AthleteSheet({ profile }) {
             />
           </label>
         </div>
+        )}
 
         {/* ---------- LA FICHE (bandeau navy imprimable) ---------- */}
         <div className="bg-gradient-to-r from-navy-900 to-navy-800 p-6 text-white print:bg-navy-900">

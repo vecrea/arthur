@@ -114,10 +114,12 @@ function ProgressionChart({ points, color, t, lang }) {
   )
 }
 
-export default function AboutMe({ profile }) {
+export default function AboutMe({ profile, coachView = false }) {
   const { t, lang } = useLang()
-  const coach = useMemo(() => parseCoachHash(), [])
-  const isCoach = !!coach
+  // coachView (mode coach via le site) lit les données locales/cloud ; sinon on
+  // peut aussi recevoir une vue coach encodée dans l'URL (ancien lien #coach=...).
+  const coach = useMemo(() => (coachView ? null : parseCoachHash()), [coachView])
+  const isCoach = coachView || !!coach
 
   const [about, setAbout] = useState(() => loadAbout())
   const [editing, setEditing] = useState(false)
@@ -125,8 +127,8 @@ export default function AboutMe({ profile }) {
   const [contactOpen, setContactOpen] = useState(false)
 
   // Source des données : la vue coach lit l'URL ; sinon le stockage local.
-  const A = isCoach ? coach.about || {} : about
-  const times = useMemo(() => (isCoach ? coach.times || [] : loadTimes()), [isCoach, coach])
+  const A = coach ? coach.about || {} : about
+  const times = useMemo(() => (coach ? coach.times || [] : loadTimes()), [coach])
 
   // Bassin & épreuve par défaut : ceux qui contiennent le plus de temps.
   const initCourse = times.filter((x) => x.course === 'SCM').length > times.filter((x) => x.course === 'LCM').length ? 'SCM' : 'LCM'
