@@ -1,5 +1,6 @@
 import { EVENTS, lcmToScy, scyLevel, formatTime, LEVELS, eventTargets, athleteLevel, STROKE_EN } from '../lib/convert.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 // Barre visuelle : positionne le temps SCY sur l'échelle Développement → Élite D1,
 // avec les zones de niveau colorées et un marqueur à la position du nageur.
@@ -62,80 +63,83 @@ export default function Recruitable({ profile }) {
 
   return (
     <div className="space-y-4">
-      <div className="panel overflow-hidden">
-        {/* Verdict global */}
-        <div className="panel-dark p-5 text-white">
-          <h2 className="font-display text-xl font-extrabold">{t('Suis-je recrutable ?', 'Am I recruitable?')}</h2>
-          <p className="mt-1 text-sm text-white/80">
-            {t(
-              'Tes meilleurs temps (grand bassin) convertis en yards (SCY, le standard universitaire US), comparés aux repères de recrutement masculin.',
-              'Your best long-course times converted to yards (SCY, the US college standard), compared to men’s recruiting benchmarks.',
-            )}
-          </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
+      <PageHeader
+        icon="gauge"
+        title={t('Suis-je recrutable ?', 'Am I recruitable?')}
+        subtitle={t(
+          'Tes meilleurs temps (grand bassin) convertis en yards (SCY, le standard US), comparés aux repères de recrutement masculin.',
+          'Your best long-course times converted to yards (SCY, the US college standard), compared to men’s recruiting benchmarks.',
+        )}
+      />
+
+      {/* Verdict global — carte sombre */}
+      <section className="panel-dark grain relative overflow-hidden p-5 text-white sm:p-6">
+        <div className="relative z-10">
+          <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-white/55">{t('Ton verdict', 'Your verdict')}</div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl bg-white/[0.07] p-4 ring-1 ring-white/10">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Niveau actuel (meilleure épreuve)', 'Current level (best event)')}</div>
-              <div className="mt-1 font-display text-2xl font-black" style={{ color: LEVELS[level].color }}>
+              <div className="mt-1 font-display text-2xl font-black tracking-tight" style={{ color: LEVELS[level].color }}>
                 {t(LEVELS[level].label, LEVELS[level].labelEn)}
               </div>
             </div>
-            <div className="rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/10">
+            <div className="rounded-2xl bg-white/[0.07] p-4 ring-1 ring-white/10">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t('Projection 2028 (+1 palier de marge)', '2028 projection (+1 level of margin)')}</div>
-              <div className="mt-1 font-display text-2xl font-black" style={{ color: LEVELS[projected].color }}>
+              <div className="mt-1 font-display text-2xl font-black tracking-tight" style={{ color: LEVELS[projected].color }}>
                 {t(LEVELS[projected].label, LEVELS[projected].labelEn)}
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Détail par épreuve — lignes séparées par un filet */}
-        <div className="row-list border-t border-hair">
-          {rows.map(({ ev, lcm, scy, lvl, tg, gapLowD1, gapSolid }) => (
-            <div key={ev.key} className="p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h3 className="font-display text-lg font-extrabold text-heading">{t(ev.label, ev.labelEn)}</h3>
-                  <p className="text-xs text-secondary">{t(ev.stroke, STROKE_EN[ev.stroke])}</p>
-                </div>
-                <span className="rounded-full px-2.5 py-1 text-xs font-bold text-white" style={{ background: LEVELS[lvl].color }}>
-                  {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
-                </span>
+      {/* Détail par épreuve — grille de cartes */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        {rows.map(({ ev, lcm, scy, lvl, tg, gapLowD1, gapSolid }) => (
+          <div key={ev.key} className="panel p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="font-display text-lg font-extrabold text-heading">{t(ev.label, ev.labelEn)}</h3>
+                <p className="text-xs text-secondary">{t(ev.stroke, STROKE_EN[ev.stroke])}</p>
               </div>
+              <span className="rounded-full px-2.5 py-1 text-xs font-bold text-white" style={{ background: LEVELS[lvl].color }}>
+                {t(LEVELS[lvl].short, LEVELS[lvl].shortEn)}
+              </span>
+            </div>
 
-              <div className="mt-3 flex items-end gap-4">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">{t('Ton temps (50 m)', 'Your time (50 m)')}</div>
-                  <div className="font-display text-xl font-black text-heading">{formatTime(lcm)}</div>
-                </div>
-                <div className="text-tertiary">→</div>
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">{t('Converti (yards)', 'Converted (yards)')}</div>
-                  <div className="font-display text-xl font-black text-accent">{formatTime(scy)}</div>
-                </div>
+            <div className="mt-3 flex items-end gap-4">
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">{t('Ton temps (50 m)', 'Your time (50 m)')}</div>
+                <div className="font-display text-xl font-black text-heading">{formatTime(lcm)}</div>
               </div>
-
-              <LevelBar scy={scy} eventKey={ev.key} />
-
-              <div className="mt-3 space-y-1 text-sm">
-                {gapLowD1 <= 0 ? (
-                  <p className="font-semibold text-emerald-700 dark:text-emerald-400">{t('Déjà au niveau D1 sur cette épreuve.', 'Already at D1 level in this event.')}</p>
-                ) : (
-                  <p className="text-primary">
-                    <span className="font-semibold text-heading">−{gapLowD1.toFixed(2)} s</span> {t('pour atteindre la porte D1', 'to reach the D1 door')}
-                    <span className="text-tertiary"> (≈ {formatTime(tg.lowD1)} SCY)</span>
-                  </p>
-                )}
-                {gapSolid > 0 ? (
-                  <p className="text-secondary">
-                    −{gapSolid.toFixed(2)} s {t('pour une D1 solide', 'for a solid D1')} <span className="text-tertiary">(≈ {formatTime(tg.solidD1)} SCY)</span>
-                  </p>
-                ) : (
-                  <p className="text-secondary">{t('D1 solide atteinte', 'Solid D1 reached')}</p>
-                )}
+              <div className="text-tertiary">→</div>
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">{t('Converti (yards)', 'Converted (yards)')}</div>
+                <div className="font-display text-xl font-black text-accent">{formatTime(scy)}</div>
               </div>
             </div>
-          ))}
-        </div>
+
+            <LevelBar scy={scy} eventKey={ev.key} />
+
+            <div className="mt-3 space-y-1 text-sm">
+              {gapLowD1 <= 0 ? (
+                <p className="font-semibold text-emerald-700 dark:text-emerald-400">{t('Déjà au niveau D1 sur cette épreuve.', 'Already at D1 level in this event.')}</p>
+              ) : (
+                <p className="text-primary">
+                  <span className="font-semibold text-heading">−{gapLowD1.toFixed(2)} s</span> {t('pour atteindre la porte D1', 'to reach the D1 door')}
+                  <span className="text-tertiary"> (≈ {formatTime(tg.lowD1)} SCY)</span>
+                </p>
+              )}
+              {gapSolid > 0 ? (
+                <p className="text-secondary">
+                  −{gapSolid.toFixed(2)} s {t('pour une D1 solide', 'for a solid D1')} <span className="text-tertiary">(≈ {formatTime(tg.solidD1)} SCY)</span>
+                </p>
+              ) : (
+                <p className="text-secondary">{t('D1 solide atteinte', 'Solid D1 reached')}</p>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       <p className="px-1 text-xs text-secondary">
