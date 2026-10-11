@@ -1,6 +1,8 @@
 import { Dots, FitBadge, TypeBadge, divColor } from './ui.jsx'
 import { scholarshipPotential, capFirst } from '../lib/scholarship.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
+import Icon from './Icons.jsx'
 
 export default function Compare({ unis, onToggleFav }) {
   const { t } = useLang()
@@ -34,49 +36,56 @@ export default function Compare({ unis, onToggleFav }) {
   ]
 
   return (
-    <div className="panel overflow-hidden">
+    <div className="space-y-4">
+      <PageHeader icon="compare" title={t('Comparer', 'Compare')} />
+
       {unis.length === 0 ? (
-        <div className="p-10 text-center">
-          <p className="font-semibold text-heading">{t("Aucune fac à comparer pour l'instant", 'No schools to compare yet')}</p>
+        <section className="panel p-10 text-center">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+            <Icon name="compare" className="h-6 w-6" />
+          </span>
+          <p className="mt-4 font-semibold text-heading">{t("Aucune fac à comparer pour l'instant", 'No schools to compare yet')}</p>
           <p className="mt-1 text-sm text-secondary">
             {t(
               'Ajoute des universités à tes favoris (⭐) depuis le classement pour les comparer ici.',
               'Add universities to your favorites (⭐) from the rankings to compare them here.',
             )}
           </p>
-        </div>
+        </section>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="sticky left-0 z-10 surface p-3 text-left text-xs font-semibold uppercase tracking-wide text-tertiary">
-                  {t('Critère', 'Criterion')}
-                </th>
-                {unis.map((u) => (
-                  <th key={u.id} className="min-w-44 border-l border-hair p-3 text-left align-top">
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="font-display text-sm font-extrabold leading-tight text-heading">{u.shortName}</span>
-                      <button onClick={() => onToggleFav(u.id)} title={t('Retirer', 'Remove')} className="text-lg leading-none hover:scale-110">⭐</button>
-                    </div>
+        <section className="panel overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="sticky left-0 z-10 surface p-3 text-left text-xs font-semibold uppercase tracking-wide text-tertiary">
+                    {t('Critère', 'Criterion')}
                   </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {ROWS.map((row, i) => (
-                <tr key={row.label} className={i % 2 ? 'surface-2' : ''}>
-                  <td className="sticky left-0 z-10 whitespace-nowrap bg-inherit p-3 text-xs font-semibold text-secondary">
-                    {row.label}
-                  </td>
                   {unis.map((u) => (
-                    <td key={u.id} className="border-l border-hair p-3 align-middle">{row.render(u)}</td>
+                    <th key={u.id} className="min-w-44 border-l border-hair p-3 text-left align-top">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="font-display text-sm font-extrabold leading-tight text-heading">{u.shortName}</span>
+                        <button onClick={() => onToggleFav(u.id)} title={t('Retirer', 'Remove')} className="text-lg leading-none hover:scale-110">⭐</button>
+                      </div>
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {ROWS.map((row, i) => (
+                  <tr key={row.label} className={i % 2 ? 'surface-2' : ''}>
+                    <td className="sticky left-0 z-10 whitespace-nowrap bg-inherit p-3 text-xs font-semibold text-secondary">
+                      {row.label}
+                    </td>
+                    {unis.map((u) => (
+                      <td key={u.id} className="border-l border-hair p-3 align-middle">{row.render(u)}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       )}
     </div>
   )

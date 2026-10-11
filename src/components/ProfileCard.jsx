@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { EVENTS, athleteLevel, lcmToScy, scyLevel, formatTime, LEVELS } from '../lib/convert.js'
 import { downloadBackup, importBackup } from '../lib/backup.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 function ageFrom(birthDate) {
   const b = new Date(birthDate)
@@ -14,7 +15,7 @@ function ageFrom(birthDate) {
 
 function Info({ label, value }) {
   return (
-    <div className="surface border border-hair rounded-lg p-3">
+    <div className="surface-2 rounded-xl p-3">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{label}</div>
       <div className="mt-0.5 font-semibold text-heading">{value}</div>
     </div>
@@ -51,25 +52,25 @@ export default function ProfileCard({ profile }) {
   }
 
   return (
-    <div className="panel overflow-hidden">
-      {/* Bandeau sombre — identité + niveau */}
-      <div className="panel-dark p-5 text-white">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="font-display text-2xl font-black">{profile.name}</h2>
-            <p className="text-white/90">{t(profile.sport, 'Swimming')} · {t(profile.specialty, profile.specialtyEn)}</p>
-          </div>
-          <div className="text-right">
-            <div className="text-[11px] uppercase tracking-wide text-white/80">{t('Niveau actuel (converti)', 'Current level (converted)')}</div>
-            <div className="mt-1 inline-block rounded-full px-3 py-1 font-display text-sm font-extrabold text-white" style={{ background: lvl.color }}>
-              {t(lvl.label, lvl.labelEn)}
-            </div>
+    <div className="space-y-4">
+      <PageHeader
+        icon="user"
+        title={profile.name}
+        subtitle={<>{t(profile.sport, 'Swimming')} · {t(profile.specialty, profile.specialtyEn)}</>}
+      />
+
+      {/* Niveau actuel — carte sombre */}
+      <section className="panel-dark grain relative overflow-hidden p-5 text-white sm:p-6">
+        <div className="relative z-10">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-white/55">{t('Niveau actuel (converti)', 'Current level (converted)')}</div>
+          <div className="mt-2 font-display text-2xl font-black tracking-tight" style={{ color: lvl.color }}>
+            {t(lvl.label, lvl.labelEn)}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Infos profil */}
-      <div className="border-t border-hair p-4">
+      <section className="panel p-5">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <Info label={t('Nationalité', 'Nationality')} value={`${profile.nationality}`} />
           <Info label={t('Âge', 'Age')} value={`${age} ${t('ans', 'yrs')}`} />
@@ -82,10 +83,10 @@ export default function ProfileCard({ profile }) {
           <Info label={t('Club / coach', 'Club / coach')} value={`${profile.homeClub} — ${profile.coach}`} />
           <Info label={t('Stage', 'Training camp')} value={t(profile.trainingCampFr, profile.trainingCampEn)} />
         </div>
-      </div>
+      </section>
 
       {/* Temps & conversion */}
-      <div className="border-t border-hair">
+      <section className="panel overflow-hidden">
         <div className="flex items-center justify-between border-b border-hair px-4 py-3">
           <h3 className="font-display text-lg font-extrabold text-heading">{t('Tes temps', 'Your times')}</h3>
           <span className="text-xs text-tertiary">{t('grand bassin → yards (US)', 'long course → yards (US)')}</span>
@@ -126,10 +127,10 @@ export default function ProfileCard({ profile }) {
             'Indicative conversion (approximate factors, not the official USA Swimming table). It places your level, but the exact yards time must be verified.',
           )}
         </p>
-      </div>
+      </section>
 
       {/* Roadmap */}
-      <div className="border-t border-hair p-5">
+      <section className="panel p-5">
         <h3 className="font-display text-lg font-extrabold text-heading">{t('Ta Road to D1', 'Your Road to D1')}</h3>
         <p className="mt-1 text-sm text-primary">
           {t(
@@ -155,10 +156,10 @@ export default function ProfileCard({ profile }) {
             'Coming soon (Phases 2 & 3): steps tracking (NCAA, SAT/TOEFL), coach contact book, and AI recommendations + coach email generator.',
           )}
         </p>
-      </div>
+      </section>
 
       {/* Sauvegarde & synchro entre appareils */}
-      <div className="border-t border-hair p-5">
+      <section className="panel p-5">
         <h3 className="font-display text-lg font-extrabold text-heading">{t('Sauvegarde & synchro', 'Backup & sync')}</h3>
         <p className="mt-1 text-sm text-primary">
           {t(
@@ -167,7 +168,7 @@ export default function ProfileCard({ profile }) {
           )}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button onClick={downloadBackup} className="rounded-full bg-navy-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-navy-800">
+          <button onClick={downloadBackup} className="btn-primary px-4 py-2 text-sm">
             {t('Exporter mes données', 'Export my data')}
           </button>
           <button onClick={() => fileRef.current?.click()} className="rounded-full surface-2 border border-hair px-4 py-2 text-sm font-semibold text-primary transition hover:surface-3">
@@ -182,7 +183,7 @@ export default function ProfileCard({ profile }) {
             'Import replaces this device’s data with the file’s. The file holds times, goals, favorites, coach contacts and steps.',
           )}
         </p>
-      </div>
+      </section>
     </div>
   )
 }

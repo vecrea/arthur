@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { netCost } from '../lib/cost.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader, CardHead } from './ui/Page.jsx'
 
 // % de bourse sportive par défaut selon le type de programme.
 const DEFAULT_SCHOLAR = { athletic: 35, d3: 0, ivy: 0, service: 100 }
@@ -49,109 +50,111 @@ export default function Budget({ schools, favorites }) {
 
   return (
     <div className="space-y-4">
-      <div className="panel overflow-hidden">
-        {/* Intro + choix de la fac */}
-        <div className="p-5">
-          <h2 className="font-display text-xl font-extrabold text-heading">{t('Budget sur 4 ans', '4-year budget')}</h2>
-          <p className="text-sm text-secondary">
-            {t(
-              'Estimation du coût total en euros pour tes parents : scolarité nette (après bourse), vols Belgique↔US et visa. Ajuste les hypothèses.',
-              'Total cost estimate in euros for your parents: net tuition (after scholarship), Belgium↔US flights and visa. Adjust the assumptions.',
-            )}
-          </p>
+      <PageHeader
+        icon="wallet"
+        title={t('Budget sur 4 ans', '4-year budget')}
+        subtitle={t(
+          'Estimation du coût total en euros pour tes parents : scolarité nette (après bourse), vols Belgique↔US et visa. Ajuste les hypothèses.',
+          'Total cost estimate in euros for your parents: net tuition (after scholarship), Belgium↔US flights and visa. Adjust the assumptions.',
+        )}
+      />
 
-          {/* Choix de la fac */}
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Université', 'University')}</span>
-              <select value={schoolId} onChange={(e) => pick(e.target.value)} className="field mt-1">
-                {favList.length > 0 && (
-                  <optgroup label={t('Mes favoris', 'My favorites')}>
-                    {favList.map((u) => (
-                      <option key={u.id} value={u.id}>{u.shortName} · {u.division}</option>
-                    ))}
-                  </optgroup>
-                )}
-                <optgroup label={t('Facs détaillées', 'Detailed schools')}>
-                  {curList.map((u) => (
+      {/* Choix de la fac */}
+      <section className="panel p-5">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Université', 'University')}</span>
+            <select value={schoolId} onChange={(e) => pick(e.target.value)} className="field mt-1">
+              {favList.length > 0 && (
+                <optgroup label={t('Mes favoris', 'My favorites')}>
+                  {favList.map((u) => (
                     <option key={u.id} value={u.id}>{u.shortName} · {u.division}</option>
                   ))}
                 </optgroup>
-                <optgroup label={t('Autre', 'Other')}>
-                  <option value="manual">{t('Saisie manuelle', 'Manual entry')}</option>
-                </optgroup>
-              </select>
+              )}
+              <optgroup label={t('Facs détaillées', 'Detailed schools')}>
+                {curList.map((u) => (
+                  <option key={u.id} value={u.id}>{u.shortName} · {u.division}</option>
+                ))}
+              </optgroup>
+              <optgroup label={t('Autre', 'Other')}>
+                <option value="manual">{t('Saisie manuelle', 'Manual entry')}</option>
+              </optgroup>
+            </select>
+          </label>
+          <label className="block">
+            <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Coût annoncé / an ($, intl)', 'Sticker cost / yr ($, intl)')}</span>
+            <input type="number" value={isManual ? manualCost : costUSD} onChange={(e) => setManualCost(e.target.value)} disabled={!isManual} className="field mt-1 disabled:surface-3 disabled:text-secondary" />
+          </label>
+        </div>
+
+        {info && (
+          <p className="mt-2 text-xs text-secondary">
+            <span className="font-semibold text-primary">{info.label}.</span> {info.note}
+          </p>
+        )}
+      </section>
+
+      {/* Hypothèses */}
+      <section className="panel p-5">
+        <CardHead>{t('Hypothèses (ajuste-les)', 'Assumptions (adjust them)')}</CardHead>
+
+        <div className="space-y-4">
+          <div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-primary">{t('Bourse sportive', 'Athletic scholarship')}</span>
+              <span className="font-display font-extrabold text-accent">{scholar}%</span>
+            </div>
+            <input type="range" min="0" max="70" step="5" value={scholar} onChange={(e) => setScholar(Number(e.target.value))} className="mt-1 w-full accent-pool-500" />
+            <p className="text-[11px] text-tertiary">{t('La natation = bourses souvent partielles. D3/Ivy = 0 (aides au mérite à part).', 'Swimming = often partial scholarships. D3/Ivy = 0 (merit aid is separate).')}</p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="block">
+              <span className="text-xs font-medium text-secondary">{t('Taux $→€', 'Rate $→€')}</span>
+              <input type="number" step="0.01" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="field mt-1" />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Coût annoncé / an ($, intl)', 'Sticker cost / yr ($, intl)')}</span>
-              <input type="number" value={isManual ? manualCost : costUSD} onChange={(e) => setManualCost(e.target.value)} disabled={!isManual} className="field mt-1 disabled:surface-3 disabled:text-secondary" />
+              <span className="text-xs font-medium text-secondary">{t('Aller-retours / an', 'Round trips / yr')}</span>
+              <input type="number" min="0" value={roundTrips} onChange={(e) => setRoundTrips(e.target.value)} className="field mt-1" />
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-secondary">{t('Prix A/R (€)', 'Round trip (€)')}</span>
+              <input type="number" min="0" value={flightPrice} onChange={(e) => setFlightPrice(e.target.value)} className="field mt-1" />
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-secondary">{t('Années', 'Years')}</span>
+              <input type="number" min="1" max="5" value={years} onChange={(e) => setYears(e.target.value)} className="field mt-1" />
             </label>
           </div>
-
-          {info && (
-            <p className="mt-2 text-xs text-secondary">
-              <span className="font-semibold text-primary">{info.label}.</span> {info.note}
-            </p>
-          )}
+          <label className="block sm:max-w-xs">
+            <span className="text-xs font-medium text-secondary">{t('Visa + SEVIS (1× la 1re année, €)', 'Visa + SEVIS (one-time, year 1, €)')}</span>
+            <input type="number" min="0" value={visaFees} onChange={(e) => setVisaFees(e.target.value)} className="field mt-1" />
+          </label>
         </div>
+      </section>
 
-        {/* Hypothèses */}
-        <div className="border-t border-hair p-5">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Hypothèses (ajuste-les)', 'Assumptions (adjust them)')}</p>
-
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-primary">{t('Bourse sportive', 'Athletic scholarship')}</span>
-                <span className="font-display font-extrabold text-accent">{scholar}%</span>
-              </div>
-              <input type="range" min="0" max="70" step="5" value={scholar} onChange={(e) => setScholar(Number(e.target.value))} className="mt-1 w-full accent-pool-500" />
-              <p className="text-[11px] text-tertiary">{t('La natation = bourses souvent partielles. D3/Ivy = 0 (aides au mérite à part).', 'Swimming = often partial scholarships. D3/Ivy = 0 (merit aid is separate).')}</p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <label className="block">
-                <span className="text-xs font-medium text-secondary">{t('Taux $→€', 'Rate $→€')}</span>
-                <input type="number" step="0.01" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="field mt-1" />
-              </label>
-              <label className="block">
-                <span className="text-xs font-medium text-secondary">{t('Aller-retours / an', 'Round trips / yr')}</span>
-                <input type="number" min="0" value={roundTrips} onChange={(e) => setRoundTrips(e.target.value)} className="field mt-1" />
-              </label>
-              <label className="block">
-                <span className="text-xs font-medium text-secondary">{t('Prix A/R (€)', 'Round trip (€)')}</span>
-                <input type="number" min="0" value={flightPrice} onChange={(e) => setFlightPrice(e.target.value)} className="field mt-1" />
-              </label>
-              <label className="block">
-                <span className="text-xs font-medium text-secondary">{t('Années', 'Years')}</span>
-                <input type="number" min="1" max="5" value={years} onChange={(e) => setYears(e.target.value)} className="field mt-1" />
-              </label>
-            </div>
-            <label className="block sm:max-w-xs">
-              <span className="text-xs font-medium text-secondary">{t('Visa + SEVIS (1× la 1re année, €)', 'Visa + SEVIS (one-time, year 1, €)')}</span>
-              <input type="number" min="0" value={visaFees} onChange={(e) => setVisaFees(e.target.value)} className="field mt-1" />
-            </label>
-          </div>
+      {/* Résultat — coût total (carte sombre) */}
+      <section className="panel-dark grain relative overflow-hidden p-5 text-white sm:p-6">
+        <div className="relative z-10">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t(`Coût total estimé sur ${years} an(s)`, `Estimated total over ${years} year(s)`)}</div>
+          <div className="font-display text-4xl font-black text-spark-400">≈ {eur(totalEUR)}</div>
+          <div className="mt-1 text-sm text-white/80">{t('soit', 'i.e.')} ≈ {eur(annualEUR)} / {t('an', 'yr')} {scholar > 0 && <>· {t('économie bourse', 'scholarship saving')} ≈ {eur(savedEUR)}</>}</div>
         </div>
+      </section>
 
-        {/* Résultat */}
-        <div className="border-t border-hair">
-          <div className="panel-dark p-5 text-white">
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">{t(`Coût total estimé sur ${years} an(s)`, `Estimated total over ${years} year(s)`)}</div>
-            <div className="font-display text-4xl font-black text-spark-400">≈ {eur(totalEUR)}</div>
-            <div className="mt-1 text-sm text-white/80">{t('soit', 'i.e.')} ≈ {eur(annualEUR)} / {t('an', 'yr')} {scholar > 0 && <>· {t('économie bourse', 'scholarship saving')} ≈ {eur(savedEUR)}</>}</div>
-          </div>
-          <table className="w-full text-sm">
-            <tbody>
-              <Row label={t('Scolarité nette / an', 'Net tuition / yr')} val={eur(tuitionEUR)} sub={scholar > 0 ? t(`après ${scholar}% de bourse`, `after ${scholar}% scholarship`) : t('sans bourse sportive', 'no athletic scholarship')} />
-              <Row label={t('Vols / an', 'Flights / yr')} val={eur(flightsEUR)} sub={`${roundTrips} ${t('A/R', 'round trips')} × ${eur(flightPrice)}`} />
-              <Row label={t('Sous-total / an', 'Subtotal / yr')} val={eur(annualEUR)} bold />
-              <Row label={t('Visa + SEVIS (1×)', 'Visa + SEVIS (one-time)')} val={eur(visaEUR)} />
-              <Row label={t(`TOTAL sur ${years} an(s)`, `TOTAL over ${years} year(s)`)} val={eur(totalEUR)} bold accent />
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Détail du calcul */}
+      <section className="panel overflow-hidden">
+        <table className="w-full text-sm">
+          <tbody>
+            <Row label={t('Scolarité nette / an', 'Net tuition / yr')} val={eur(tuitionEUR)} sub={scholar > 0 ? t(`après ${scholar}% de bourse`, `after ${scholar}% scholarship`) : t('sans bourse sportive', 'no athletic scholarship')} />
+            <Row label={t('Vols / an', 'Flights / yr')} val={eur(flightsEUR)} sub={`${roundTrips} ${t('A/R', 'round trips')} × ${eur(flightPrice)}`} />
+            <Row label={t('Sous-total / an', 'Subtotal / yr')} val={eur(annualEUR)} bold />
+            <Row label={t('Visa + SEVIS (1×)', 'Visa + SEVIS (one-time)')} val={eur(visaEUR)} />
+            <Row label={t(`TOTAL sur ${years} an(s)`, `TOTAL over ${years} year(s)`)} val={eur(totalEUR)} bold accent />
+          </tbody>
+        </table>
+      </section>
 
       <p className="px-1 text-xs text-secondary">
         {t(
