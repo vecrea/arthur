@@ -185,6 +185,24 @@ export default function CoachView({ profile }) {
           </div>
         </section>
 
+        {/* ============ STATEMENT ============ */}
+        <section className="relative overflow-hidden py-24 sm:py-36">
+          <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(60% 60% at 50% 50%, rgba(45,212,238,0.08), transparent 70%)' }} />
+          <div className="relative mx-auto max-w-6xl px-6 text-center">
+            <Reveal>
+              <h2 className="font-cine uppercase leading-[0.88] text-white" style={{ fontSize: 'clamp(2.5rem, 8vw, 6.5rem)' }}>
+                {t('De la Belgique', 'From Belgium')}<br />
+                <span className="cine-outline">{t('à la', 'to the')}</span> <span className="text-cyan-300 cine-glow">NCAA</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.12}>
+              <p className="mx-auto mt-6 max-w-xl text-base text-white/60 sm:text-lg">
+                {t('Deux ans de travail, un cap clair : nager en Division 1.', 'Two years of work, one clear goal: swim in Division 1.')}
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
         {/* ============ FIT TOOL ============ */}
         <CineSection id="fit" eyebrow={t('Compatibilité', 'Fit')} title={t('À votre niveau ?', 'Does he fit?')}>
           <div className="cine-card p-5 sm:p-7">
