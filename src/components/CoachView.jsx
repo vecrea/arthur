@@ -24,12 +24,14 @@ const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior:
 export default function CoachView({ profile }) {
   const { t, lang, setLang } = useLang()
 
-  // La page coach est toujours sombre (cinématique).
+  // La page coach est toujours sombre (cinématique) + titre d'onglet dédié.
   useEffect(() => {
-    const prev = document.documentElement.dataset.theme
+    const prevTheme = document.documentElement.dataset.theme
+    const prevTitle = document.title
     document.documentElement.dataset.theme = 'dark'
-    return () => { document.documentElement.dataset.theme = prev }
-  }, [])
+    document.title = `${profile.name} — Road to NCAA`
+    return () => { document.documentElement.dataset.theme = prevTheme; document.title = prevTitle }
+  }, [profile.name])
 
   const about = useMemo(() => loadAbout(), [])
   const extras = useMemo(() => loadProfileExtras(), [])

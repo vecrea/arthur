@@ -74,9 +74,9 @@ export default function FitTool({ profile }) {
           : t('Entrez vos temps de recrutement en yards (SCY) — ex : 20.50 ou 1:45.00.', 'Enter your recruiting cut times in yards (SCY) — e.g. 20.50 or 1:45.00.')}
       </p>
 
-      {/* Tableau de comparaison */}
-      <div className="overflow-hidden rounded-xl border border-hair">
-        <table className="w-full text-sm">
+      {/* Tableau de comparaison (défilable horizontalement sur mobile) */}
+      <div className="overflow-x-auto rounded-xl border border-hair">
+        <table className="w-full min-w-[540px] text-sm">
           <thead>
             <tr className="surface-2 text-left text-[11px] uppercase tracking-wide text-tertiary">
               <th className="p-3 font-semibold">{t('Épreuve', 'Event')}</th>
