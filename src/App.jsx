@@ -16,6 +16,7 @@ import Steps from './components/Steps.jsx'
 import Ia from './components/Ia.jsx'
 import AboutMe from './components/AboutMe.jsx'
 import CoachView from './components/CoachView.jsx'
+import { PageHeader } from './components/ui/Page.jsx'
 import { profile } from './data/profile.js'
 import { universities } from './data/schools.js'
 import { computeMatches } from './lib/score.js'
@@ -114,52 +115,69 @@ export default function App() {
         )
       case 'ranking':
         return (
-          <section className="panel overflow-hidden">
-            {/* Bandeau de stats — cellules séparées par des filets, pas des cartes */}
-            <div className="grid grid-cols-2 gap-px sm:grid-cols-4" style={{ background: 'var(--border)' }}>
-              <StatCell label={t('Meilleur match', 'Best match')} value={`${topMatch.match}`} sub={topMatch.shortName} accent="#16a34a" />
-              <StatCell label={t('Réalistes', 'Safety')} value={counts.safety} sub={t('dans tes cordes', 'in your range')} accent="#16a34a" />
-              <StatCell label={t('Objectifs', 'Targets')} value={counts.target} sub={t('à ta portée', 'within reach')} accent="#0ea5e9" />
-              <StatCell label={t('Ambitieux', 'Reach')} value={counts.reach} sub={t('la Road to D1', 'the Road to D1')} accent="#f59e0b" />
-            </div>
+          <div className="space-y-4">
+            <PageHeader
+              icon="trophy"
+              title={t('Classement', 'Rankings')}
+              subtitle={t('Les universités classées par compatibilité avec ton profil.', 'Universities ranked by fit with your profile.')}
+            />
+
+            {/* Bandeau de stats — cellules séparées par des filets */}
+            <section className="panel overflow-hidden">
+              <div className="grid grid-cols-2 gap-px sm:grid-cols-4" style={{ background: 'var(--border)' }}>
+                <StatCell label={t('Meilleur match', 'Best match')} value={`${topMatch.match}`} sub={topMatch.shortName} accent="#16a34a" />
+                <StatCell label={t('Réalistes', 'Safety')} value={counts.safety} sub={t('dans tes cordes', 'in your range')} accent="#16a34a" />
+                <StatCell label={t('Objectifs', 'Targets')} value={counts.target} sub={t('à ta portée', 'within reach')} accent="#0ea5e9" />
+                <StatCell label={t('Ambitieux', 'Reach')} value={counts.reach} sub={t('la Road to D1', 'the Road to D1')} accent="#f59e0b" />
+              </div>
+            </section>
 
             {/* Filtres */}
-            <div className="border-t border-hair p-4 sm:p-5">
+            <section className="panel p-4 sm:p-5">
               <Filters filters={filters} setFilters={setFilters} count={filtered.length} />
-            </div>
+            </section>
 
             {/* Liste des universités — lignes séparées par un filet */}
-            {filtered.length === 0 ? (
-              <p className="border-t border-hair p-10 text-center text-secondary">
-                {t('Aucune université ne correspond à ces filtres.', 'No university matches these filters.')}
-              </p>
-            ) : (
-              <div className="row-list">
-                {filteredLoc.map((u) => (
-                  <UniversityCard key={u.id} u={u} profile={profile} isFav={favorites.has(u.id)} onToggleFav={toggleFav} />
-                ))}
-              </div>
-            )}
-          </section>
+            <section className="panel overflow-hidden">
+              {filtered.length === 0 ? (
+                <p className="p-10 text-center text-secondary">
+                  {t('Aucune université ne correspond à ces filtres.', 'No university matches these filters.')}
+                </p>
+              ) : (
+                <div className="row-list">
+                  {filteredLoc.map((u) => (
+                    <UniversityCard key={u.id} u={u} profile={profile} isFav={favorites.has(u.id)} onToggleFav={toggleFav} />
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
         )
       case 'favorites':
         return (
-          <section className="panel overflow-hidden">
-            {favUnis.length === 0 ? (
-              <div className="p-10 text-center">
-                <p className="font-semibold text-heading">{t('Pas encore de favoris', 'No favorites yet')}</p>
-                <p className="mt-1 text-sm text-secondary">
-                  {t("Clique sur l'étoile d'une fac dans le classement pour la sauvegarder ici.", 'Click a school’s star in the rankings to save it here.')}
-                </p>
-              </div>
-            ) : (
-              <div className="row-list">
-                {favLoc.map((u) => (
-                  <UniversityCard key={u.id} u={u} profile={profile} isFav onToggleFav={toggleFav} />
-                ))}
-              </div>
-            )}
-          </section>
+          <div className="space-y-4">
+            <PageHeader
+              icon="star"
+              title={t('Favoris', 'Favorites')}
+              subtitle={t('Les universités que tu as mises en favori.', 'The schools you starred.')}
+            />
+            <section className="panel overflow-hidden">
+              {favUnis.length === 0 ? (
+                <div className="p-10 text-center">
+                  <p className="font-semibold text-heading">{t('Pas encore de favoris', 'No favorites yet')}</p>
+                  <p className="mt-1 text-sm text-secondary">
+                    {t("Clique sur l'étoile d'une fac dans le classement pour la sauvegarder ici.", 'Click a school’s star in the rankings to save it here.')}
+                  </p>
+                </div>
+              ) : (
+                <div className="row-list">
+                  {favLoc.map((u) => (
+                    <UniversityCard key={u.id} u={u} profile={profile} isFav onToggleFav={toggleFav} />
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
         )
       case 'compare':
         return <Compare unis={favLoc} onToggleFav={toggleFav} />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { EVENTS, lcmToScy, formatTime } from '../lib/convert.js'
 import { loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
+import { PageHeader } from './ui/Page.jsx'
 
 const L = {
   en: {
@@ -71,33 +72,34 @@ export default function AthleteSheet({ profile, coachView = false }) {
 
   return (
     <div className="space-y-4">
-      <div className="panel overflow-hidden print-sheet mx-auto max-w-3xl">
-        {/* Barre d'actions (non imprimee) */}
-        <div className="no-print flex flex-wrap items-center justify-between gap-3 p-4">
-          <div>
-            <h2 className="font-display text-xl font-extrabold text-heading">{coachView ? tr('Fiche athlète', 'Athlete sheet') : tr('Ta fiche athlète', 'Your athlete sheet')}</h2>
-            <p className="text-sm text-secondary">
-              {coachView
-                ? tr('Fiche de recrutement — télécharge-la en PDF.', 'Recruiting profile — download it as PDF.')
-                : tr(
-                    'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
-                    'To send to US coaches. Fill in the fields, then export to PDF. (Follows the site language — switch to EN for coaches.)',
-                  )}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+      {/* En-tête de page (non imprimé) */}
+      <div className="no-print">
+        <PageHeader
+          icon="doc"
+          title={coachView ? tr('Fiche athlète', 'Athlete sheet') : tr('Ta fiche athlète', 'Your athlete sheet')}
+          subtitle={
+            coachView
+              ? tr('Fiche de recrutement — télécharge-la en PDF.', 'Recruiting profile — download it as PDF.')
+              : tr(
+                  'À envoyer aux coachs US. Remplis les champs, puis exporte en PDF. (Suit la langue du site — passe en EN pour les coachs.)',
+                  'To send to US coaches. Fill in the fields, then export to PDF. (Follows the site language — switch to EN for coaches.)',
+                )
+          }
+          action={
             <button
               onClick={() => window.print()}
-              className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-flag-600"
+              className="rounded-full bg-flag-500 px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-flag-600"
             >
               {tr('Exporter / Imprimer (PDF)', 'Export / Print (PDF)')}
             </button>
-          </div>
-        </div>
+          }
+        />
+      </div>
 
+      <div className="panel overflow-hidden print-sheet mx-auto max-w-3xl">
         {/* Panneau d'edition (non imprime) — masqué en vue coach */}
         {!coachView && (
-        <div className="no-print border-t border-hair p-4">
+        <div className="no-print border-b border-hair p-4">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-tertiary">{tr('Compléter ta fiche', 'Complete your sheet')}</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {FIELDS.map((f) => (
