@@ -43,6 +43,8 @@ const FIELDS = [
   { key: 'sat', label: { en: 'SAT / ACT', fr: 'SAT / ACT' }, ph: { en: 'coming soon', fr: 'à venir' } },
   { key: 'english', label: { en: 'English test', fr: "Test d'anglais" }, ph: { en: 'TOEFL/Duolingo coming', fr: 'TOEFL/Duolingo à venir' } },
   { key: 'videoUrl', label: { en: 'Race video (URL)', fr: 'Vidéo (lien)' }, ph: { en: 'https://youtube.com/...', fr: 'https://youtube.com/...' } },
+  { key: 'ncaaEligibility', label: { en: 'NCAA eligibility (FAQ)', fr: 'Éligibilité NCAA (FAQ)' }, ph: { en: 'Eligibility Center: in progress', fr: 'Eligibility Center : en cours' } },
+  { key: 'visaStatus', label: { en: 'Visa status (FAQ)', fr: 'Visa (FAQ)' }, ph: { en: 'F-1 planned (I-20 on offer)', fr: 'F-1 prévu (I-20 à l’offre)' } },
 ]
 
 export default function AthleteSheet({ profile, coachView = false }) {

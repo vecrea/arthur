@@ -16,6 +16,7 @@ import Steps from './components/Steps.jsx'
 import Ia from './components/Ia.jsx'
 import AboutMe from './components/AboutMe.jsx'
 import CoachView from './components/CoachView.jsx'
+import Inbox from './components/Inbox.jsx'
 import { PageHeader } from './components/ui/Page.jsx'
 import { profile } from './data/profile.js'
 import { universities } from './data/schools.js'
@@ -201,6 +202,8 @@ export default function App() {
         return <Ia />
       case 'profile':
         return <ProfileCard profile={profile} />
+      case 'messages':
+        return <Inbox />
       default:
         return null
     }

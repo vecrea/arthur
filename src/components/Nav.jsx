@@ -28,6 +28,7 @@ export const NAV = [
   {
     title: ['Mon dossier', 'My file'],
     items: [
+      { key: 'messages', icon: 'inbox', fr: 'Messages coachs', en: 'Coach messages' },
       { key: 'sheet', icon: 'doc', fr: 'Ma fiche', en: 'My sheet' },
       { key: 'steps', icon: 'steps', fr: 'Démarches', en: 'Steps' },
       { key: 'ia', icon: 'sparkles', fr: 'Assistant IA', en: 'AI' },

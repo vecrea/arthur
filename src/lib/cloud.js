@@ -13,7 +13,7 @@
 // ---------------------------------------------------------------------------
 import { initializeApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
-import { initializeFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { initializeFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc, onSnapshot, query, orderBy, updateDoc, deleteDoc } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBrpI9uwQ5wBu6WoJcvN6QPIUdjJ5ljsqU',
@@ -52,6 +52,8 @@ const auth = getAuth(app)
 // Long-polling auto-détecté : plus robuste derrière certains réseaux/proxys.
 const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true })
 const ref = doc(db, DOC_COLLECTION, DOC_ID)
+// Boîte de réception des coachs : création publique, lecture réservée au propriétaire (voir règles).
+const inboxCol = collection(db, 'inbox')
 
 let currentUser = null
 let loadedAt = 0 // ms de la version cloud actuellement appliquée en local
@@ -254,4 +256,61 @@ export async function cloudSignOut() {
 
 export function cloudCurrentUser() {
   return currentUser
+}
+
+// --- Boîte de réception coachs -------------------------------------------
+// Un coach (non connecté) dépose un message ; l'athlète (connecté) le lit.
+
+export async function submitCoachMessage(payload) {
+  const clean = {
+    type: String(payload.type || 'message').slice(0, 40),
+    coachName: String(payload.coachName || '').slice(0, 300),
+    team: String(payload.team || '').slice(0, 300),
+    position: String(payload.position || '').slice(0, 160),
+    coachEmail: String(payload.coachEmail || '').slice(0, 300),
+    message: String(payload.message || '').slice(0, 4000),
+    requestKinds: Array.isArray(payload.requestKinds) ? payload.requestKinds.slice(0, 12).map((x) => String(x).slice(0, 80)) : [],
+    slots: String(payload.slots || '').slice(0, 600),
+    createdAt: serverTimestamp(),
+    read: false,
+  }
+  await addDoc(inboxCol, clean)
+}
+
+// Abonnement temps réel à la boîte (login requis). Renvoie une fonction de désinscription.
+export function subscribeInbox(onItems, onError) {
+  try {
+    const q = query(inboxCol, orderBy('createdAt', 'desc'))
+    return onSnapshot(
+      q,
+      (snap) => {
+        const items = []
+        snap.forEach((d) => items.push({ id: d.id, ...d.data() }))
+        onItems(items)
+      },
+      (e) => {
+        console.warn('[cloud] inbox', e)
+        onError && onError(e)
+      },
+    )
+  } catch (e) {
+    onError && onError(e)
+    return () => {}
+  }
+}
+
+export async function markInboxRead(id, read = true) {
+  try {
+    await updateDoc(doc(db, 'inbox', id), { read })
+  } catch (e) {
+    console.warn('[cloud] markInboxRead', e)
+  }
+}
+
+export async function deleteInboxEntry(id) {
+  try {
+    await deleteDoc(doc(db, 'inbox', id))
+  } catch (e) {
+    console.warn('[cloud] deleteInboxEntry', e)
+  }
 }

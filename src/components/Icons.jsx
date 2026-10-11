@@ -24,6 +24,11 @@ const PATHS = {
   arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
   chevron: <path d="m9 6 6 6-6 6" />,
   calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
+  mail: <><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 6 10 7L22 6" /></>,
+  inbox: <><path d="M22 12h-5l-2 3h-6l-2-3H2" /><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z" /></>,
+  reply: <><path d="M9 17 4 12l5-5" /><path d="M4 12h11a4 4 0 0 1 4 4v3" /></>,
+  trash: <><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" /></>,
+  check: <path d="M20 6 9 17l-5-5" />,
 }
 
 export default function Icon({ name, className = 'h-5 w-5' }) {

@@ -6,6 +6,8 @@ rules_version = '2';
 // Modèle « login » :
 //   - LECTURE publique du document de l'athlète (les coachs doivent voir la page ?coach).
 //   - ÉCRITURE réservée au propriétaire (ton compte, via son UID).
+//   - BOÎTE DE RÉCEPTION (inbox) : un coach non connecté peut DÉPOSER un message
+//     (create), mais seul le propriétaire peut le lire / le gérer.
 //   - Tout le reste de la base est fermé.
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -15,6 +17,19 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null
                    && request.auth.uid == "6hvjif4GR6Q5Ue0eNajvwVqeX8S2";
+    }
+
+    // Boîte de réception : messages des coachs (intérêt, demandes, questions, mots).
+    match /inbox/{msg} {
+      // Toi seul peux lire, marquer lu, supprimer.
+      allow read, update, delete: if request.auth != null
+                                  && request.auth.uid == "6hvjif4GR6Q5Ue0eNajvwVqeX8S2";
+      // N'importe quel coach peut déposer un message (création uniquement), avec garde-fous.
+      allow create: if request.resource.data.read == false
+                    && request.resource.data.type is string
+                    && request.resource.data.size() <= 12
+                    && (!('message' in request.resource.data) || request.resource.data.message.size() <= 4000)
+                    && (!('coachName' in request.resource.data) || request.resource.data.coachName.size() <= 300);
     }
 
     // Par défaut : rien d'autre n'est lisible ni modifiable.
