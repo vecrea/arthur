@@ -38,10 +38,10 @@ export default function DownloadPacket({ profile }) {
   const { t, lang } = useLang()
   return (
     <div className="flex flex-wrap gap-3">
-      <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-full bg-flag-500 px-5 py-2.5 text-sm font-bold text-white shadow transition hover:bg-flag-600">
+      <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-full bg-cyan-400 px-6 py-3 text-sm font-bold text-[#05070f] shadow-[0_0_26px_rgba(45,212,238,0.45)] transition hover:shadow-[0_0_40px_rgba(45,212,238,0.75)]">
         <Icon name="doc" className="h-4 w-4" /> {t('Fiche de recrutement (PDF)', 'Recruiting sheet (PDF)')}
       </button>
-      <button onClick={() => downloadVCard(profile, lang)} className="inline-flex items-center gap-2 rounded-full surface-2 border border-hair px-5 py-2.5 text-sm font-bold text-primary transition hover:surface-3">
+      <button onClick={() => downloadVCard(profile, lang)} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
         <Icon name="user" className="h-4 w-4" /> {t('Enregistrer le contact (vCard)', 'Save contact (vCard)')}
       </button>
     </div>

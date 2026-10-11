@@ -311,6 +311,33 @@
 .print-only { display: none; }
 @media print { .print-only { display: block !important; } }
 
+/* Sur la page cinématique (écran uniquement), les composants réutilisés
+   (présentation, test des temps, formulaires…) passent en « verre » pour
+   fondre dans l'ambiance sombre. L'impression garde ses propres règles. */
+@media screen {
+  .cine-root .panel:not(.print-sheet) {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.09);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .cine-root .surface { background: rgba(255, 255, 255, 0.03); }
+  .cine-root .surface-2 { background: rgba(255, 255, 255, 0.06); }
+  .cine-root .surface-3 { background: rgba(255, 255, 255, 0.1); }
+  .cine-root .border-hair { border-color: rgba(255, 255, 255, 0.1); }
+  .cine-root .border-hair-strong { border-color: rgba(255, 255, 255, 0.18); }
+  .cine-root .field { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.16); }
+  /* CTA principaux en cyan néon pour coller à l'ambiance. */
+  .cine-root .btn-primary {
+    background-image: linear-gradient(120deg, #2dd4ee 0%, #0a9fd0 100%);
+    color: #05070f;
+    box-shadow: 0 0 26px rgba(45, 212, 238, 0.4);
+  }
+  .cine-root .btn-primary:hover { box-shadow: 0 0 40px rgba(45, 212, 238, 0.7); }
+  .cine-root .pill-active { background-color: #2dd4ee; color: #05070f; }
+}
+
 /* Carte « verre » sombre pour la page cinématique. */
 .cine-card {
   background: rgba(255, 255, 255, 0.035);

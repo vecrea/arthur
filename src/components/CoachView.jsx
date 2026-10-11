@@ -72,7 +72,7 @@ export default function CoachView({ profile }) {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#05070f] text-white" style={{ fontFamily: 'var(--font-sans)' }}>
+    <div className="cine-root min-h-screen bg-[#05070f] text-white" style={{ fontFamily: 'var(--font-sans)' }}>
       {/* Barre de progression */}
       <div className="no-print fixed left-0 top-0 z-50 h-[3px] bg-gradient-to-r from-cyan-400 to-sky-400 shadow-[0_0_12px_rgba(45,212,238,0.7)]" style={{ width: `${prog}%` }} />
 
