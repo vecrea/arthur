@@ -8,6 +8,7 @@ import CoachRequests from './coach/CoachRequests.jsx'
 import CoachFaq from './coach/CoachFaq.jsx'
 import DownloadPacket from './coach/DownloadPacket.jsx'
 import { Reveal, Counter, Marquee, PoolCanvas } from './coach/cine.jsx'
+import PortraitReveal from './coach/PortraitReveal.jsx'
 import { EVENTS, lcmToScy, formatTime, scyLevel, LEVELS, athleteLevel, STROKE_EN } from '../lib/convert.js'
 import { loadAbout, loadProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
@@ -101,30 +102,45 @@ export default function CoachView({ profile }) {
         {/* ============ HERO ============ */}
         <section className="grain relative flex min-h-[100svh] items-center overflow-hidden">
           <PoolCanvas className="absolute inset-0 h-full w-full" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#05070f]/40 via-transparent to-[#05070f]" />
-          <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-20">
-            <Reveal><div className="mb-5 text-[11px] font-bold uppercase tracking-[0.4em] text-cyan-300/90">Road to NCAA — Recruiting {profile.usEntryYear}</div></Reveal>
-            <Reveal delay={0.08}>
-              <h1 className="font-cine uppercase leading-[0.82] text-white cine-glow" style={{ fontSize: 'clamp(4.5rem, 20vw, 15rem)' }}>{profile.name}</h1>
-            </Reveal>
-            <Reveal delay={0.16}>
-              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75 sm:text-xl">
-                {t('Nageur belge de', 'Belgian swimmer,')} {age} {t('ans', 'years old')} · {specialty}. <span className="text-cyan-300">{t('Cap sur la NCAA Division 1.', 'Aiming for NCAA Division 1.')}</span>
-              </p>
-            </Reveal>
-            <Reveal delay={0.24}>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <button onClick={() => scrollTo('contact')} className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-cyan-400 px-7 py-3.5 text-sm font-bold text-[#05070f] shadow-[0_0_30px_rgba(45,212,238,0.5)] transition hover:shadow-[0_0_44px_rgba(45,212,238,0.8)]">
-                  {t('Je suis intéressé(e)', 'I’m interested')} <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                </button>
-                <button onClick={() => scrollTo('file')} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
-                  <Icon name="doc" className="h-4 w-4" /> {t('Le dossier', 'The packet')}
-                </button>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#05070f]/30 via-transparent to-[#05070f]" />
+          <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-4 px-6 pb-10 pt-24 lg:grid-cols-[1.08fr_0.92fr] lg:gap-8 lg:pt-16">
+            {/* Texte */}
+            <div className="order-2 lg:order-1">
+              <Reveal><div className="mb-4 text-[11px] font-bold uppercase tracking-[0.38em] text-cyan-300/90">Road to NCAA — Recruiting {profile.usEntryYear}</div></Reveal>
+              <Reveal delay={0.08}>
+                <h1 className="font-cine uppercase leading-[0.8] text-white cine-glow" style={{ fontSize: 'clamp(3.5rem, 12vw, 9rem)' }}>{profile.name}</h1>
+              </Reveal>
+              <Reveal delay={0.16}>
+                <p className="mt-4 max-w-md text-base leading-relaxed text-white/75 sm:text-lg">
+                  {t('Nageur belge,', 'Belgian swimmer,')} {age} {t('ans', 'years old')} · {specialty}. <span className="text-cyan-300">{t('Cap sur la NCAA Division 1.', 'Aiming for NCAA Division 1.')}</span>
+                </p>
+              </Reveal>
+              <Reveal delay={0.24}>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <button onClick={() => scrollTo('contact')} className="group inline-flex items-center gap-2 rounded-full bg-cyan-400 px-7 py-3.5 text-sm font-bold text-[#05070f] shadow-[0_0_30px_rgba(45,212,238,0.5)] transition hover:shadow-[0_0_44px_rgba(45,212,238,0.85)]">
+                    {t('Je suis intéressé(e)', 'I’m interested')} <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                  </button>
+                  <button onClick={() => scrollTo('file')} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
+                    <Icon name="doc" className="h-4 w-4" /> {t('Le dossier', 'The packet')}
+                  </button>
+                </div>
+              </Reveal>
+            </div>
+
+            {/* Portrait à révélation (bonnet + lunettes au survol) */}
+            <Reveal delay={0.12} className="order-1 lg:order-2">
+              <div className="relative mx-auto h-[40vh] w-full max-w-xs sm:max-w-sm lg:h-[74vh] lg:max-w-none">
+                <PortraitReveal className="h-full w-full" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-1 flex justify-center">
+                  <span className="cine-float rounded-full bg-white/10 px-3.5 py-1.5 text-[11px] font-semibold text-white/85 ring-1 ring-white/15 backdrop-blur">
+                    {t('Survolez / touchez le portrait', 'Hover / tap the portrait')} <span className="text-cyan-300">✦</span>
+                  </span>
+                </div>
               </div>
             </Reveal>
           </div>
           {/* Indicateur de scroll */}
-          <div className="pointer-events-none absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2">
+          <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2">
             <div className="flex h-9 w-5 justify-center rounded-full border border-white/25 pt-1.5">
               <span className="h-1.5 w-1 rounded-full bg-cyan-300 cine-scrolldot" />
             </div>

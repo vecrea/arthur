@@ -104,6 +104,17 @@ export function PoolCanvas({ className = '' }) {
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
 
+    // Pause l'animation quand le hero n'est plus visible (batterie / perf).
+    let visible = true
+    const vo = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        visible = e.isIntersecting
+        if (visible && !reduce && raf == null) raf = requestAnimationFrame(frame)
+      }),
+      { threshold: 0 },
+    )
+    vo.observe(canvas)
+
     const waves = [
       { amp: 24, len: 0.0085, sp: 0.55, y: 0.33, col: 'rgba(45,212,238,0.11)', lw: 2 },
       { amp: 18, len: 0.012, sp: -0.85, y: 0.5, col: 'rgba(56,189,248,0.08)', lw: 1.5 },
@@ -144,11 +155,11 @@ export function PoolCanvas({ className = '' }) {
         ctx.fillStyle = `rgba(160,235,255,${p.o})`
         ctx.fill()
       }
-      raf = requestAnimationFrame(frame)
+      raf = visible ? requestAnimationFrame(frame) : null
     }
 
-    if (reduce) { frame(); cancelAnimationFrame(raf) } else frame()
-    return () => { cancelAnimationFrame(raf); ro.disconnect() }
+    if (reduce) { frame(); cancelAnimationFrame(raf); raf = null } else frame()
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); vo.disconnect() }
   }, [])
   return <canvas ref={ref} className={className} aria-hidden="true" />
 }
