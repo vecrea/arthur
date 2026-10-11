@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import Header from './components/Header.jsx'
+import { Sidebar, TopBar } from './components/Nav.jsx'
 import Filters, { MAJOR_CONFERENCES } from './components/Filters.jsx'
 import UniversityCard from './components/UniversityCard.jsx'
 import ProfileCard from './components/ProfileCard.jsx'
@@ -192,27 +192,31 @@ export default function App() {
   if (coachMode) return <CoachView profile={profile} theme={theme} setTheme={setTheme} />
 
   return (
-    <div className="min-h-screen">
-      <Header tab={tab} setTab={setTab} favCount={favorites.size} theme={theme} setTheme={setTheme} />
+    <div className="flex min-h-screen">
+      <Sidebar tab={tab} setTab={setTab} favCount={favorites.size} theme={theme} setTheme={setTheme} />
 
-      <main className="mx-auto px-5 lg:px-8 xl:px-12 py-6">
-        {/* key={tab} : le contenu se remonte à chaque onglet → l'animation se rejoue */}
-        <div key={tab} className="animate-tab">
-          {renderTab()}
-        </div>
-      </main>
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+        <TopBar tab={tab} setTab={setTab} favCount={favorites.size} theme={theme} setTheme={setTheme} />
 
-      <footer className="no-print mx-auto px-5 lg:px-8 xl:px-12 pb-10">
-        <div className="px-1 text-xs text-secondary">
-          {t(
-            "Données indicatives (MVP). La sélection d'universités, les coûts et la force des programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine étape : enrichissement via College Scorecard (données officielles US) + suivi des démarches et IA.",
-            'Indicative data (MVP). The university selection, costs and swim-program strength are a first basis to verify against official 2025-26 rosters/sites. Next step: enrichment via College Scorecard (official US data) + steps tracking and AI.',
-          )}
-        </div>
-        <p className="mt-3 text-center text-xs text-tertiary">
-          Road to NCAA · {t('fait pour', 'made for')} {profile.name}
-        </p>
-      </footer>
+        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-6 lg:px-8 xl:px-10">
+          {/* key={tab} : le contenu se remonte à chaque onglet → l'animation se rejoue */}
+          <div key={tab} className="animate-tab">
+            {renderTab()}
+          </div>
+        </main>
+
+        <footer className="no-print mx-auto w-full max-w-6xl px-5 pb-10 lg:px-8 xl:px-10">
+          <div className="px-1 text-xs text-secondary">
+            {t(
+              "Données indicatives (MVP). La sélection d'universités, les coûts et la force des programmes de natation sont une première base à vérifier sur les rosters/sites officiels 2025-26. Prochaine étape : enrichissement via College Scorecard (données officielles US) + suivi des démarches et IA.",
+              'Indicative data (MVP). The university selection, costs and swim-program strength are a first basis to verify against official 2025-26 rosters/sites. Next step: enrichment via College Scorecard (official US data) + steps tracking and AI.',
+            )}
+          </div>
+          <p className="mt-3 text-center text-xs text-tertiary">
+            Road to NCAA · {t('fait pour', 'made for')} {profile.name}
+          </p>
+        </footer>
+      </div>
     </div>
   )
 }
