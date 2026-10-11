@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import AboutMe from './AboutMe.jsx'
 import AthleteSheet from './AthleteSheet.jsx'
 import Icon from './Icons.jsx'
@@ -7,67 +7,28 @@ import CoachMessageForm from './coach/CoachMessageForm.jsx'
 import CoachRequests from './coach/CoachRequests.jsx'
 import CoachFaq from './coach/CoachFaq.jsx'
 import DownloadPacket from './coach/DownloadPacket.jsx'
-import { athleteLevel, LEVELS } from '../lib/convert.js'
+import { Reveal, Counter, Marquee, PoolCanvas } from './coach/cine.jsx'
+import { EVENTS, lcmToScy, formatTime, scyLevel, LEVELS, athleteLevel, STROKE_EN } from '../lib/convert.js'
 import { loadAbout, loadProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
-// Puce de contact (en-tête) : affiche la valeur, la copie au clic (« Copié ✓ »),
-// et garde l'ouverture mail/tél là où un gestionnaire existe (mobile).
-function ContactChip({ href, value, icon }) {
-  const { t } = useLang()
-  const [copied, setCopied] = useState(false)
-  const onClick = () => {
-    try {
-      navigator.clipboard?.writeText(value)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1600)
-    } catch {
-      /* ignore */
-    }
-  }
-  return (
-    <a
-      href={href}
-      onClick={onClick}
-      title={t('Cliquer pour copier', 'Click to copy')}
-      className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/20"
-    >
-      {icon}
-      <span className="max-w-[13rem] truncate">{copied ? t('Copié ✓', 'Copied ✓') : value}</span>
-    </a>
-  )
-}
-
-// Bloc d'action coach (carte, non imprimé) : icône + titre + contenu.
-function Block({ icon, title, subtitle, id, children }) {
-  const { t } = useLang()
-  return (
-    <section id={id} className="no-print panel p-5 sm:p-6">
-      <div className="mb-4 flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent ring-1 ring-[color-mix(in_srgb,var(--accent)_22%,transparent)]">
-          <Icon name={icon} className="h-5 w-5" />
-        </span>
-        <div className="min-w-0">
-          <h3 className="font-display text-lg font-extrabold leading-tight text-heading">{title}</h3>
-          {subtitle && <p className="text-sm text-secondary">{subtitle}</p>}
-        </div>
-      </div>
-      {children}
-    </section>
-  )
-}
-
 // ---------------------------------------------------------------------------
-// Vue coach (page `?coach`) : atterrissage orienté ACTION pour un coach US.
-// En-tête + présentation + progression + fiche (lecture seule), puis des outils :
-// test des temps, contact/intérêt, demandes, FAQ, mot, téléchargement.
-// Les messages des coachs arrivent dans la boîte de réception de l'athlète.
+// Vue coach « cinématique » (page ?coach) : expérience immersive sombre + néon
+// aqua, typo géante, animations au scroll — inspirée des sites de sportifs
+// premium. Garde et met en avant tous les outils (contact, test des temps,
+// FAQ, demandes, mot, téléchargement) ; la fiche PDF reste imprimable.
 // ---------------------------------------------------------------------------
-export default function CoachView({ profile, theme, setTheme }) {
+export default function CoachView({ profile }) {
   const { t, lang, setLang } = useLang()
-  const dark = theme === 'dark'
+
+  // La page coach est toujours sombre (cinématique).
+  useEffect(() => {
+    const prev = document.documentElement.dataset.theme
+    document.documentElement.dataset.theme = 'dark'
+    return () => { document.documentElement.dataset.theme = prev }
+  }, [])
 
   const about = useMemo(() => loadAbout(), [])
   const extras = useMemo(() => loadProfileExtras(), [])
@@ -81,165 +42,299 @@ export default function CoachView({ profile, theme, setTheme }) {
   const phone = about.phone || extras.phone || ''
   const specialty = lang === 'en' ? profile.specialtyEn : profile.specialty
 
+  const age = Math.floor((Date.now() - new Date(profile.birthDate)) / (365.25 * 864e5))
+  const today = new Date()
+  const target = new Date(`${profile.usEntryYear}-08-15`)
+  const days = Math.max(0, Math.ceil((target - today) / 86400000))
+  const months = Math.round(days / 30.44)
+
+  const times = useMemo(
+    () => EVENTS.filter((ev) => profile.times?.[ev.key] != null).map((ev) => {
+      const lcm = profile.times[ev.key]
+      return { ev, lcm, scy: lcmToScy(lcm, ev.distance) }
+    }),
+    [profile],
+  )
+  const bestFree = times.find((x) => x.ev.key === '50FR') || times[0]
+
+  // Barre de progression du scroll.
+  const [prog, setProg] = useState(0)
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement
+      const max = h.scrollHeight - h.clientHeight
+      setProg(max > 0 ? (h.scrollTop / max) * 100 : 0)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <div className="min-h-screen">
-      {/* Barre du haut minimaliste : marque + thème + langue */}
-      <header className="no-print topbar sticky top-0 z-30">
-        <div className="mx-auto flex items-center justify-between gap-4 px-5 py-4 lg:px-8 xl:px-12">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-sm ring-1 ring-white/10" style={{ background: 'linear-gradient(135deg,#0e88d3,#0b1524)' }}>
+    <div className="min-h-screen bg-[#05070f] text-white" style={{ fontFamily: 'var(--font-sans)' }}>
+      {/* Barre de progression */}
+      <div className="no-print fixed left-0 top-0 z-50 h-[3px] bg-gradient-to-r from-cyan-400 to-sky-400 shadow-[0_0_12px_rgba(45,212,238,0.7)]" style={{ width: `${prog}%` }} />
+
+      {/* En-tête fixe translucide */}
+      <header className="no-print fixed inset-x-0 top-0 z-40">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl text-white ring-1 ring-white/15" style={{ background: 'linear-gradient(135deg,#22d3ee,#0a6bb0)' }}>
               <Wave />
             </div>
-            <div className="leading-tight">
-              <div className="font-display text-xl font-extrabold tracking-tight text-heading sm:text-2xl">
-                Road to <span className="text-pool-500">NCAA</span>
-              </div>
-              <div className="text-[11px] font-medium text-tertiary">{t('Profil recrutement · vue coach', 'Recruiting profile · coach view')}</div>
-            </div>
+            <div className="font-display text-sm font-extrabold tracking-tight text-white">Road to <span className="text-cyan-300">NCAA</span></div>
           </div>
-
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setTheme(dark ? 'light' : 'dark')}
-              aria-label={dark ? t('Passer en clair', 'Switch to light') : t('Passer en sombre', 'Switch to dark')}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-hair text-secondary transition hover:text-heading surface-2"
-            >
-              {dark ? <Sun /> : <Moon />}
+            <button onClick={() => scrollTo('contact')} className="hidden rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20 sm:inline-block">
+              {t('Contact', 'Contact')}
             </button>
-            <div className="inline-flex rounded-lg border border-hair surface-2 p-0.5 text-xs font-semibold">
+            <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-0.5 text-xs font-semibold backdrop-blur">
               {['fr', 'en'].map((lg) => (
-                <button key={lg} onClick={() => setLang(lg)} aria-label={lg === 'fr' ? 'Français' : 'English'} className={'rounded-md px-2.5 py-1 transition ' + (lang === lg ? 'pill-active shadow-sm' : 'text-secondary hover:text-heading')}>
-                  {lg.toUpperCase()}
-                </button>
+                <button key={lg} onClick={() => setLang(lg)} className={'rounded-md px-2.5 py-1 transition ' + (lang === lg ? 'bg-cyan-400 text-[#05070f]' : 'text-white/70 hover:text-white')}>{lg.toUpperCase()}</button>
               ))}
             </div>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl space-y-4 px-5 py-6 lg:px-8">
-        {/* En-tête (bandeau navy) + CTA */}
-        <section className="no-print panel-dark grain relative overflow-hidden">
-          <div className="relative z-10 bg-gradient-to-r from-navy-900 to-navy-800 p-6 text-white sm:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h1 className="font-display text-3xl font-black leading-none tracking-tight sm:text-4xl">{profile.name}</h1>
-                <p className="mt-2 text-white/90">
-                  {t('Promo', 'Class of')} {profile.usEntryYear} · {t('Nageur belge', 'Belgian swimmer')} · {specialty}
-                </p>
-                {lvl && (
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold text-white" style={{ background: lvl.color }}>
-                      {t('Niveau actuel', 'Current level')} : {lang === 'en' ? lvl.shortEn : lvl.short}
-                    </span>
-                    {proj && projLevel > curLevel && (
-                      <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold text-white ring-1 ring-white/25" style={{ background: proj.color }}>
-                        {t('Objectif', 'Target')} {profile.usEntryYear} : {lang === 'en' ? proj.shortEn : proj.short}
-                      </span>
-                    )}
-                  </div>
-                )}
+      <div className="no-print">
+        {/* ============ HERO ============ */}
+        <section className="grain relative flex min-h-[100svh] items-center overflow-hidden">
+          <PoolCanvas className="absolute inset-0 h-full w-full" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#05070f]/40 via-transparent to-[#05070f]" />
+          <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-20">
+            <Reveal><div className="mb-5 text-[11px] font-bold uppercase tracking-[0.4em] text-cyan-300/90">Road to NCAA — Recruiting {profile.usEntryYear}</div></Reveal>
+            <Reveal delay={0.08}>
+              <h1 className="font-cine uppercase leading-[0.82] text-white cine-glow" style={{ fontSize: 'clamp(4.5rem, 20vw, 15rem)' }}>{profile.name}</h1>
+            </Reveal>
+            <Reveal delay={0.16}>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75 sm:text-xl">
+                {t('Nageur belge de', 'Belgian swimmer,')} {age} {t('ans', 'years old')} · {specialty}. <span className="text-cyan-300">{t('Cap sur la NCAA Division 1.', 'Aiming for NCAA Division 1.')}</span>
+              </p>
+            </Reveal>
+            <Reveal delay={0.24}>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <button onClick={() => scrollTo('contact')} className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-cyan-400 px-7 py-3.5 text-sm font-bold text-[#05070f] shadow-[0_0_30px_rgba(45,212,238,0.5)] transition hover:shadow-[0_0_44px_rgba(45,212,238,0.8)]">
+                  {t('Je suis intéressé(e)', 'I’m interested')} <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                </button>
+                <button onClick={() => scrollTo('file')} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
+                  <Icon name="doc" className="h-4 w-4" /> {t('Le dossier', 'The packet')}
+                </button>
               </div>
-
-              <div className="flex flex-wrap gap-2">
-                {ig && (
-                  <a href={`https://instagram.com/${ig}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/20">
-                    <InstagramIcon /> @{ig}
-                  </a>
-                )}
-                {email && <ContactChip href={`mailto:${email}`} value={email} icon={<MailIcon />} />}
-                {phone && <ContactChip href={`tel:${phone}`} value={phone} icon={<PhoneIcon />} />}
-              </div>
-            </div>
-
-            {/* Appels à l'action */}
-            <div className="mt-6 flex flex-wrap gap-3">
-              <button onClick={() => scrollTo('contact')} className="inline-flex items-center gap-2 rounded-full bg-pool-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:bg-pool-400">
-                <Icon name="users" className="h-4 w-4" /> {t('Je suis intéressé(e)', 'I’m interested')}
-              </button>
-              <button onClick={() => scrollTo('download')} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 text-sm font-bold text-white ring-1 ring-white/20 transition hover:bg-white/20">
-                <Icon name="doc" className="h-4 w-4" /> {t('Télécharger le dossier', 'Download the packet')}
-              </button>
+            </Reveal>
+          </div>
+          {/* Indicateur de scroll */}
+          <div className="pointer-events-none absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2">
+            <div className="flex h-9 w-5 justify-center rounded-full border border-white/25 pt-1.5">
+              <span className="h-1.5 w-1 rounded-full bg-cyan-300 cine-scrolldot" />
             </div>
           </div>
         </section>
 
-        {/* Présentation + progression (lecture seule) */}
-        <div className="no-print">
-          <AboutMe profile={profile} coachView />
+        {/* ============ MARQUEE ============ */}
+        <div className="border-y border-white/10 bg-cyan-400/[0.04] py-4">
+          <Marquee
+            className="font-cine text-xl uppercase tracking-wide text-white/80 sm:text-2xl"
+            items={[`${t('Promo', 'Class of')} ${profile.usEntryYear}`, t('Nageur belge', 'Belgian swimmer'), 'Sprint Free & Back', 'NCAA Division 1', `${lang === 'en' ? proj.shortEn : proj.short}`, 'Road to USA']}
+          />
         </div>
 
-        {/* #2 · Teste mes temps contre vos standards */}
-        <Block icon="gauge" title={t('Teste mes temps contre vos standards', 'Test my times against your standards')} subtitle={t('Choisissez un niveau type ou entrez vos temps de recrutement — comparaison instantanée.', 'Pick a preset level or enter your recruiting cut times — instant comparison.')}>
-          <FitTool profile={profile} />
-        </Block>
+        {/* ============ STATS ============ */}
+        <section className="relative py-16 sm:py-20">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 text-center sm:grid-cols-4">
+            <Stat text={String(age)} label={t('ans', 'years old')} />
+            <Stat text={String(months)} label={t('mois avant la rentrée', 'months to enrollment')} count value={months} />
+            {bestFree && <Stat value={bestFree.scy} decimals={2} label={`${t('meilleur', 'best')} ${t(bestFree.ev.label, bestFree.ev.labelEn)} · yards`} count />}
+            <Stat text={lang === 'en' ? proj.shortEn : proj.short} label={t('objectif 2028', '2028 target')} glow={proj.color} />
+          </div>
+        </section>
 
-        {/* Fiche de recrutement (IMPRIMABLE) */}
+        {/* ============ LE NAGEUR (présentation + progression) ============ */}
+        <CineSection id="swimmer" eyebrow={t('Le nageur', 'The swimmer')} title={t('Qui est Arthur', 'Meet Arthur')}>
+          <AboutMe profile={profile} coachView />
+        </CineSection>
+
+        {/* ============ LES TEMPS ============ */}
+        <section className="relative py-20 sm:py-28">
+          <div className="mx-auto max-w-6xl px-6">
+            <SectionTitle eyebrow={t('Performances', 'Performances')} title={t('Les chronos', 'The times')} />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {times.map((x, i) => <TimeCard key={x.ev.key} {...x} delay={(i % 3) * 0.08} />)}
+            </div>
+            <Reveal className="mt-5 text-center text-sm text-white/50">
+              {t('Temps grand bassin (50 m) — conversion yards (SCY) indicative pour les standards US.', 'Long-course (50 m) times — indicative yards (SCY) conversion for US standards.')}
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ============ FIT TOOL ============ */}
+        <CineSection id="fit" eyebrow={t('Compatibilité', 'Fit')} title={t('À votre niveau ?', 'Does he fit?')}>
+          <div className="cine-card p-5 sm:p-7">
+            <p className="mb-5 text-white/70">{t('Choisissez le niveau de votre programme (ou entrez vos temps de recrutement) — la comparaison est instantanée.', 'Pick your program’s level (or enter your recruiting cut times) — the comparison is instant.')}</p>
+            <FitTool profile={profile} />
+          </div>
+        </CineSection>
+
+        {/* ============ LE DOSSIER ============ */}
+        <section id="file" className="relative py-20 sm:py-28">
+          <div className="mx-auto max-w-4xl px-6">
+            <SectionTitle eyebrow={t('Dossier', 'Packet')} title={t('Le dossier complet', 'The full packet')} />
+            <Reveal>
+              <div className="cine-card overflow-hidden p-7 text-center sm:p-10">
+                <p className="mx-auto mb-6 max-w-xl text-white/70">{t('La fiche de recrutement en PDF (académique, natation, meilleurs temps) + le contact d’Arthur à enregistrer d’un geste.', 'The recruiting sheet as a PDF (academics, swimming, best times) + Arthur’s contact to save in one tap.')}</p>
+                <div className="flex justify-center">
+                  <DownloadPacket profile={profile} />
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ============ CONTACT ============ */}
+        <section id="contact" className="relative overflow-hidden py-20 sm:py-28">
+          <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(60% 50% at 50% 0%, rgba(45,212,238,0.10), transparent 70%)' }} />
+          <div className="relative mx-auto max-w-3xl px-6">
+            <Reveal className="text-center">
+              <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-cyan-300/80">{t('Recrutement', 'Recruiting')}</div>
+              <h2 className="font-cine text-5xl uppercase leading-none text-white sm:text-7xl cine-glow">{t('Parlons-en', 'Let’s talk')}</h2>
+              <p className="mx-auto mt-4 max-w-xl text-white/70">{t('Présentez-vous — votre message arrive directement à Arthur.', 'Introduce yourself — your message goes straight to Arthur.')}</p>
+            </Reveal>
+
+            {(ig || email || phone) && (
+              <Reveal className="mt-7 flex flex-wrap justify-center gap-2.5">
+                {ig && <a href={`https://instagram.com/${ig}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"><InstagramIcon /> @{ig}</a>}
+                {email && <ContactChip href={`mailto:${email}`} value={email} icon={<MailIcon />} />}
+                {phone && <ContactChip href={`tel:${phone}`} value={phone} icon={<PhoneIcon />} />}
+              </Reveal>
+            )}
+
+            <Reveal delay={0.1} className="mt-8">
+              <div className="cine-card p-5 sm:p-7">
+                <CoachMessageForm type="interest" messagePlaceholder={t('Votre message (programme, intérêt, questions…)', 'Your message (program, interest, questions…)')} submitLabel={t('Envoyer à Arthur', 'Send to Arthur')} />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ============ OUTILS SUPPLÉMENTAIRES ============ */}
+        <section className="relative mx-auto max-w-6xl px-6 pb-24">
+          <div className="grid gap-5 lg:grid-cols-2">
+            <ToolCard icon="steps" title={t('Demandes rapides', 'Quick requests')} subtitle={t('Vidéo, relevé, appel, temps récents.', 'Video, transcript, call, latest times.')}><CoachRequests /></ToolCard>
+            <ToolCard icon="star" title={t('Laisser un mot', 'Leave a note')} subtitle={t('Un retour, un encouragement.', 'Feedback or encouragement.')}><CoachMessageForm type="note" minimal messagePlaceholder={t('Votre mot pour Arthur…', 'Your note for Arthur…')} submitLabel={t('Envoyer', 'Send')} /></ToolCard>
+          </div>
+          <div className="mt-5">
+            <ToolCard icon="book" title={t('Questions fréquentes', 'Recruiting FAQ')} subtitle={t('Académique, éligibilité, visa — déjà répondu.', 'Academics, eligibility, visa — already answered.')}><CoachFaq profile={profile} /></ToolCard>
+          </div>
+        </section>
+
+        {/* ============ FOOTER ============ */}
+        <footer className="border-t border-white/10 py-10 text-center">
+          <div className="font-cine text-2xl uppercase tracking-wide text-white/90">Road to <span className="text-cyan-300">NCAA</span></div>
+          <p className="mt-2 text-xs text-white/40">{t('Profil généré depuis les données de l’athlète', 'Profile generated from the athlete’s data')} · {profile.name} · {profile.usEntryYear}</p>
+        </footer>
+      </div>
+
+      {/* Fiche imprimable (écran : cachée ; impression : seule visible) */}
+      <div className="print-only">
         <AthleteSheet profile={profile} coachView />
-
-        {/* #1 · Contact / intérêt */}
-        <Block id="contact" icon="users" title={t('Intéressé(e) ? Contactez Arthur', 'Interested? Contact Arthur')} subtitle={t('Présentez-vous et laissez un message — il arrive directement à Arthur.', 'Introduce yourself and leave a message — it goes straight to Arthur.')}>
-          <CoachMessageForm type="interest" messagePlaceholder={t('Votre message (programme, intérêt, questions…)', 'Your message (program, interest, questions…)')} submitLabel={t('Envoyer à Arthur', 'Send to Arthur')} />
-        </Block>
-
-        {/* #3 · Demandes rapides */}
-        <Block icon="steps" title={t('Demandes rapides', 'Quick requests')} subtitle={t('Cochez ce dont vous avez besoin — Arthur vous l’envoie.', 'Tick what you need — Arthur will send it over.')}>
-          <CoachRequests />
-        </Block>
-
-        {/* #6 · FAQ */}
-        <Block icon="book" title={t('Questions fréquentes', 'Recruiting FAQ')} subtitle={t('Académique, éligibilité, visa — l’essentiel déjà répondu.', 'Academics, eligibility, visa — the essentials already answered.')}>
-          <CoachFaq profile={profile} />
-        </Block>
-
-        {/* #5 · Laisser un mot */}
-        <Block icon="star" title={t('Laisser un mot à Arthur', 'Leave Arthur a note')} subtitle={t('Un retour, un encouragement — ça lui fera plaisir.', 'A bit of feedback or encouragement — he’ll appreciate it.')}>
-          <CoachMessageForm type="note" minimal messagePlaceholder={t('Votre mot pour Arthur…', 'Your note for Arthur…')} submitLabel={t('Envoyer le mot', 'Send note')} />
-        </Block>
-
-        {/* #4 · Télécharger */}
-        <Block id="download" icon="doc" title={t('Télécharger le dossier', 'Download the packet')} subtitle={t('La fiche de recrutement en PDF + le contact d’Arthur (vCard).', 'The recruiting sheet as PDF + Arthur’s contact (vCard).')}>
-          <DownloadPacket profile={profile} />
-        </Block>
-
-        <p className="no-print pt-2 text-center text-xs text-tertiary">
-          {t('Profil généré depuis les données de l’athlète · Road to NCAA', 'Profile generated from the athlete’s data · Road to NCAA')}
-        </p>
-      </main>
+      </div>
     </div>
+  )
+}
+
+// ---- Sous-composants cinématiques ----------------------------------------
+
+function SectionTitle({ eyebrow, title }) {
+  return (
+    <Reveal className="mb-10 text-center">
+      {eyebrow && <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-cyan-300/80">{eyebrow}</div>}
+      <h2 className="font-cine text-4xl uppercase leading-none tracking-tight text-white sm:text-6xl">{title}</h2>
+    </Reveal>
+  )
+}
+
+function CineSection({ id, eyebrow, title, children }) {
+  return (
+    <section id={id} className="relative mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+      <SectionTitle eyebrow={eyebrow} title={title} />
+      <Reveal delay={0.08}>{children}</Reveal>
+    </section>
+  )
+}
+
+function Stat({ value, text, label, decimals = 0, count = false, glow }) {
+  return (
+    <Reveal>
+      <div className="font-cine uppercase leading-none text-white cine-glow" style={{ fontSize: 'clamp(2.75rem, 7vw, 4.5rem)', color: glow || undefined, textShadow: glow ? `0 0 26px ${glow}66` : undefined }}>
+        {count ? <Counter value={value} decimals={decimals} /> : text}
+      </div>
+      <div className="mt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-300/70">{label}</div>
+    </Reveal>
+  )
+}
+
+function TimeCard({ ev, lcm, scy, delay }) {
+  const { t, lang } = useLang()
+  const lv = LEVELS[scyLevel(scy, ev.key)]
+  return (
+    <Reveal delay={delay} className="cine-card group relative overflow-hidden p-5 transition hover:-translate-y-1">
+      <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-20 blur-2xl transition group-hover:opacity-40" style={{ background: lv.color }} />
+      <div className="relative flex items-center justify-between">
+        <div className="text-xs font-bold uppercase tracking-widest text-cyan-300/70">{t(ev.label, ev.labelEn)}</div>
+        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: lv.color }}>{lang === 'en' ? lv.shortEn : lv.short}</span>
+      </div>
+      <div className="relative mt-3 font-cine text-5xl text-white">{formatTime(lcm)}</div>
+      <div className="relative mt-1 text-sm text-white/50">≈ {formatTime(scy)} yards · {t(ev.stroke, STROKE_EN[ev.stroke])}</div>
+    </Reveal>
+  )
+}
+
+function ToolCard({ icon, title, subtitle, children }) {
+  return (
+    <Reveal className="cine-card p-5 sm:p-6">
+      <div className="mb-4 flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-400/15 text-cyan-300 ring-1 ring-cyan-400/25">
+          <Icon name={icon} className="h-5 w-5" />
+        </span>
+        <div>
+          <h3 className="font-display text-lg font-extrabold leading-tight text-white">{title}</h3>
+          <p className="text-sm text-white/55">{subtitle}</p>
+        </div>
+      </div>
+      {children}
+    </Reveal>
+  )
+}
+
+function ContactChip({ href, value, icon }) {
+  const { t } = useLang()
+  const [copied, setCopied] = useState(false)
+  return (
+    <a
+      href={href}
+      onClick={() => { try { navigator.clipboard?.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1600) } catch { /* ignore */ } }}
+      title={t('Cliquer pour copier', 'Click to copy')}
+      className="inline-flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+    >
+      {icon}
+      <span className="max-w-[13rem] truncate">{copied ? t('Copié ✓', 'Copied ✓') : value}</span>
+    </a>
   )
 }
 
 function Wave() {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 8c1.6-1.7 3.2-1.7 4.8 0S11 9.7 12.6 8s3.2-1.7 4.8 0S20.6 9.7 22.2 8" />
       <path d="M3 13c1.6-1.7 3.2-1.7 4.8 0S11 14.7 12.6 13s3.2-1.7 4.8 0S20.6 14.7 22.2 13" />
       <path d="M3 18c1.6-1.7 3.2-1.7 4.8 0S11 19.7 12.6 18s3.2-1.7 4.8 0S20.6 19.7 22.2 18" />
     </svg>
   )
 }
-function Sun() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-    </svg>
-  )
-}
-function Moon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
-    </svg>
-  )
-}
 function InstagramIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+      <rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
     </svg>
   )
 }
@@ -253,8 +348,7 @@ function PhoneIcon() {
 function MailIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-      <path d="m2 6 10 7L22 6" />
+      <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 6 10 7L22 6" />
     </svg>
   )
 }

@@ -1,5 +1,5 @@
 /* Polices Google Fonts — doit precéder toute autre regle (sauf @charset). */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 /* La variante `dark:` suit notre attribut data-theme (bascule manuelle), pas le système. */
@@ -8,6 +8,7 @@
 @theme {
   --font-display: 'Archivo', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-cine: 'Anton', 'Archivo', system-ui, sans-serif;
 
   /* Encre / marine — structure, en-têtes, panneaux sombres */
   --color-navy-950: #0b1524;
@@ -241,6 +242,93 @@
     pointer-events: none;
     mix-blend-mode: soft-light;
   }
+}
+
+/* ============================================================
+   Expérience coach « cinématique » (page ?coach) — inspirée des
+   sites de sportifs premium : sombre, néon aqua, typo géante,
+   animations au scroll. Classes préfixées cine- (opt-in, sans effet
+   sur le reste de l'app).
+   ============================================================ */
+
+/* Révélation au scroll (classe is-in togglée en JS via IntersectionObserver). */
+.cine-reveal {
+  opacity: 0;
+  transform: translateY(44px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--cine-delay, 0s);
+  will-change: opacity, transform;
+}
+.cine-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Grand mot « contour » (outline). */
+.cine-outline {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.22);
+  color: transparent;
+}
+
+/* Lueur néon aqua sur le texte. */
+.cine-glow {
+  text-shadow: 0 0 26px rgba(45, 212, 238, 0.45), 0 0 70px rgba(45, 212, 238, 0.22);
+}
+
+/* Bandeau défilant (marquee). */
+.cine-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.cine-marquee__track {
+  display: inline-flex;
+  will-change: transform;
+  animation: cine-marquee var(--cine-marquee-dur, 26s) linear infinite;
+}
+@keyframes cine-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Flottement doux + indicateur de scroll. */
+@keyframes cine-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.cine-float { animation: cine-float 7s ease-in-out infinite; }
+
+@keyframes cine-scrolldot {
+  0% { transform: translateY(0); opacity: 0; }
+  35% { opacity: 1; }
+  75% { transform: translateY(15px); opacity: 0; }
+  100% { opacity: 0; }
+}
+.cine-scrolldot { animation: cine-scrolldot 1.8s ease-in-out infinite; }
+
+/* Visible uniquement à l'impression (la fiche PDF sur la page cinématique). */
+.print-only { display: none; }
+@media print { .print-only { display: block !important; } }
+
+/* Carte « verre » sombre pour la page cinématique. */
+.cine-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 1.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Sheen qui balaie (boutons / barres). */
+@keyframes cine-sheen {
+  0% { transform: translateX(-120%); }
+  60%, 100% { transform: translateX(220%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-reveal { opacity: 1 !important; transform: none !important; }
+  .cine-marquee__track, .cine-float, .cine-scrolldot { animation: none !important; }
 }
 
 /* Apparition douce au changement d'onglet (rejouée via key={tab}). */
