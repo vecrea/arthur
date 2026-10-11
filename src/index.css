@@ -336,6 +336,11 @@
   }
   .cine-root .btn-primary:hover { box-shadow: 0 0 40px rgba(45, 212, 238, 0.7); }
   .cine-root .pill-active { background-color: #2dd4ee; color: #05070f; }
+  /* Section « présentation » : texte en blanc pour bien ressortir sur le fond sombre. */
+  .cine-root .cine-about .text-primary,
+  .cine-root .cine-about .text-heading { color: #ffffff; }
+  .cine-root .cine-about .text-secondary { color: rgba(255, 255, 255, 0.78); }
+  .cine-root .cine-about .text-tertiary { color: rgba(255, 255, 255, 0.58); }
 }
 
 /* Carte « verre » sombre pour la page cinématique. */
