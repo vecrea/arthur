@@ -8,9 +8,10 @@ import { createContext, useContext, useEffect, useState } from 'react'
 const KEY = 'pitusa.lang.v1'
 const LangContext = createContext({ lang: 'fr', setLang: () => {}, t: (fr) => fr })
 
-// La page coach (?coach) s'adresse aux coachs US : elle s'ouvre d'office en
-// anglais, indépendamment de la préférence de l'appli principale (et sans
-// l'écraser). L'appli principale reste en français par défaut.
+// Tout le site est en anglais par défaut (public NCAA / coachs US). La page
+// coach (?coach) force toujours l'anglais, sans écraser ni lire la préférence
+// mémorisée ; l'appli principale part en anglais mais retient un éventuel
+// passage en français.
 const isCoach = (() => {
   try {
     return new URLSearchParams(window.location.search).has('coach')
@@ -23,9 +24,11 @@ export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
     if (isCoach) return 'en'
     try {
-      return localStorage.getItem(KEY) === 'en' ? 'en' : 'fr'
+      // Anglais par défaut ; on ne repasse en français que si l'utilisateur
+      // l'a explicitement choisi auparavant (mémorisé).
+      return localStorage.getItem(KEY) === 'fr' ? 'fr' : 'en'
     } catch {
-      return 'fr'
+      return 'en'
     }
   })
   const setLang = (l) => {
