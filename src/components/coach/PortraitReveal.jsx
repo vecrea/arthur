@@ -19,6 +19,8 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
     if (!ctx) return
     const off = document.createElement('canvas')
     const octx = off.getContext('2d')
+    const mask = document.createElement('canvas')   // masque = chemin du curseur
+    const mctx = mask.getContext('2d')
     let w = 0, h = 0, dpr = 1, raf
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -39,11 +41,12 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       dpr = Math.min(2, window.devicePixelRatio || 1)
       w = wrap.clientWidth
       h = wrap.clientHeight
-      for (const c of [canvas, off]) { c.width = Math.max(1, Math.floor(w * dpr)); c.height = Math.max(1, Math.floor(h * dpr)) }
+      for (const c of [canvas, off, mask]) { c.width = Math.max(1, Math.floor(w * dpr)); c.height = Math.max(1, Math.floor(h * dpr)) }
       canvas.style.width = w + 'px'
       canvas.style.height = h + 'px'
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       octx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      mctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     resize()
     const ro = new ResizeObserver(resize)
@@ -124,86 +127,102 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
 
     const lerp = (a, b, k) => a + (b - a) * k
 
-    // Rayon « ondulé » : une somme de sinus (angle + temps) déforme le cercle en
-    // continu → un contour liquide qui ondule, au lieu d'une boule figée.
-    const wavyRadius = (a, t, amp) =>
-      1 + amp * (0.10 * Math.sin(a * 3 + t * 1.3)
-        + 0.06 * Math.sin(a * 5 - t * 2.0 + 1.1)
-        + 0.035 * Math.sin(a * 7 + t * 0.8 + 2.3)
-        + 0.02 * Math.sin(a * 11 - t * 1.4))
+    // Traînée liquide : on mémorise le chemin récent du curseur et on révèle la
+    // version bonnet/lunettes le long de ce chemin. Chaque point vieillit puis
+    // s'évapore → un filet d'eau qui suit le geste, pas une forme posée.
+    let trail = []        // { x, y, t } en coordonnées normalisées (0..1)
+    const LIFE = 560      // ms avant évaporation complète d'un point
 
-    const wavyPath = (c, cx, cy, R, t, amp) => {
-      const N = 84
-      c.beginPath()
-      for (let i = 0; i <= N; i++) {
-        const a = (i / N) * Math.PI * 2
-        const rr = R * wavyRadius(a, t, amp)
-        const x = cx + Math.cos(a) * rr
-        const y = cy + Math.sin(a) * rr
-        i === 0 ? c.moveTo(x, y) : c.lineTo(x, y)
-      }
-      c.closePath()
+    // Dépose un disque doux (dégradé radial) servant à composer le masque / la lueur.
+    const blob = (c, x, y, rad, a, col = '0,0,0') => {
+      const g = c.createRadialGradient(x, y, 0, x, y, rad)
+      g.addColorStop(0, `rgba(${col},${a})`)
+      g.addColorStop(0.5, `rgba(${col},${a})`)
+      g.addColorStop(1, `rgba(${col},0)`)
+      c.fillStyle = g
+      c.beginPath(); c.arc(x, y, rad, 0, Math.PI * 2); c.fill()
     }
-
-    let ripples = []     // vaguelettes concentriques qui s'éloignent du centre
-    let lastSpawn = 0
 
     const frame = (now) => {
       const tt = reduce ? 0 : now / 1000
-      // Démo automatique au début (pour le mobile sans survol).
+      // Démo automatique au début (trace un chemin, utile sur mobile sans survol).
       if (!interacted && !reduce) {
         const el = (now - t0) / 1000
-        if (el > 1.2 && el < 7) {
-          reveal.tr = 0.17
-          mouse.x = 0.5 + Math.cos(el * 1.1) * 0.22
-          mouse.y = 0.44 + Math.sin(el * 1.7) * 0.14
-        } else if (el >= 7) {
+        if (el > 1.0 && el < 7.5) {
+          reveal.tr = 0.13
+          mouse.x = 0.5 + Math.cos(el * 1.3) * 0.2
+          mouse.y = 0.42 + Math.sin(el * 2.1) * 0.17
+        } else if (el >= 7.5) {
           reveal.tr = 0
         }
       }
-      reveal.r = lerp(reveal.r, reveal.tr, 0.14)
-      reveal.x = lerp(reveal.x, mouse.x, 0.45)
-      reveal.y = lerp(reveal.y, mouse.y, 0.45)
+      reveal.r = lerp(reveal.r, reveal.tr, 0.16)
 
       ctx.clearRect(0, 0, w, h)
       if (srcBase && okA) drawCover(ctx, imgA)
       else placeholder(ctx, 'base')
 
-      if (reveal.r > 0.004) {
-        const px = reveal.x * w, py = reveal.y * h, R = reveal.r * Math.min(w, h)
+      // Alimente la traînée : points interpolés entre l'ancienne et la nouvelle
+      // position → filet continu même quand le curseur va vite.
+      if (reveal.r > 0.003) {
+        const last = trail[trail.length - 1]
+        if (!last) {
+          trail.push({ x: mouse.x, y: mouse.y, t: now })
+        } else {
+          const d = Math.hypot(mouse.x - last.x, mouse.y - last.y)
+          if (d > 0.0015) {
+            const steps = Math.min(12, Math.max(1, Math.ceil(d / 0.008)))
+            for (let i = 1; i <= steps; i++) {
+              const k = i / steps
+              trail.push({ x: last.x + (mouse.x - last.x) * k, y: last.y + (mouse.y - last.y) * k, t: now })
+            }
+          }
+        }
+      }
+      trail = trail.filter((p) => now - p.t < LIFE)
+      if (trail.length > 120) trail = trail.slice(trail.length - 120)
 
-        // 1) Masque liquide : la version bonnet/lunettes est révélée sous une
-        //    forme ondulée au bord adouci (flou), jamais un disque net.
+      if (reveal.r > 0.003) {
+        const Rh = reveal.r * Math.min(w, h)   // rayon de la « tête » (au curseur)
+
+        // 1) Masque = union des gouttes le long du chemin + tête au curseur.
+        //    Les points anciens rétrécissent et pâlissent (évaporation).
+        mctx.clearRect(0, 0, w, h)
+        for (const p of trail) {
+          const fresh = Math.max(0, 1 - (now - p.t) / LIFE)
+          const wob = 1 + 0.16 * Math.sin((p.x + p.y) * 26 + tt * 4)
+          blob(mctx, p.x * w, p.y * h, Rh * (0.26 + 0.6 * fresh) * wob, 0.35 + 0.65 * fresh)
+        }
+        // tête : goutte toujours présente au curseur (ne disparaît pas au repos)
+        blob(mctx, mouse.x * w, mouse.y * h, Rh * (0.92 + 0.08 * Math.sin(tt * 5)), 1)
+
+        // 2) Applique le masque à la version révélée.
         octx.setTransform(dpr, 0, 0, dpr, 0, 0)
         octx.clearRect(0, 0, w, h)
         if (srcReveal && okB) drawCover(octx, imgB)
         else placeholder(octx, 'reveal')
         octx.save()
         octx.globalCompositeOperation = 'destination-in'
-        octx.filter = `blur(${Math.max(1, R * 0.045)}px)`
-        octx.fillStyle = '#000'
-        wavyPath(octx, px, py, R * 0.9, tt, 0.5)
-        octx.fill()
+        octx.drawImage(mask, 0, 0, w, h)
         octx.restore()
         ctx.drawImage(off, 0, 0, w, h)
 
-        // 2) Liseré « eau » épousant le bord ondulé + vaguelettes qui s'éloignent.
+        // 3) Lueur cyan le long du filet (un point sur trois) + reflet mouillé
+        //    sur la tête, en additif.
         ctx.save()
         ctx.globalCompositeOperation = 'lighter'
-        wavyPath(ctx, px, py, R * 0.9, tt, 0.5)
-        ctx.strokeStyle = 'rgba(45,212,238,0.13)'; ctx.lineWidth = 6; ctx.stroke()
-        ctx.strokeStyle = 'rgba(120,235,255,0.5)'; ctx.lineWidth = 2; ctx.stroke()
-        if (!reduce) {
-          if (now - lastSpawn > 820) { ripples.push(now); lastSpawn = now }
-          ripples = ripples.filter((ts) => now - ts < 1500)
-          for (const ts of ripples) {
-            const age = (now - ts) / 1500
-            ctx.strokeStyle = `rgba(90,231,255,${(1 - age) * 0.2})`
-            ctx.lineWidth = 1.25
-            wavyPath(ctx, px, py, R * (0.7 + age * 0.8), tt, 0.4)
-            ctx.stroke()
-          }
+        for (let i = 0; i < trail.length; i += 3) {
+          const p = trail[i]
+          const fresh = Math.max(0, 1 - (now - p.t) / LIFE)
+          blob(ctx, p.x * w, p.y * h, Rh * (0.26 + 0.6 * fresh) * 1.1, 0.09 * fresh, '120,230,255')
         }
+        const hx = mouse.x * w, hy = mouse.y * h
+        const gh = ctx.createRadialGradient(hx, hy, 0, hx, hy, Rh * 1.05)
+        gh.addColorStop(0, 'rgba(185,245,255,0.45)')
+        gh.addColorStop(0.5, 'rgba(90,210,240,0.12)')
+        gh.addColorStop(1, 'rgba(90,210,240,0)')
+        ctx.fillStyle = gh
+        ctx.beginPath(); ctx.arc(hx, hy, Rh * 1.05, 0, Math.PI * 2); ctx.fill()
         ctx.restore()
       }
       raf = requestAnimationFrame(frame)
@@ -215,9 +234,9 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       mouse.x = (cx - rect.left) / rect.width
       mouse.y = (cy - rect.top) / rect.height
     }
-    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.17 }
+    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.13 }
     const onLeave = () => { reveal.tr = 0 }
-    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.17 } }
+    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.13 } }
     const onTouchEnd = () => { reveal.tr = 0 }
     wrap.addEventListener('mousemove', onMove)
     wrap.addEventListener('mouseleave', onLeave)
