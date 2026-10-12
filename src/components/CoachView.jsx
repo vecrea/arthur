@@ -201,7 +201,7 @@ export default function CoachView({ profile }) {
               {times.map((x, i) => <TimeCard key={x.ev.key} {...x} delay={(i % 3) * 0.08} />)}
             </div>
             <Reveal className="mt-5 text-center text-sm text-white/50">
-              {t('Meilleurs temps en 25 m (petit bassin) et 50 m (grand bassin) — conversion yards (SCY) indicative pour les standards US.', 'Best times in 25 m (short course) and 50 m (long course) — indicative yards (SCY) conversion for US standards.')}
+              {t('Meilleurs temps en SCM (petit bassin) et LCM (grand bassin) — conversion yards (SCY) indicative pour les standards US.', 'Best times in SCM (short course) and LCM (long course) — indicative yards (SCY) conversion for US standards.')}
             </Reveal>
           </div>
         </section>
@@ -368,8 +368,8 @@ function TimeCard({ ev, lcm, scm, scyLcm, scyScm, scy, delay }) {
       </div>
       <div className="relative mt-1 text-[11px] uppercase tracking-wide text-white/40">{t(ev.stroke, STROKE_EN[ev.stroke])}</div>
       <div className="relative mt-3 grid grid-cols-2 gap-3">
-        <CourseTime label="25 m" time={scm} scy={scyScm} />
-        <CourseTime label="50 m" time={lcm} scy={scyLcm} />
+        <CourseTime label="SCM" time={scm} scy={scyScm} />
+        <CourseTime label="LCM" time={lcm} scy={scyLcm} />
       </div>
     </Reveal>
   )
