@@ -15,6 +15,10 @@ import { useLang } from '../lib/i18n.jsx'
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
+// Épreuves masquées dans « The times » côté coach (hors spécialité d'Arthur —
+// sprint nage libre & dos), même si un temps a été enregistré pour elles.
+const HIDDEN_TIME_EVENTS = new Set(['400FR', '400IM', '50FL', '200IM'])
+
 // ---------------------------------------------------------------------------
 // Vue coach « cinématique » (page ?coach) : expérience immersive sombre + néon
 // aqua, typo géante, animations au scroll — inspirée des sites de sportifs
@@ -65,7 +69,7 @@ export default function CoachView({ profile }) {
   }, [])
 
   const times = useMemo(
-    () => EVENTS.filter((ev) => profile.times?.[ev.key] != null || bestScm[ev.key] != null).map((ev) => {
+    () => EVENTS.filter((ev) => !HIDDEN_TIME_EVENTS.has(ev.key) && (profile.times?.[ev.key] != null || bestScm[ev.key] != null)).map((ev) => {
       const lcm = profile.times?.[ev.key] ?? null
       const scm = bestScm[ev.key] ?? null
       const scyLcm = lcm != null ? lcmToScy(lcm, ev.distance) : null
@@ -197,7 +201,7 @@ export default function CoachView({ profile }) {
               {times.map((x, i) => <TimeCard key={x.ev.key} {...x} delay={(i % 3) * 0.08} />)}
             </div>
             <Reveal className="mt-5 text-center text-sm text-white/50">
-              {t('Meilleurs temps en 50 m (grand bassin) et 25 m (petit bassin) — conversion yards (SCY) indicative pour les standards US.', 'Best times in 50 m (long course) and 25 m (short course) — indicative yards (SCY) conversion for US standards.')}
+              {t('Meilleurs temps en 25 m (petit bassin) et 50 m (grand bassin) — conversion yards (SCY) indicative pour les standards US.', 'Best times in 25 m (short course) and 50 m (long course) — indicative yards (SCY) conversion for US standards.')}
             </Reveal>
           </div>
         </section>
@@ -364,8 +368,8 @@ function TimeCard({ ev, lcm, scm, scyLcm, scyScm, scy, delay }) {
       </div>
       <div className="relative mt-1 text-[11px] uppercase tracking-wide text-white/40">{t(ev.stroke, STROKE_EN[ev.stroke])}</div>
       <div className="relative mt-3 grid grid-cols-2 gap-3">
-        <CourseTime label="50 m" time={lcm} scy={scyLcm} />
         <CourseTime label="25 m" time={scm} scy={scyScm} />
+        <CourseTime label="50 m" time={lcm} scy={scyLcm} />
       </div>
     </Reveal>
   )
