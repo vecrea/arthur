@@ -9,8 +9,8 @@ import CoachFaq from './coach/CoachFaq.jsx'
 import DownloadPacket from './coach/DownloadPacket.jsx'
 import { Reveal, Counter, Marquee, PoolCanvas } from './coach/cine.jsx'
 import PortraitReveal from './coach/PortraitReveal.jsx'
-import { EVENTS, lcmToScy, formatTime, scyLevel, LEVELS, athleteLevel, STROKE_EN } from '../lib/convert.js'
-import { loadAbout, loadProfileExtras } from '../lib/storage.js'
+import { EVENTS, lcmToScy, scmToScy, formatTime, scyLevel, LEVELS, athleteLevel, STROKE_EN } from '../lib/convert.js'
+import { loadAbout, loadProfileExtras, loadTimes } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -53,12 +53,27 @@ export default function CoachView({ profile }) {
   // Nombre de jours depuis le 10 juin 2013 (début de l'aventure).
   const daysSwimming = Math.max(0, Math.floor((today - new Date('2013-06-10')) / 86400000))
 
+  // Meilleur temps petit bassin (25 m / SCM) par épreuve, depuis le journal
+  // de chronos (temps gravés + saisis + synchronisés).
+  const bestScm = useMemo(() => {
+    const m = {}
+    for (const r of loadTimes()) {
+      if (r.course !== 'SCM' || r.seconds == null) continue
+      if (m[r.eventKey] == null || r.seconds < m[r.eventKey]) m[r.eventKey] = r.seconds
+    }
+    return m
+  }, [])
+
   const times = useMemo(
-    () => EVENTS.filter((ev) => profile.times?.[ev.key] != null).map((ev) => {
-      const lcm = profile.times[ev.key]
-      return { ev, lcm, scy: lcmToScy(lcm, ev.distance) }
+    () => EVENTS.filter((ev) => profile.times?.[ev.key] != null || bestScm[ev.key] != null).map((ev) => {
+      const lcm = profile.times?.[ev.key] ?? null
+      const scm = bestScm[ev.key] ?? null
+      const scyLcm = lcm != null ? lcmToScy(lcm, ev.distance) : null
+      const scyScm = scm != null ? scmToScy(scm, ev.distance) : null
+      const scy = Math.min(...[scyLcm, scyScm].filter((v) => v != null))
+      return { ev, lcm, scm, scyLcm, scyScm, scy }
     }),
-    [profile],
+    [profile, bestScm],
   )
   const bestFree = times.find((x) => x.ev.key === '50FR') || times[0]
 
@@ -182,7 +197,7 @@ export default function CoachView({ profile }) {
               {times.map((x, i) => <TimeCard key={x.ev.key} {...x} delay={(i % 3) * 0.08} />)}
             </div>
             <Reveal className="mt-5 text-center text-sm text-white/50">
-              {t('Temps grand bassin (50 m) — conversion yards (SCY) indicative pour les standards US.', 'Long-course (50 m) times — indicative yards (SCY) conversion for US standards.')}
+              {t('Meilleurs temps en 50 m (grand bassin) et 25 m (petit bassin) — conversion yards (SCY) indicative pour les standards US.', 'Best times in 50 m (long course) and 25 m (short course) — indicative yards (SCY) conversion for US standards.')}
             </Reveal>
           </div>
         </section>
@@ -319,7 +334,25 @@ function Stat({ value, text, label, decimals = 0, count = false, glow }) {
   )
 }
 
-function TimeCard({ ev, lcm, scy, delay }) {
+function CourseTime({ label, time, scy }) {
+  if (time == null) {
+    return (
+      <div className="opacity-40">
+        <div className="text-[10px] font-bold uppercase tracking-widest text-white/45">{label}</div>
+        <div className="mt-1 font-cine text-3xl text-white/35">—</div>
+      </div>
+    )
+  }
+  return (
+    <div>
+      <div className="text-[10px] font-bold uppercase tracking-widest text-cyan-300/70">{label}</div>
+      <div className="mt-1 font-cine text-3xl text-white sm:text-4xl">{formatTime(time)}</div>
+      <div className="mt-0.5 text-[11px] text-white/45">≈ {formatTime(scy)} yd</div>
+    </div>
+  )
+}
+
+function TimeCard({ ev, lcm, scm, scyLcm, scyScm, scy, delay }) {
   const { t, lang } = useLang()
   const lv = LEVELS[scyLevel(scy, ev.key)]
   return (
@@ -329,8 +362,11 @@ function TimeCard({ ev, lcm, scy, delay }) {
         <div className="text-xs font-bold uppercase tracking-widest text-cyan-300/70">{t(ev.label, ev.labelEn)}</div>
         <span className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: lv.color }}>{lang === 'en' ? lv.shortEn : lv.short}</span>
       </div>
-      <div className="relative mt-3 font-cine text-5xl text-white">{formatTime(lcm)}</div>
-      <div className="relative mt-1 text-sm text-white/50">≈ {formatTime(scy)} yards · {t(ev.stroke, STROKE_EN[ev.stroke])}</div>
+      <div className="relative mt-1 text-[11px] uppercase tracking-wide text-white/40">{t(ev.stroke, STROKE_EN[ev.stroke])}</div>
+      <div className="relative mt-3 grid grid-cols-2 gap-3">
+        <CourseTime label="50 m" time={lcm} scy={scyLcm} />
+        <CourseTime label="25 m" time={scm} scy={scyScm} />
+      </div>
     </Reveal>
   )
 }
