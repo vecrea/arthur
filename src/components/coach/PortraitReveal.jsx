@@ -154,7 +154,7 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       if (!interacted && !reduce) {
         const el = (now - t0) / 1000
         if (el > 1.2 && el < 7) {
-          reveal.tr = 0.4
+          reveal.tr = 0.26
           mouse.x = 0.5 + Math.cos(el * 1.1) * 0.22
           mouse.y = 0.44 + Math.sin(el * 1.7) * 0.14
         } else if (el >= 7) {
@@ -215,9 +215,9 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       mouse.x = (cx - rect.left) / rect.width
       mouse.y = (cy - rect.top) / rect.height
     }
-    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.42 }
+    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.28 }
     const onLeave = () => { reveal.tr = 0 }
-    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.42 } }
+    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.28 } }
     const onTouchEnd = () => { reveal.tr = 0 }
     wrap.addEventListener('mousemove', onMove)
     wrap.addEventListener('mouseleave', onLeave)
