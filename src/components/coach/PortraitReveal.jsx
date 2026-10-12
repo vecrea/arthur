@@ -131,7 +131,7 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
     // version bonnet/lunettes le long de ce chemin. Chaque point vieillit puis
     // s'évapore → un filet d'eau qui suit le geste, pas une forme posée.
     let trail = []        // { x, y, t } en coordonnées normalisées (0..1)
-    const LIFE = 560      // ms avant évaporation complète d'un point
+    const LIFE = 600      // ms avant évaporation complète d'un point
 
     // Dépose un disque doux (dégradé radial) servant à composer le masque / la lueur.
     const blob = (c, x, y, rad, a, col = '0,0,0') => {
@@ -149,7 +149,7 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       if (!interacted && !reduce) {
         const el = (now - t0) / 1000
         if (el > 1.0 && el < 7.5) {
-          reveal.tr = 0.13
+          reveal.tr = 0.17
           mouse.x = 0.5 + Math.cos(el * 1.3) * 0.2
           mouse.y = 0.42 + Math.sin(el * 2.1) * 0.17
         } else if (el >= 7.5) {
@@ -190,11 +190,22 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
         mctx.clearRect(0, 0, w, h)
         for (const p of trail) {
           const fresh = Math.max(0, 1 - (now - p.t) / LIFE)
-          const wob = 1 + 0.16 * Math.sin((p.x + p.y) * 26 + tt * 4)
-          blob(mctx, p.x * w, p.y * h, Rh * (0.26 + 0.6 * fresh) * wob, 0.35 + 0.65 * fresh)
+          // Bord qui ondule (2 fréquences) + léger déplacement → clapot réaliste.
+          const ph = p.x * 50 + p.y * 37
+          const wob = 1 + 0.2 * Math.sin(ph + tt * 3) + 0.1 * Math.sin(ph * 1.7 - tt * 4.3)
+          const ox = Math.sin(ph * 0.9 + tt * 2.2) * Rh * 0.1
+          const oy = Math.cos(ph * 1.1 - tt * 2.6) * Rh * 0.1
+          blob(mctx, p.x * w + ox, p.y * h + oy, Rh * (0.26 + 0.6 * fresh) * wob, 0.35 + 0.65 * fresh)
         }
-        // tête : goutte toujours présente au curseur (ne disparaît pas au repos)
-        blob(mctx, mouse.x * w, mouse.y * h, Rh * (0.92 + 0.08 * Math.sin(tt * 5)), 1)
+        // tête : petit amas de gouttes au curseur, au bord organique qui ondule
+        // (et qui ne disparaît pas au repos).
+        const hx0 = mouse.x * w, hy0 = mouse.y * h
+        blob(mctx, hx0, hy0, Rh * (0.8 + 0.06 * Math.sin(tt * 5)), 1)
+        for (let k = 0; k < 4; k++) {
+          const a = (k / 4) * Math.PI * 2 + tt * 0.8
+          const rr = Rh * (0.42 + 0.14 * Math.sin(tt * 3 + k))
+          blob(mctx, hx0 + Math.cos(a) * Rh * 0.42, hy0 + Math.sin(a) * Rh * 0.42, rr, 1)
+        }
 
         // 2) Applique le masque à la version révélée.
         octx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -205,6 +216,27 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
         octx.globalCompositeOperation = 'destination-in'
         octx.drawImage(mask, 0, 0, w, h)
         octx.restore()
+
+        // Caustiques : bandes de lumière ondulantes qui bougent, visibles
+        // uniquement dans le liquide (source-atop) → surface d'eau réaliste.
+        if (!reduce) {
+          octx.save()
+          octx.globalCompositeOperation = 'source-atop'
+          octx.lineWidth = Math.max(1, Rh * 0.05)
+          for (let i = 0; i < 7; i++) {
+            const prog = (i + 0.5) / 7
+            octx.beginPath()
+            for (let x = 0; x <= w; x += 9) {
+              const y = h * prog
+                + Math.sin(x * 0.03 + tt * 1.6 + i * 1.3) * (h * 0.028)
+                + Math.sin(x * 0.013 - tt * 2.2 + i) * (h * 0.02)
+              x === 0 ? octx.moveTo(x, y) : octx.lineTo(x, y)
+            }
+            octx.strokeStyle = `rgba(200,248,255,${0.07 + 0.035 * Math.sin(tt * 2 + i)})`
+            octx.stroke()
+          }
+          octx.restore()
+        }
         ctx.drawImage(off, 0, 0, w, h)
 
         // 3) Lueur cyan le long du filet (un point sur trois) + reflet mouillé
@@ -234,9 +266,9 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       mouse.x = (cx - rect.left) / rect.width
       mouse.y = (cy - rect.top) / rect.height
     }
-    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.13 }
+    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.17 }
     const onLeave = () => { reveal.tr = 0 }
-    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.13 } }
+    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.17 } }
     const onTouchEnd = () => { reveal.tr = 0 }
     wrap.addEventListener('mousemove', onMove)
     wrap.addEventListener('mouseleave', onLeave)
