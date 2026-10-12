@@ -62,11 +62,11 @@ void main(){
 
   // Clapot : petite ondulation animée à l'intérieur du liquide.
   float rip = sin(vUv.x * uAspect.x * 44.0 + uTime * 3.0) + sin(vUv.y * uAspect.y * 50.0 - uTime * 3.7);
-  vec2 disp = grad * 0.4 + vec2(rip) * 0.002 * wet;
+  vec2 disp = grad * 0.24 + vec2(rip) * 0.0013 * wet;
   vec2 uvD = vUv - disp;
 
   float m = smoothstep(0.05, 0.34, wet);
-  vec2 ca = vec2(0.0035, 0.0) * (wet + length(grad) * 3.0);
+  vec2 ca = vec2(0.0024, 0.0) * (wet + length(grad) * 2.0);
   vec3 col = vec3(
     mix(texture2D(uBase, uvD + ca).r, texture2D(uReveal, uvD + ca).r, m),
     mix(texture2D(uBase, uvD).g,       texture2D(uReveal, uvD).g,       m),
