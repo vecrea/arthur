@@ -154,16 +154,16 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       if (!interacted && !reduce) {
         const el = (now - t0) / 1000
         if (el > 1.2 && el < 7) {
-          reveal.tr = 0.26
+          reveal.tr = 0.17
           mouse.x = 0.5 + Math.cos(el * 1.1) * 0.22
           mouse.y = 0.44 + Math.sin(el * 1.7) * 0.14
         } else if (el >= 7) {
           reveal.tr = 0
         }
       }
-      reveal.r = lerp(reveal.r, reveal.tr, 0.1)
-      reveal.x = lerp(reveal.x, mouse.x, 0.16)
-      reveal.y = lerp(reveal.y, mouse.y, 0.16)
+      reveal.r = lerp(reveal.r, reveal.tr, 0.14)
+      reveal.x = lerp(reveal.x, mouse.x, 0.45)
+      reveal.y = lerp(reveal.y, mouse.y, 0.45)
 
       ctx.clearRect(0, 0, w, h)
       if (srcBase && okA) drawCover(ctx, imgA)
@@ -182,7 +182,7 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
         octx.globalCompositeOperation = 'destination-in'
         octx.filter = `blur(${Math.max(1, R * 0.045)}px)`
         octx.fillStyle = '#000'
-        wavyPath(octx, px, py, R * 0.9, tt, 1)
+        wavyPath(octx, px, py, R * 0.9, tt, 0.5)
         octx.fill()
         octx.restore()
         ctx.drawImage(off, 0, 0, w, h)
@@ -190,17 +190,17 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
         // 2) Liseré « eau » épousant le bord ondulé + vaguelettes qui s'éloignent.
         ctx.save()
         ctx.globalCompositeOperation = 'lighter'
-        wavyPath(ctx, px, py, R * 0.9, tt, 1)
-        ctx.strokeStyle = 'rgba(45,212,238,0.14)'; ctx.lineWidth = 7; ctx.stroke()
+        wavyPath(ctx, px, py, R * 0.9, tt, 0.5)
+        ctx.strokeStyle = 'rgba(45,212,238,0.13)'; ctx.lineWidth = 6; ctx.stroke()
         ctx.strokeStyle = 'rgba(120,235,255,0.5)'; ctx.lineWidth = 2; ctx.stroke()
         if (!reduce) {
-          if (now - lastSpawn > 780) { ripples.push(now); lastSpawn = now }
-          ripples = ripples.filter((ts) => now - ts < 1700)
+          if (now - lastSpawn > 820) { ripples.push(now); lastSpawn = now }
+          ripples = ripples.filter((ts) => now - ts < 1500)
           for (const ts of ripples) {
-            const age = (now - ts) / 1700
-            ctx.strokeStyle = `rgba(90,231,255,${(1 - age) * 0.3})`
-            ctx.lineWidth = 1.5
-            wavyPath(ctx, px, py, R * (0.5 + age * 1.0), tt, 0.5)
+            const age = (now - ts) / 1500
+            ctx.strokeStyle = `rgba(90,231,255,${(1 - age) * 0.2})`
+            ctx.lineWidth = 1.25
+            wavyPath(ctx, px, py, R * (0.7 + age * 0.8), tt, 0.4)
             ctx.stroke()
           }
         }
@@ -215,9 +215,9 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       mouse.x = (cx - rect.left) / rect.width
       mouse.y = (cy - rect.top) / rect.height
     }
-    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.28 }
+    const onMove = (e) => { interacted = true; pos(e.clientX, e.clientY); reveal.tr = 0.17 }
     const onLeave = () => { reveal.tr = 0 }
-    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.28 } }
+    const onTouch = (e) => { interacted = true; const tt = e.touches[0]; if (tt) { pos(tt.clientX, tt.clientY); reveal.tr = 0.17 } }
     const onTouchEnd = () => { reveal.tr = 0 }
     wrap.addEventListener('mousemove', onMove)
     wrap.addEventListener('mouseleave', onLeave)
