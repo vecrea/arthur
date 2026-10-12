@@ -8,8 +8,20 @@ import { createContext, useContext, useEffect, useState } from 'react'
 const KEY = 'pitusa.lang.v1'
 const LangContext = createContext({ lang: 'fr', setLang: () => {}, t: (fr) => fr })
 
+// La page coach (?coach) s'adresse aux coachs US : elle s'ouvre d'office en
+// anglais, indépendamment de la préférence de l'appli principale (et sans
+// l'écraser). L'appli principale reste en français par défaut.
+const isCoach = (() => {
+  try {
+    return new URLSearchParams(window.location.search).has('coach')
+  } catch {
+    return false
+  }
+})()
+
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
+    if (isCoach) return 'en'
     try {
       return localStorage.getItem(KEY) === 'en' ? 'en' : 'fr'
     } catch {
@@ -18,6 +30,7 @@ export function LanguageProvider({ children }) {
   })
   const setLang = (l) => {
     setLangState(l)
+    if (isCoach) return // ne pas écraser la préférence de l'appli principale
     try {
       localStorage.setItem(KEY, l)
     } catch {

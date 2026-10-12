@@ -124,7 +124,32 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
 
     const lerp = (a, b, k) => a + (b - a) * k
 
+    // Rayon « ondulé » : une somme de sinus (angle + temps) déforme le cercle en
+    // continu → un contour liquide qui ondule, au lieu d'une boule figée.
+    const wavyRadius = (a, t, amp) =>
+      1 + amp * (0.10 * Math.sin(a * 3 + t * 1.3)
+        + 0.06 * Math.sin(a * 5 - t * 2.0 + 1.1)
+        + 0.035 * Math.sin(a * 7 + t * 0.8 + 2.3)
+        + 0.02 * Math.sin(a * 11 - t * 1.4))
+
+    const wavyPath = (c, cx, cy, R, t, amp) => {
+      const N = 84
+      c.beginPath()
+      for (let i = 0; i <= N; i++) {
+        const a = (i / N) * Math.PI * 2
+        const rr = R * wavyRadius(a, t, amp)
+        const x = cx + Math.cos(a) * rr
+        const y = cy + Math.sin(a) * rr
+        i === 0 ? c.moveTo(x, y) : c.lineTo(x, y)
+      }
+      c.closePath()
+    }
+
+    let ripples = []     // vaguelettes concentriques qui s'éloignent du centre
+    let lastSpawn = 0
+
     const frame = (now) => {
+      const tt = reduce ? 0 : now / 1000
       // Démo automatique au début (pour le mobile sans survol).
       if (!interacted && !reduce) {
         const el = (now - t0) / 1000
@@ -145,23 +170,41 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       else placeholder(ctx, 'base')
 
       if (reveal.r > 0.004) {
+        const px = reveal.x * w, py = reveal.y * h, R = reveal.r * Math.min(w, h)
+
+        // 1) Masque liquide : la version bonnet/lunettes est révélée sous une
+        //    forme ondulée au bord adouci (flou), jamais un disque net.
         octx.setTransform(dpr, 0, 0, dpr, 0, 0)
         octx.clearRect(0, 0, w, h)
         if (srcReveal && okB) drawCover(octx, imgB)
         else placeholder(octx, 'reveal')
-        const px = reveal.x * w, py = reveal.y * h, R = reveal.r * Math.min(w, h)
+        octx.save()
         octx.globalCompositeOperation = 'destination-in'
-        const mg = octx.createRadialGradient(px, py, R * 0.1, px, py, R)
-        mg.addColorStop(0, 'rgba(0,0,0,1)'); mg.addColorStop(0.72, 'rgba(0,0,0,1)'); mg.addColorStop(1, 'rgba(0,0,0,0)')
-        octx.fillStyle = mg
-        octx.beginPath(); octx.arc(px, py, R, 0, Math.PI * 2); octx.fill()
-        octx.globalCompositeOperation = 'source-over'
+        octx.filter = `blur(${Math.max(1, R * 0.045)}px)`
+        octx.fillStyle = '#000'
+        wavyPath(octx, px, py, R * 0.9, tt, 1)
+        octx.fill()
+        octx.restore()
         ctx.drawImage(off, 0, 0, w, h)
-        // anneau « lentille d'eau »
-        ctx.strokeStyle = 'rgba(45,212,238,0.5)'; ctx.lineWidth = 2
-        ctx.beginPath(); ctx.arc(px, py, R * 0.9, 0, Math.PI * 2); ctx.stroke()
-        ctx.strokeStyle = 'rgba(45,212,238,0.18)'; ctx.lineWidth = 6
-        ctx.beginPath(); ctx.arc(px, py, R * 0.9, 0, Math.PI * 2); ctx.stroke()
+
+        // 2) Liseré « eau » épousant le bord ondulé + vaguelettes qui s'éloignent.
+        ctx.save()
+        ctx.globalCompositeOperation = 'lighter'
+        wavyPath(ctx, px, py, R * 0.9, tt, 1)
+        ctx.strokeStyle = 'rgba(45,212,238,0.14)'; ctx.lineWidth = 7; ctx.stroke()
+        ctx.strokeStyle = 'rgba(120,235,255,0.5)'; ctx.lineWidth = 2; ctx.stroke()
+        if (!reduce) {
+          if (now - lastSpawn > 780) { ripples.push(now); lastSpawn = now }
+          ripples = ripples.filter((ts) => now - ts < 1700)
+          for (const ts of ripples) {
+            const age = (now - ts) / 1700
+            ctx.strokeStyle = `rgba(90,231,255,${(1 - age) * 0.3})`
+            ctx.lineWidth = 1.5
+            wavyPath(ctx, px, py, R * (0.5 + age * 1.0), tt, 0.5)
+            ctx.stroke()
+          }
+        }
+        ctx.restore()
       }
       raf = requestAnimationFrame(frame)
     }
