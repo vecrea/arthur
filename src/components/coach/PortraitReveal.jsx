@@ -95,8 +95,9 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
 
     let w = 0, h = 0, dpr = 1, raf
     const mouse = { x: 0.5, y: 0.58, px: 0.5, py: 0.58 } // uv, y depuis le bas
-    let down = 0, downPrev = 0, interacted = false
+    let down = 0, downPrev = 0, lastActive = -1e9
     const t0 = performance.now()
+    const IDLE_MS = 3000 // reprend le chemin prédéfini après ~3 s sans interaction
 
     // --- Images (optionnelles) -------------------------------------------
     const imgA = new Image(), imgB = new Image()
@@ -285,11 +286,10 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
     const frame = (now) => {
       const tt = reduce ? 0 : (now - t0) / 1000
 
-      // Chemin prédéfini : tant que le visiteur n'a pas pris la main (survol ou
-      // toucher), un trajet en figure de huit balaie la tête en continu et
-      // dévoile le bonnet + les lunettes. Statique (posé sur la tête) si
-      // l'utilisateur préfère réduire les animations.
-      if (!interacted) {
+      // Chemin prédéfini : un trajet en figure de huit balaie la tête (bonnet +
+      // lunettes) au chargement, et REPREND tout seul après IDLE_MS sans
+      // interaction. Statique (posé sur la tête) en reduced-motion.
+      if (now - lastActive > IDLE_MS) {
         down = 1
         if (reduce) {
           mouse.x = 0.5; mouse.y = 0.62
@@ -352,9 +352,9 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
       mouse.x = (cx - rect.left) / rect.width
       mouse.y = 1 - (cy - rect.top) / rect.height // uv : y depuis le bas
     }
-    const onMove = (e) => { interacted = true; down = 1; pos(e.clientX, e.clientY) }
+    const onMove = (e) => { lastActive = performance.now(); down = 1; pos(e.clientX, e.clientY) }
     const onLeave = () => { down = 0 }
-    const onTouch = (e) => { interacted = true; down = 1; const t = e.touches[0]; if (t) pos(t.clientX, t.clientY) }
+    const onTouch = (e) => { lastActive = performance.now(); down = 1; const t = e.touches[0]; if (t) pos(t.clientX, t.clientY) }
     const onTouchEnd = () => { down = 0 }
     wrap.addEventListener('mousemove', onMove)
     wrap.addEventListener('mouseenter', onMove)
