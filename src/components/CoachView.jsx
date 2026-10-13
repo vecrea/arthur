@@ -135,7 +135,7 @@ export default function CoachView({ profile }) {
               </Reveal>
               <Reveal delay={0.16}>
                 <p className="mt-4 max-w-md text-base leading-relaxed text-white/75 sm:text-lg">
-                  {t('Nageur belge,', 'Belgian swimmer,')} {age} {t('ans', 'years old')} · {specialty}. <span className="text-cyan-300">{t('Cap sur la NCAA Division 1.', 'Aiming for NCAA Division 1.')}</span>
+                  {t('Nageur belge,', 'Belgian swimmer,')} {age} {t('ans', 'years old')} · {specialty}. <span className="text-cyan-300">{t('Cap sur la NCAA.', 'Aiming for the NCAA.')}</span>
                 </p>
               </Reveal>
               <Reveal delay={0.24}>
@@ -144,7 +144,7 @@ export default function CoachView({ profile }) {
                     {t('Je suis intéressé(e)', 'I’m interested')} <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
                   </button>
                   <button onClick={() => scrollTo('file')} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">
-                    <Icon name="doc" className="h-4 w-4" /> {t('Le dossier', 'The packet')}
+                    <Icon name="doc" className="h-4 w-4" /> {t('Le dossier', 'The package')}
                   </button>
                 </div>
               </Reveal>
@@ -174,7 +174,7 @@ export default function CoachView({ profile }) {
         <div className="border-y border-white/10 bg-cyan-400/[0.04] py-4">
           <Marquee
             className="font-cine text-xl uppercase tracking-wide text-white/80 sm:text-2xl"
-            items={[`${t('Promo', 'Class of')} ${profile.usEntryYear}`, t('Nageur belge', 'Belgian swimmer'), 'Sprint Free & Back', 'NCAA Division 1', t('Objectif D1', 'D1 target'), 'Road to USA']}
+            items={[`${t('Promo', 'Class of')} ${profile.usEntryYear}`, t('Nageur belge', 'Belgian swimmer'), 'Sprint Free & Back', 'NCAA Swimming', t('Objectif NCAA', 'NCAA bound'), 'Road to USA']}
           />
         </div>
 
@@ -184,7 +184,7 @@ export default function CoachView({ profile }) {
             <Stat text={String(age)} label={t('ans', 'years old')} />
             <Stat text={String(months)} label={t('mois avant la rentrée', 'months to enrollment')} count value={months} />
             {bestFree && <Stat value={bestFree.scy} decimals={2} label={`${t('meilleur', 'best')} ${t(bestFree.ev.label, bestFree.ev.labelEn)} · yards`} count />}
-            <Stat text="D1" label={t('objectif 2028', '2028 target')} glow="#38bdf8" />
+            <Stat text="NCAA" label={t('objectif 2028', '2028 target')} glow="#38bdf8" />
           </div>
         </section>
 
@@ -226,7 +226,7 @@ export default function CoachView({ profile }) {
             </Reveal>
             <Reveal delay={0.2}>
               <p className="mx-auto mt-7 max-w-xl text-base text-white/55 sm:text-lg">
-                {t('Un cap clair : nager en Division 1.', 'One clear goal: swim in Division 1.')}
+                {t('Un cap clair : nager en NCAA.', 'One clear goal: swim in the NCAA.')}
               </p>
             </Reveal>
           </div>
@@ -243,7 +243,7 @@ export default function CoachView({ profile }) {
         {/* ============ LE DOSSIER ============ */}
         <section id="file" className="relative py-20 sm:py-28">
           <div className="mx-auto max-w-4xl px-6">
-            <SectionTitle eyebrow={t('Dossier', 'Packet')} title={t('Le dossier complet', 'The full packet')} />
+            <SectionTitle eyebrow={t('Dossier', 'Package')} title={t('Le dossier complet', 'The full package')} />
             <Reveal>
               <div className="cine-card overflow-hidden p-7 text-center sm:p-10">
                 <p className="mx-auto mb-6 max-w-xl text-white/70">{t('La fiche de recrutement en PDF (académique, natation, meilleurs temps) + le contact d’Arthur à enregistrer d’un geste.', 'The recruiting sheet as a PDF (academics, swimming, best times) + Arthur’s contact to save in one tap.')}</p>

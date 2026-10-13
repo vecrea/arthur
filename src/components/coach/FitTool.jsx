@@ -3,10 +3,10 @@ import { EVENTS, lcmToScy, formatTime, parseTime, eventTargets, STROKE_EN } from
 import { useLang } from '../../lib/i18n.jsx'
 
 const TIERS = [
-  { key: 'elite', field: 'eliteD1', fr: 'Élite D1', en: 'Elite D1' },
-  { key: 'solid', field: 'solidD1', fr: 'D1 solide', en: 'Solid D1' },
-  { key: 'low', field: 'lowD1', fr: 'Bas D1 / D2', en: 'Low D1 / D2' },
-  { key: 'dev', field: 'd2d3', fr: 'D2 / D3', en: 'D2 / D3' },
+  { key: 'elite', field: 'eliteD1', fr: 'Élite NCAA', en: 'Elite NCAA' },
+  { key: 'solid', field: 'solidD1', fr: 'NCAA solide', en: 'Solid NCAA' },
+  { key: 'low', field: 'lowD1', fr: 'NCAA intermédiaire', en: 'Mid NCAA' },
+  { key: 'dev', field: 'd2d3', fr: 'NCAA accessible', en: 'Entry NCAA' },
 ]
 
 // Verdict couleur selon l'écart (en secondes) à la référence.
