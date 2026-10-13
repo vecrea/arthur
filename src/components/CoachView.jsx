@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import AboutMe from './AboutMe.jsx'
 import AthleteSheet from './AthleteSheet.jsx'
 import Icon from './Icons.jsx'
-import FitTool from './coach/FitTool.jsx'
 import CoachMessageForm from './coach/CoachMessageForm.jsx'
 import CoachRequests from './coach/CoachRequests.jsx'
 import CoachFaq from './coach/CoachFaq.jsx'
@@ -231,14 +230,6 @@ export default function CoachView({ profile }) {
             </Reveal>
           </div>
         </section>
-
-        {/* ============ FIT TOOL ============ */}
-        <CineSection id="fit" eyebrow={t('Compatibilité', 'Fit')} title={t('À votre niveau ?', 'Does he fit?')}>
-          <div className="cine-card p-5 sm:p-7">
-            <p className="mb-5 text-white/80">{t('Choisissez le niveau de votre programme (ou entrez vos temps de recrutement) — la comparaison est instantanée.', 'Pick your program’s level (or enter your recruiting cut times) — the comparison is instant.')}</p>
-            <FitTool profile={profile} />
-          </div>
-        </CineSection>
 
         {/* ============ LE DOSSIER ============ */}
         <section id="file" className="relative py-20 sm:py-28">
