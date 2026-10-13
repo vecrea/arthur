@@ -121,19 +121,19 @@ export default function CoachView({ profile }) {
           <PoolCanvas className="absolute inset-0 h-full w-full" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#05070f]/30 via-transparent to-[#05070f]" />
           <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-4 px-6 pb-10 pt-24 lg:grid-cols-[1.08fr_0.92fr] lg:gap-8 lg:pt-16">
-            {/* Texte */}
-            <div className="order-2 lg:order-1">
+            {/* Texte (centré sur mobile, aligné à gauche sur desktop) */}
+            <div className="order-2 text-center lg:order-1 lg:text-left">
               <Reveal><div className="mb-4 text-[11px] font-bold uppercase tracking-[0.38em] text-cyan-300/90">Road to NCAA — Recruiting {profile.usEntryYear}</div></Reveal>
               <Reveal delay={0.08}>
                 <h1 className="font-cine uppercase leading-[0.8] text-white cine-glow" style={{ fontSize: 'clamp(3.5rem, 12vw, 9rem)' }}>{profile.name}</h1>
               </Reveal>
               <Reveal delay={0.16}>
-                <p className="mt-4 max-w-md text-base leading-relaxed text-white/75 sm:text-lg">
+                <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-white/75 sm:text-lg lg:mx-0">
                   {t('Nageur belge,', 'Belgian swimmer,')} {age} {t('ans', 'years old')} · {specialty}. <span className="text-cyan-300">{t('Cap sur la NCAA.', 'Aiming for the NCAA.')}</span>
                 </p>
               </Reveal>
               <Reveal delay={0.24}>
-                <div className="mt-7 flex flex-wrap gap-3">
+                <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
                   <button onClick={() => scrollTo('contact')} className="group inline-flex items-center gap-2 rounded-full bg-cyan-400 px-7 py-3.5 text-sm font-bold text-[#05070f] shadow-[0_0_30px_rgba(45,212,238,0.5)] transition hover:shadow-[0_0_44px_rgba(45,212,238,0.85)]">
                     {t('Je suis intéressé(e)', 'I’m interested')} <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
                   </button>

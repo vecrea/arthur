@@ -285,14 +285,19 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
     const frame = (now) => {
       const tt = reduce ? 0 : (now - t0) / 1000
 
-      // Démo automatique : trace un chemin au début (utile sur mobile).
-      if (!interacted && !reduce) {
-        const el = (now - t0) / 1000
-        if (el > 1.0 && el < 7.5) {
-          down = 1
-          mouse.x = 0.5 + Math.cos(el * 1.3) * 0.2
-          mouse.y = 0.58 + Math.sin(el * 2.1) * 0.17
-        } else if (el >= 7.5) { down = 0 }
+      // Chemin prédéfini : tant que le visiteur n'a pas pris la main (survol ou
+      // toucher), un trajet en figure de huit balaie la tête en continu et
+      // dévoile le bonnet + les lunettes. Statique (posé sur la tête) si
+      // l'utilisateur préfère réduire les animations.
+      if (!interacted) {
+        down = 1
+        if (reduce) {
+          mouse.x = 0.5; mouse.y = 0.62
+        } else {
+          const p = Math.max(0, (now - t0) / 1000 - 0.5) * 0.9
+          mouse.x = 0.5 + Math.sin(p) * 0.15
+          mouse.y = 0.62 + Math.sin(p * 2) * 0.075
+        }
       }
       // Évite un trait géant lors d'un saut / d'une (ré)entrée du curseur.
       if (!downPrev && down) { mouse.px = mouse.x; mouse.py = mouse.y }

@@ -54,7 +54,7 @@ export default function CoachMessageForm({ type = 'interest', minimal = false, m
         placeholder={messagePlaceholder || t('Ton message *', 'Your message *')}
         className="field"
       />
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
         <span className="text-[11px] text-tertiary">{t('* obligatoire. Tes coordonnées servent à te répondre.', '* required. Your details are only used to reply to you.')}</span>
         <button type="submit" disabled={!valid || status === 'sending'} className="btn-primary px-5 py-2.5 text-sm disabled:opacity-50">
           {status === 'sending' ? t('Envoi…', 'Sending…') : submitLabel || t('Envoyer', 'Send')}
