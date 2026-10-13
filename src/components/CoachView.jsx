@@ -25,7 +25,7 @@ const HIDDEN_TIME_EVENTS = new Set(['400FR', '400IM', '50FL', '200IM'])
 // FAQ, demandes, mot, téléchargement) ; la fiche PDF reste imprimable.
 // ---------------------------------------------------------------------------
 export default function CoachView({ profile }) {
-  const { t, lang, setLang } = useLang()
+  const { t, lang } = useLang()
 
   // La page coach est toujours sombre (cinématique) + titre d'onglet dédié.
   useEffect(() => {
@@ -108,14 +108,9 @@ export default function CoachView({ profile }) {
             <div className="font-display text-sm font-extrabold tracking-tight text-white">Road to <span className="text-cyan-300">NCAA</span></div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => scrollTo('contact')} className="hidden rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20 sm:inline-block">
-              {t('Contact', 'Contact')}
+            <button onClick={() => scrollTo('contact')} className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20">
+              Contact
             </button>
-            <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-0.5 text-xs font-semibold backdrop-blur">
-              {['fr', 'en'].map((lg) => (
-                <button key={lg} onClick={() => setLang(lg)} className={'rounded-md px-2.5 py-1 transition ' + (lang === lg ? 'bg-cyan-400 text-[#05070f]' : 'text-white/70 hover:text-white')}>{lg.toUpperCase()}</button>
-              ))}
-            </div>
           </div>
         </div>
       </header>
@@ -161,8 +156,8 @@ export default function CoachView({ profile }) {
               </div>
             </Reveal>
           </div>
-          {/* Indicateur de scroll */}
-          <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2">
+          {/* Indicateur de scroll (masqué sur mobile) */}
+          <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 hidden sm:flex -translate-x-1/2 flex-col items-center gap-2">
             <div className="flex h-9 w-5 justify-center rounded-full border border-white/25 pt-1.5">
               <span className="h-1.5 w-1 rounded-full bg-cyan-300 cine-scrolldot" />
             </div>
