@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { onCloudState, cloudSignIn, cloudSignOut } from '../lib/cloud.js'
 import { useLang } from '../lib/i18n.jsx'
 
@@ -17,14 +18,12 @@ export default function CloudSync() {
 
   useEffect(() => onCloudState(setState), [])
 
-  // Ferme le menu si on clique en dehors.
+  // Ferme la fenêtre avec la touche Échap.
   useEffect(() => {
     if (!open) return
-    const onDoc = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
   }, [open])
 
   const user = state.user
@@ -62,65 +61,86 @@ export default function CloudSync() {
         <span className="hidden sm:inline">{signedIn ? t('Synchro', 'Synced') : t('Synchro', 'Sync')}</span>
       </button>
 
-      {open && (
-        <div className="absolute right-0 z-40 mt-2 w-72 rounded-xl surface border border-hair p-4 shadow-card">
-          {signedIn ? (
-            <div>
-              <div className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-300">
-                <CloudCheck /> {t('Synchronisé', 'Synced')}
+      {open && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center">
+          <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="relative w-full max-w-md rounded-2xl surface border border-hair p-6 shadow-panel sm:p-7">
+            <button
+              onClick={() => setOpen(false)}
+              aria-label={t('Fermer', 'Close')}
+              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-tertiary transition hover:surface-2 hover:text-heading"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+
+            {signedIn ? (
+              <div>
+                <div className="flex items-center gap-2 text-base font-bold text-emerald-700 dark:text-emerald-300">
+                  <CloudCheck /> {t('Synchronisé', 'Synced')}
+                </div>
+                <p className="mt-1 break-all text-sm text-secondary">{user.email}</p>
+                <p className="mt-3 text-sm text-tertiary">
+                  {t(
+                    'Tes modifications sont enregistrées dans le cloud et retrouvées sur tous tes appareils.',
+                    'Your changes are saved to the cloud and available on all your devices.',
+                  )}
+                </p>
+                <button
+                  onClick={async () => { await cloudSignOut(); setOpen(false) }}
+                  className="mt-5 w-full rounded-xl surface-2 border border-hair px-4 py-3 text-sm font-semibold text-primary transition hover:surface-3"
+                >
+                  {t('Se déconnecter', 'Sign out')}
+                </button>
               </div>
-              <p className="mt-1 break-all text-xs text-secondary">{user.email}</p>
-              <p className="mt-2 text-xs text-tertiary">
-                {t(
-                  'Tes modifications sont enregistrées dans le cloud et retrouvées sur tous tes appareils.',
-                  'Your changes are saved to the cloud and available on all your devices.',
-                )}
-              </p>
-              <button
-                onClick={async () => {
-                  await cloudSignOut()
-                  setOpen(false)
-                }}
-                className="mt-3 w-full rounded-lg surface-2 border border-hair px-3 py-2 text-sm font-semibold text-primary transition hover:surface-3"
-              >
-                {t('Se déconnecter', 'Sign out')}
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={submit}>
-              <p className="text-sm font-bold text-heading">{t('Connexion', 'Sign in')}</p>
-              <p className="mt-1 text-xs text-secondary">
-                {t('Connecte-toi pour synchroniser tes données partout.', 'Sign in to sync your data everywhere.')}
-              </p>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="email"
-                autoComplete="username"
-                className="field mt-3"
-                required
-              />
-              <input
-                type="password"
-                value={pass}
-                onChange={(e) => setPass(e.target.value)}
-                placeholder={t('mot de passe', 'password')}
-                autoComplete="current-password"
-                className="field mt-2"
-                required
-              />
-              {err && <p className="mt-2 text-xs font-semibold text-flag-600 dark:text-flag-400">{err}</p>}
-              <button
-                type="submit"
-                disabled={busy}
-                className="mt-3 w-full rounded-lg bg-pool-500 px-3 py-2 text-sm font-bold text-white transition hover:bg-pool-600 disabled:opacity-60"
-              >
-                {busy ? t('Connexion…', 'Signing in…') : t('Se connecter', 'Sign in')}
-              </button>
-            </form>
-          )}
-        </div>
+            ) : (
+              <form onSubmit={submit}>
+                <div className="flex items-center gap-2.5 text-lg font-extrabold text-heading">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-accent"><CloudIcon /></span>
+                  {t('Synchroniser mes données', 'Sync my data')}
+                </div>
+                <p className="mt-2 text-sm text-secondary">
+                  {t(
+                    'Connecte-toi pour enregistrer tes données (temps, objectifs, favoris…) et les retrouver sur tous tes appareils.',
+                    'Sign in to save your data (times, goals, favorites…) and find it on all your devices.',
+                  )}
+                </p>
+                <label className="mt-5 block">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Email', 'Email')}</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="ton@email.com"
+                    autoComplete="username"
+                    className="field mt-1 py-3 text-base"
+                    required
+                  />
+                </label>
+                <label className="mt-3 block">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Mot de passe', 'Password')}</span>
+                  <input
+                    type="password"
+                    value={pass}
+                    onChange={(e) => setPass(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    className="field mt-1 py-3 text-base"
+                    required
+                  />
+                </label>
+                {err && <p className="mt-3 text-sm font-semibold text-flag-600 dark:text-flag-400">{err}</p>}
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="mt-5 w-full rounded-xl bg-pool-500 px-4 py-3 text-base font-bold text-white transition hover:bg-pool-600 disabled:opacity-60"
+                >
+                  {busy ? t('Connexion…', 'Signing in…') : t('Se connecter', 'Sign in')}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>,
+        document.body,
       )}
     </div>
   )

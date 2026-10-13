@@ -59,6 +59,8 @@ export default function Budget({ schools, favorites }) {
         )}
       />
 
+      <div className="grid gap-4 xl:grid-cols-2 xl:items-start">
+      <div className="space-y-4">
       {/* Choix de la fac */}
       <section className="panel p-5">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -133,7 +135,9 @@ export default function Budget({ schools, favorites }) {
           </label>
         </div>
       </section>
+      </div>
 
+      <div className="space-y-4">
       {/* Résultat — coût total (carte sombre) */}
       <section className="panel-dark grain relative overflow-hidden p-5 text-white sm:p-6">
         <div className="relative z-10">
@@ -162,6 +166,8 @@ export default function Budget({ schools, favorites }) {
           'Indicative estimate in euros. The “sticker cost” usually includes housing, meals and health insurance; flights and visa are added on top. Swimming athletic scholarships are often partial — confirm the real offer with the coach. Adjust the exchange rate when the time comes.',
         )}
       </p>
+      </div>
+      </div>
     </div>
   )
 }

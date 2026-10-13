@@ -219,7 +219,7 @@ export default function App() {
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <TopBar tab={tab} setTab={setTab} favCount={favorites.size} theme={theme} setTheme={setTheme} />
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-6 lg:px-8 xl:px-10">
+        <main className={'mx-auto w-full flex-1 px-5 py-6 lg:px-8 xl:px-10 ' + (tab === 'compare' || tab === 'budget' ? 'max-w-none' : 'max-w-6xl')}>
           {/* key={tab} : le contenu se remonte à chaque onglet → l'animation se rejoue */}
           <div key={tab} className="animate-tab">
             {renderTab()}
