@@ -116,6 +116,17 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
               >
                 {t('Coachs natation', 'Swim coaches')} ↗
               </a>
+              {coaches?.instagramUrl && (
+                <a
+                  href={coaches.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={t('Instagram natation de la fac', "School's swim Instagram")}
+                  className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-fuchsia-600 to-amber-500 px-3 py-1 text-xs font-semibold text-white transition hover:opacity-90"
+                >
+                  Instagram ↗
+                </a>
+              )}
               <a
                 href={NCSA_URL}
                 target="_blank"
@@ -162,16 +173,42 @@ export default function UniversityCard({ u, isFav, onToggleFav, profile }) {
                 {coaches.staff.map((c) => (
                   <li key={c.name} className="text-secondary">
                     <span className="text-tertiary">{c.role} :</span> <span className="font-medium text-primary">{c.name}</span>
+                    {c.email && (
+                      <>
+                        {' · '}
+                        <a href={`mailto:${c.email}`} className="break-all font-medium text-accent hover:underline">{c.email}</a>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-xs text-tertiary">
-                {t('Emails directs rarement publics en D1 — contacte via le', 'Direct emails are rarely public in D1 — reach out via the')}{' '}
-                <a href={coachsStaffLink(u)} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">
-                  {t('staff / formulaire recrue', 'staff / recruit form')} ↗
-                </a>
-                .
-              </p>
+              {coaches.staff.some((c) => c.email) ? (
+                <p className="mt-2 text-xs text-tertiary">
+                  {t('Emails à re-vérifier via la page staff officielle', 'Double-check emails via the official staff page')}{' '}
+                  <a href={coachsStaffLink(u)} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">↗</a>
+                  {coaches.instagramUrl && (
+                    <>
+                      {' · '}
+                      <a href={coaches.instagramUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">Instagram ↗</a>
+                    </>
+                  )}
+                  .
+                </p>
+              ) : (
+                <p className="mt-2 text-xs text-tertiary">
+                  {t('Emails directs rarement publics — contacte via le', 'Direct emails are rarely public — reach out via the')}{' '}
+                  <a href={coachsStaffLink(u)} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">
+                    {t('staff / formulaire recrue', 'staff / recruit form')} ↗
+                  </a>
+                  {coaches.instagramUrl && (
+                    <>
+                      {' · '}
+                      <a href={coaches.instagramUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">Instagram ↗</a>
+                    </>
+                  )}
+                  .
+                </p>
+              )}
             </div>
           )}
 

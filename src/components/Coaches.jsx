@@ -108,7 +108,7 @@ export default function Coaches({ unis, favorites, profile }) {
         have.add(key)
         toAdd.push({
           ...blank(), id: newId(), schoolId: sid, school,
-          coachName: s.name, status: 'todo',
+          coachName: s.name, email: s.email || '', status: 'todo',
           notes: `${s.role} · ${t('staff vérifié', 'verified staff')} ${COACHES_AS_OF}`,
         })
       }
