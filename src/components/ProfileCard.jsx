@@ -72,7 +72,7 @@ export default function ProfileCard({ profile }) {
       {/* Infos profil */}
       <section className="panel p-5">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          <Info label={t('Nationalité', 'Nationality')} value={`${profile.nationality}`} />
+          <Info label={t('Nationalité', 'Nationality')} value={t(profile.nationality, profile.nationalityEn || profile.nationality)} />
           <Info label={t('Âge', 'Age')} value={`${age} ${t('ans', 'yrs')}`} />
           <Info label={t('Entrée fac visée', 'Target college entry')} value={`${t('Automne', 'Fall')} ${profile.usEntryYear}`} />
           <Info label={t('Classe actuelle', 'Current grade')} value={t(profile.currentGrade, profile.currentGradeEn)} />

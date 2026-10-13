@@ -7,6 +7,7 @@ export const profile = {
   specialty: 'Sprint nage libre & dos',
   specialtyEn: 'Sprint freestyle & backstroke',
   nationality: 'Belge',
+  nationalityEn: 'Belgian',
   birthDate: '2010-06-10',
   currentGrade: '5e secondaire (Belgique)',
   currentGradeEn: '5th year, Belgian secondary',

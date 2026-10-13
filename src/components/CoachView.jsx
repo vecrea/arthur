@@ -282,6 +282,7 @@ export default function CoachView({ profile }) {
         <footer className="border-t border-white/10 py-10 text-center">
           <div className="font-cine text-2xl uppercase tracking-wide text-white/90">Road to <span className="text-cyan-300">NCAA</span></div>
           <p className="mt-2 text-xs text-white/40">{t('Profil généré depuis les données de l’athlète', 'Profile generated from the athlete’s data')} · {profile.name} · {profile.usEntryYear}</p>
+          <p className="mt-3 text-[11px] text-white/35">Created with the help of Claude with the original idea of Arthur Ertveld.</p>
         </footer>
       </div>
 

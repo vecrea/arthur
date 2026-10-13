@@ -18,7 +18,7 @@ export default function CoachFaq({ profile }) {
     { q: t('Club & coach', 'Club & coach'), a: `${x.homeClub || profile.homeClub} — ${x.coachName || profile.coach}` },
     { q: t('Éligibilité NCAA', 'NCAA eligibility'), a: x.ncaaEligibility || t('Dossier NCAA Eligibility Center en cours.', 'NCAA Eligibility Center registration in progress.') },
     { q: t('Visa', 'Visa'), a: x.visaStatus || t('Visa étudiant F-1 prévu (I-20 à réception de l’offre).', 'F-1 student visa planned (I-20 upon offer).') },
-    { q: t('Nationalité', 'Nationality'), a: profile.nationality },
+    { q: t('Nationalité', 'Nationality'), a: t(profile.nationality, profile.nationalityEn || profile.nationality) },
   ]
 
   return (
