@@ -69,58 +69,78 @@ function CoreCoursesCard() {
 
 // ---------------------------------------------------------------------------
 // Les cours réels d'Arthur (horaire d'une école néerlandophone) rangés dans les
-// catégories core course NCAA. Cases verrouillées (lecture seule) — repère, le
-// mapping officiel est fait par l'Eligibility Center.
+// catégories core course NCAA (verrouillées) + saisie des années suivies par
+// matière (persistées dans profileExtras.courseYears). Repère ; le décompte
+// officiel est fait par l'Eligibility Center.
 // ---------------------------------------------------------------------------
 function MyCoursesMapping() {
   const { t } = useLang()
-  const groups = [
-    { fr: '« English » = langue d’instruction', en: '“English” = language of instruction', color: '#1273b8', courses: [['Néerlandais', 'NE', 'Dutch', 'langue des cours', 'the teaching language']] },
-    { fr: 'Langue étrangère', en: 'Foreign language', color: '#3a3f7a', courses: [['Anglais', 'EN', 'English'], ['Français', 'FR', 'French'], ['Allemand', 'DU', 'German']] },
-    { fr: 'Mathématiques', en: 'Math', color: '#1d7a4d', courses: [['Mathématiques', 'WI', 'Mathematics']] },
-    { fr: 'Sciences', en: 'Science', color: '#0e7490', courses: [['Sciences — chimie / physique / bio', 'NW', 'Science — chem / phys / bio']] },
-    { fr: 'Sciences sociales', en: 'Social science', color: '#6f63a0', courses: [['Histoire', 'GE', 'History'], ['Géographie', 'AA', 'Geography'], ['Économie', 'EC', 'Economics']] },
-    { fr: 'Au choix (philo / religion)', en: 'Additional (philosophy / religion)', color: '#b45309', courses: [['Religion', 'GO', 'Religion', 'philo / religion comparée', 'philosophy / comparative religion']] },
+  const [years, setYears] = useState(() => {
+    try { return loadProfileExtras().courseYears || {} } catch { return {} }
+  })
+  const setYear = (code, v) => {
+    setYears((prev) => {
+      const next = { ...prev }
+      if (v === '') delete next[code]
+      else next[code] = v
+      try { const ex = loadProfileExtras(); saveProfileExtras({ ...ex, courseYears: next }) } catch { /* ignore */ }
+      return next
+    })
+  }
+  const rows = [
+    { fr: 'Néerlandais', en: 'Dutch', code: 'NE', cat: '« English » (langue des cours)', catEn: '“English” (teaching language)', color: '#1273b8' },
+    { fr: 'Anglais', en: 'English', code: 'EN', cat: 'Langue étrangère', catEn: 'Foreign language', color: '#3a3f7a' },
+    { fr: 'Français', en: 'French', code: 'FR', cat: 'Langue étrangère', catEn: 'Foreign language', color: '#3a3f7a' },
+    { fr: 'Allemand', en: 'German', code: 'DU', cat: 'Langue étrangère', catEn: 'Foreign language', color: '#3a3f7a' },
+    { fr: 'Mathématiques', en: 'Mathematics', code: 'WI', cat: 'Maths', catEn: 'Math', color: '#1d7a4d' },
+    { fr: 'Sciences — chimie / physique / bio', en: 'Science — chem / phys / bio', code: 'NW', cat: 'Sciences', catEn: 'Science', color: '#0e7490' },
+    { fr: 'Histoire', en: 'History', code: 'GE', cat: 'Sciences sociales', catEn: 'Social science', color: '#6f63a0' },
+    { fr: 'Géographie', en: 'Geography', code: 'AA', cat: 'Sciences sociales', catEn: 'Social science', color: '#6f63a0' },
+    { fr: 'Économie', en: 'Economics', code: 'EC', cat: 'Sciences sociales', catEn: 'Social science', color: '#6f63a0' },
   ]
-  const nonCore = [['Éducation physique', 'LO', 'Physical education']]
   return (
     <section className="panel p-5">
       <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Mes cours → core courses NCAA', 'My courses → NCAA core courses')}</p>
-      <p className="mb-4 text-sm text-secondary">{t('D’après ton horaire réel (école néerlandophone). Cases verrouillées : le classement vient des règles NCAA, tu ne le modifies pas. Comme tes cours sont en néerlandais, c’est le néerlandais qui remplit la case « English ».', 'Based on your real timetable (Dutch-language school). Locked cells: the mapping comes from NCAA rules, you don’t change it. Since your classes are in Dutch, Dutch fills the “English” slot.')}</p>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {groups.map((g) => (
-          <div key={g.fr} className="rounded-xl surface-2 border border-hair p-3">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: g.color }} />
-              <span className="text-[11px] font-bold uppercase tracking-wide text-secondary">{t(g.fr, g.en)}</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {g.courses.map((c) => (
-                <span key={c[1]} className="inline-flex items-center gap-1.5 rounded-lg surface-3 border border-hair px-2.5 py-1 text-xs">
-                  <span className="font-semibold text-heading">{t(c[0], c[2])}</span>
-                  <span className="rounded bg-navy-900 px-1.5 text-[10px] font-bold text-white">{c[1]}</span>
-                  {c[3] && <span className="text-[10px] font-semibold text-tertiary">· {t(c[3], c[4])}</span>}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-        <div className="rounded-xl bg-flag-500/10 p-3 ring-1 ring-flag-500/20 sm:col-span-2">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="font-bold text-flag-500">✕</span>
-            <span className="text-[11px] font-bold uppercase tracking-wide text-flag-600 dark:text-flag-400">{t('Ne compte pas (non-académique)', 'Doesn’t count (non-academic)')}</span>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {nonCore.map((c) => (
-              <span key={c[1]} className="inline-flex items-center gap-1.5 rounded-lg surface-3 border border-hair px-2.5 py-1 text-xs">
-                <span className="font-semibold text-heading">{t(c[0], c[2])}</span>
-                <span className="rounded bg-navy-900 px-1.5 text-[10px] font-bold text-white">{c[1]}</span>
-              </span>
+      <p className="mb-4 text-sm text-secondary">{t('D’après ton horaire réel (école néerlandophone). La catégorie NCAA est verrouillée (c’est la règle) ; toi, tu remplis le nombre d’années suivies par matière. Comme tes cours sont en néerlandais, le néerlandais remplit la case « English ».', 'Based on your real timetable (Dutch-language school). The NCAA area is locked (that’s the rule); you fill in how many years you’ve taken each subject. Since your classes are in Dutch, Dutch fills the “English” slot.')}</p>
+      <div className="overflow-x-auto rounded-xl surface-2 border border-hair">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-[11px] uppercase tracking-wide text-tertiary">
+              <th className="px-3 py-2 font-semibold">{t('Matière', 'Subject')}</th>
+              <th className="px-3 py-2 font-semibold">{t('Catégorie NCAA', 'NCAA area')}</th>
+              <th className="w-24 px-3 py-2 font-semibold">{t('Années', 'Years')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.code} className="border-t border-hair">
+                <td className="px-3 py-2">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="font-semibold text-heading">{t(r.fr, r.en)}</span>
+                    <span className="rounded bg-navy-900 px-1.5 text-[10px] font-bold text-white">{r.code}</span>
+                  </span>
+                </td>
+                <td className="px-3 py-2">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: r.color }} />
+                    <span className="text-primary">{t(r.cat, r.catEn)}</span>
+                  </span>
+                </td>
+                <td className="px-3 py-2">
+                  <input type="number" min="0" max="7" value={years[r.code] ?? ''} onChange={(e) => setYear(r.code, e.target.value)} placeholder="—" className="field w-20 px-2 py-1" />
+                </td>
+              </tr>
             ))}
-          </div>
-        </div>
+          </tbody>
+        </table>
       </div>
-      <p className="mt-3 text-[11px] text-tertiary">{t('Ces matières comptent par année sur l’ensemble de ta scolarité (le NCAA exige un nombre d’années par catégorie). La religion compte dans les cases « au choix » quand elle est académique (religion comparée / philosophie, comme ton cours sur les valeurs et la conscience). L’Eligibility Center fait le mapping officiel à partir de tes bulletins — ceci est un repère.', 'These subjects count per year across your whole schooling (the NCAA requires a number of years per area). Religion counts in the “additional” slots when it is academic (comparative religion / philosophy, like your course on values and conscience). The Eligibility Center does the official mapping from your transcripts — this is a guide.')}</p>
+
+      <div className="mt-3 rounded-xl surface-2 border border-hair p-3">
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-tertiary">{t('Minimums NCAA (Division I, par catégorie)', 'NCAA minimums (Division I, per area)')}</div>
+        <p className="text-xs text-secondary">{t('« English » 4 ans · Maths 3 · Sciences 2 · Sciences sociales 2 · +1 au choix (anglais/maths/sciences) · +4 au choix dont langue étrangère — 16 au total.', '“English” 4 yrs · Math 3 · Science 2 · Social science 2 · +1 flex (English/math/science) · +4 additional incl. foreign language — 16 total.')}</p>
+      </div>
+
+      <p className="mt-2 text-[11px] text-tertiary">{t('Ne comptent pas : religion (GO) et éducation physique (LO). Les années comptent sur toute ta scolarité ; l’Eligibility Center fait le décompte officiel à partir de tes bulletins — ceci est un repère.', 'Don’t count: religion (GO) and physical education (LO). Years count across your whole schooling; the Eligibility Center does the official count from your transcripts — this is a guide.')}</p>
     </section>
   )
 }
