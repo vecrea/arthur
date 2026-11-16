@@ -7,17 +7,41 @@
 // ---------------------------------------------------------------------------
 
 // Bandes /20 -> GPA (points) + lettre US. Du plus haut au plus bas.
+// Valeurs en points calées sur la table officielle NCAA (Grade-Point Values).
 export const GPA_BANDS = [
   { min: 18, gpa: 4.0, letter: 'A' },
-  { min: 16, gpa: 3.7, letter: 'A-' },
-  { min: 15, gpa: 3.3, letter: 'B+' },
+  { min: 16, gpa: 3.667, letter: 'A-' },
+  { min: 15, gpa: 3.333, letter: 'B+' },
   { min: 14, gpa: 3.0, letter: 'B' },
-  { min: 13, gpa: 2.7, letter: 'B-' },
-  { min: 12, gpa: 2.3, letter: 'C+' },
+  { min: 13, gpa: 2.667, letter: 'B-' },
+  { min: 12, gpa: 2.333, letter: 'C+' },
   { min: 11, gpa: 2.0, letter: 'C' },
-  { min: 10, gpa: 1.7, letter: 'C-' },
+  { min: 10, gpa: 1.667, letter: 'C-' },
   { min: 0, gpa: 0.0, letter: 'F' },
 ]
+
+// Table officielle NCAA « Grade-Point Values » (International Student-Athlete
+// Handbook) — référence affichée telle quelle, regroupée par palier et couleur.
+export const NCAA_GRADE_POINTS = [
+  { letter: 'A', gpa: 4.0, tier: 'superior', color: '#1d7a4d' },
+  { letter: 'A-', gpa: 3.667, tier: 'superior', color: '#5cb85c' },
+  { letter: 'B+', gpa: 3.333, tier: 'above', color: '#3a3f7a' },
+  { letter: 'B', gpa: 3.0, tier: 'above', color: '#6f63a0' },
+  { letter: 'B-', gpa: 2.667, tier: 'above', color: '#9aa2cf' },
+  { letter: 'C+', gpa: 2.333, tier: 'average', color: '#0e2b52' },
+  { letter: 'C', gpa: 2.0, tier: 'average', color: '#1273b8' },
+  { letter: 'C-', gpa: 1.667, tier: 'average', color: '#5fc3ef' },
+  { letter: 'D', gpa: 1.0, tier: 'below', color: '#e8882a' },
+  { letter: 'F', gpa: 0.0, tier: 'failing', color: '#9e2b25' },
+]
+
+export const NCAA_TIERS = {
+  superior: { fr: 'Supérieur', en: 'Superior' },
+  above: { fr: 'Au-dessus de la moyenne', en: 'Above average' },
+  average: { fr: 'Moyen', en: 'Average' },
+  below: { fr: 'En dessous de la moyenne', en: 'Below average' },
+  failing: { fr: 'Échec', en: 'Failing' },
+}
 
 export function bandFor20(g) {
   const x = Number(g)

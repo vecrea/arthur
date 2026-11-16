@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { computeGpa, bandFor, gradeInRange, gpaToLetter, mentionKey, GPA_BANDS } from '../lib/gpa.js'
+import { computeGpa, bandFor, gradeInRange, gpaToLetter, mentionKey, GPA_BANDS, NCAA_GRADE_POINTS, NCAA_TIERS } from '../lib/gpa.js'
 import { loadGpaSubjects, saveGpaSubjects, loadGpaScale, saveGpaScale, loadProfileExtras, saveProfileExtras } from '../lib/storage.js'
 import { useLang } from '../lib/i18n.jsx'
 import { PageHeader } from './ui/Page.jsx'
@@ -175,10 +175,30 @@ export default function Gpa() {
           </div>
         </section>
 
+        {/* Table officielle NCAA (Grade-Point Values) — référence du handbook */}
+        <section className="panel p-5">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Table officielle NCAA (Grade-Point Values)', 'Official NCAA grade-point values')}</p>
+          <p className="mb-3 text-xs text-secondary">{t('Référence du handbook NCAA : chaque lettre vaut un nombre de points fixe (de A = 4.000 à F = 0.000).', 'NCAA handbook reference: each letter is worth a fixed number of points (A = 4.000 down to F = 0.000).')}</p>
+          <div className="space-y-2">
+            {['superior', 'above', 'average', 'below', 'failing'].map((tier) => (
+              <div key={tier} className="flex flex-wrap items-center gap-2">
+                <span className="w-full text-xs font-semibold text-secondary sm:w-52 sm:shrink-0">{t(NCAA_TIERS[tier].fr, NCAA_TIERS[tier].en)}</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {NCAA_GRADE_POINTS.filter((g) => g.tier === tier).map((g) => (
+                    <span key={g.letter} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold text-white" style={{ background: g.color }}>
+                      {g.letter} <span className="font-display tabular-nums">{g.gpa.toFixed(3)}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
       <p className="px-1 text-xs text-secondary">
         {t(
-          'Conversion indicative : il n’existe pas de barème officiel unique (WES, NCAA Eligibility Center et chaque fac ont le leur). Utile pour te situer et remplir ta fiche, mais le GPA officiel sera recalculé par l’organisme d’évaluation à partir de tes relevés.',
-          'Indicative conversion: there is no single official scale (WES, NCAA Eligibility Center and each school use their own). Useful to place yourself and fill your sheet, but the official GPA will be recomputed by the evaluator from your transcripts.',
+          'Conversion indicative : il n’existe pas de barème officiel unique (WES, NCAA Eligibility Center et chaque fac ont le leur). Utile pour te situer et remplir ta fiche, mais le GPA officiel NCAA est recalculé par le Eligibility Center à partir de tes seules matières « core courses » (pas toutes tes notes).',
+          'Indicative conversion: there is no single official scale (WES, NCAA Eligibility Center and each school use their own). Useful to place yourself and fill your sheet, but the official NCAA GPA is recomputed by the Eligibility Center from your “core courses” only (not all your grades).',
         )}
       </p>
     </div>

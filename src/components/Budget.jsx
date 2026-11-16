@@ -23,7 +23,9 @@ export default function Budget({ schools, favorites }) {
   const [rate, setRate] = useState(0.92)
   const [roundTrips, setRoundTrips] = useState(2)
   const [flightPrice, setFlightPrice] = useState(900)
-  const [visaFees, setVisaFees] = useState(500)
+  const [sevisUSD, setSevisUSD] = useState(350)
+  const [visaUSD, setVisaUSD] = useState(185)
+  const [insuranceEUR, setInsuranceEUR] = useState(0)
   const [years, setYears] = useState(4)
 
   const pick = (id) => {
@@ -41,9 +43,12 @@ export default function Budget({ schools, favorites }) {
   const netAnnualUSD = costUSD * (1 - scholar / 100)
   const tuitionEUR = netAnnualUSD * rate
   const flightsEUR = (Number(roundTrips) || 0) * (Number(flightPrice) || 0)
-  const annualEUR = tuitionEUR + flightsEUR
-  const visaEUR = Number(visaFees) || 0
-  const totalEUR = (Number(years) || 0) * annualEUR + visaEUR
+  const insEUR = Number(insuranceEUR) || 0
+  const annualEUR = tuitionEUR + flightsEUR + insEUR
+  const sevisEUR = (Number(sevisUSD) || 0) * rate
+  const visaDsEUR = (Number(visaUSD) || 0) * rate
+  const oneTimeEUR = sevisEUR + visaDsEUR
+  const totalEUR = (Number(years) || 0) * annualEUR + oneTimeEUR
   const savedEUR = (Number(years) || 0) * (costUSD - netAnnualUSD) * rate
 
   const eur = (n) => '€' + Math.round(n).toLocaleString(lang === 'en' ? 'en-US' : 'fr-FR')
@@ -129,10 +134,21 @@ export default function Budget({ schools, favorites }) {
               <input type="number" min="1" max="5" value={years} onChange={(e) => setYears(e.target.value)} className="field mt-1" />
             </label>
           </div>
-          <label className="block sm:max-w-xs">
-            <span className="text-xs font-medium text-secondary">{t('Visa + SEVIS (1× la 1re année, €)', 'Visa + SEVIS (one-time, year 1, €)')}</span>
-            <input type="number" min="0" value={visaFees} onChange={(e) => setVisaFees(e.target.value)} className="field mt-1" />
-          </label>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <label className="block">
+              <span className="text-xs font-medium text-secondary">{t('SEVIS I-901 (1×, $)', 'SEVIS I-901 (one-time, $)')}</span>
+              <input type="number" min="0" value={sevisUSD} onChange={(e) => setSevisUSD(e.target.value)} className="field mt-1" />
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-secondary">{t('Visa DS-160 (1×, $)', 'Visa DS-160 (one-time, $)')}</span>
+              <input type="number" min="0" value={visaUSD} onChange={(e) => setVisaUSD(e.target.value)} className="field mt-1" />
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-secondary">{t('Assurance santé / an (€)', 'Health insurance / yr (€)')}</span>
+              <input type="number" min="0" value={insuranceEUR} onChange={(e) => setInsuranceEUR(e.target.value)} className="field mt-1" />
+            </label>
+          </div>
+          <p className="text-[11px] text-tertiary">{t('Frais officiels ~2026 : SEVIS I-901 ≈ 350 $, visa F-1 (DS-160) ≈ 185 $. Assurance santé : souvent déjà dans le coût annoncé ; sinon la fac la facture ≈ 1 500–3 000 $/an.', 'Official ~2026 fees: SEVIS I-901 ≈ $350, F-1 visa (DS-160) ≈ $185. Health insurance: often already in the sticker cost; otherwise the school bills it ≈ $1,500–3,000/yr.')}</p>
         </div>
       </section>
       </div>
@@ -153,8 +169,10 @@ export default function Budget({ schools, favorites }) {
           <tbody>
             <Row label={t('Scolarité nette / an', 'Net tuition / yr')} val={eur(tuitionEUR)} sub={scholar > 0 ? t(`après ${scholar}% de bourse`, `after ${scholar}% scholarship`) : t('sans bourse sportive', 'no athletic scholarship')} />
             <Row label={t('Vols / an', 'Flights / yr')} val={eur(flightsEUR)} sub={`${roundTrips} ${t('A/R', 'round trips')} × ${eur(flightPrice)}`} />
+            {insEUR > 0 && <Row label={t('Assurance santé / an', 'Health insurance / yr')} val={eur(insEUR)} sub={t('si non incluse dans le coût annoncé', 'if not included in the sticker cost')} />}
             <Row label={t('Sous-total / an', 'Subtotal / yr')} val={eur(annualEUR)} bold />
-            <Row label={t('Visa + SEVIS (1×)', 'Visa + SEVIS (one-time)')} val={eur(visaEUR)} />
+            <Row label={t('SEVIS I-901 (1×)', 'SEVIS I-901 (one-time)')} val={eur(sevisEUR)} sub={`≈ $${Number(sevisUSD) || 0}`} />
+            <Row label={t('Visa DS-160 (1×)', 'Visa DS-160 (one-time)')} val={eur(visaDsEUR)} sub={`≈ $${Number(visaUSD) || 0}`} />
             <Row label={t(`TOTAL sur ${years} an(s)`, `TOTAL over ${years} year(s)`)} val={eur(totalEUR)} bold accent />
           </tbody>
         </table>
@@ -162,8 +180,8 @@ export default function Budget({ schools, favorites }) {
 
       <p className="px-1 text-xs text-secondary">
         {t(
-          'Estimation indicative en euros. Le « coût annoncé » inclut généralement logement, repas et assurance santé ; les vols et le visa sont ajoutés en plus. Les bourses sportives en natation sont souvent partielles — confirme l’offre réelle avec le coach. Taux de change à ajuster le moment venu.',
-          'Indicative estimate in euros. The “sticker cost” usually includes housing, meals and health insurance; flights and visa are added on top. Swimming athletic scholarships are often partial — confirm the real offer with the coach. Adjust the exchange rate when the time comes.',
+          'Estimation indicative en euros. Le « coût annoncé » inclut généralement logement et repas ; l’assurance santé y est parfois comprise, sinon compte-la à part (≈ 1 500–3 000 $/an). Vols, SEVIS et visa s’ajoutent. Les bourses sportives en natation sont souvent partielles — confirme l’offre réelle avec le coach. Taux de change et frais officiels à ajuster le moment venu.',
+          'Indicative estimate in euros. The “sticker cost” usually includes housing and meals; health insurance is sometimes part of it, otherwise count it separately (≈ $1,500–3,000/yr). Flights, SEVIS and visa are added on top. Swimming athletic scholarships are often partial — confirm the real offer with the coach. Adjust the exchange rate and official fees when the time comes.',
         )}
       </p>
       </div>

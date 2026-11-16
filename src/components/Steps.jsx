@@ -46,6 +46,164 @@ function Roadmap() {
   )
 }
 
+// ---------------------------------------------------------------------------
+// Amateurisme — do's / don'ts. Point sensible pour un nageur européen : primes,
+// sponsors, agents, statut pro. (NCAA International Student-Athlete Handbook.)
+// ---------------------------------------------------------------------------
+function AmateurismCard() {
+  const { t } = useLang()
+  const dos = [
+    ['Rester amateur', 'Nager pour la compétition et le plaisir — jamais contre un salaire.', 'Stay amateur', 'Swim for competition and love of the sport — never for a salary.'],
+    ['Déclarer chaque aide', 'Bourses de club, aides de la fédération, remboursements : note tout pour l’Eligibility Center.', 'Declare every benefit', 'Club grants, federation help, reimbursements: log it all for the Eligibility Center.'],
+    ['Garder les preuves', 'Reçus de tes frais réels (voyage, hébergement en stage) au cas où un prix est versé.', 'Keep the receipts', 'Proof of your actual expenses (travel, camp lodging) in case prize money is paid.'],
+    ['NIL : attendre la fac', 'Les revenus d’image (NIL) sont permis une fois inscrit, selon les règles NCAA / de l’État.', 'NIL: wait for college', 'Name-Image-Likeness income is allowed once enrolled, under NCAA / state rules.'],
+  ]
+  const donts = [
+    ['Prize money au-delà des frais', 'Encaisser des gains de compétition qui dépassent tes frais réels.', 'Prize money above expenses', 'Taking competition winnings beyond your actual expenses.'],
+    ['Salaire ou sponsor', 'Être payé pour nager, toucher un salaire de club pro ou un contrat sponsor.', 'Salary or sponsor pay', 'Being paid to swim, a pro-club salary or a sponsorship contract.'],
+    ['Signer avec un agent', 'Laisser un agent te représenter ou négocier un contrat pour toi.', 'Sign with an agent', 'Letting an agent represent you or negotiate a contract for you.'],
+    ['Statut professionnel', 'Signer comme professionnel ou concourir sous contrat pro.', 'Professional status', 'Signing as a professional or competing under a pro contract.'],
+  ]
+  return (
+    <section className="panel p-5">
+      <h3 className="font-display text-lg font-extrabold text-heading">{t('Amateurisme — à protéger dès maintenant', 'Amateurism — protect it from now')}</h3>
+      <p className="mt-0.5 text-sm text-secondary">{t('Le point le plus sensible pour un nageur européen. Une seule erreur peut coûter l’éligibilité NCAA.', 'The most sensitive point for a European swimmer. A single slip can cost your NCAA eligibility.')}</p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl bg-emerald-500/10 p-4 ring-1 ring-emerald-500/25">
+          <div className="mb-2 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">{t('À faire', 'Do')}</div>
+          <ul className="space-y-2.5">
+            {dos.map((d) => (
+              <li key={d[0]} className="flex gap-2">
+                <span className="mt-0.5 shrink-0 font-bold text-emerald-600 dark:text-emerald-400">✓</span>
+                <span><span className="font-semibold text-heading">{t(d[0], d[2])}</span> <span className="text-sm text-primary">— {t(d[1], d[3])}</span></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-xl bg-flag-500/10 p-4 ring-1 ring-flag-500/25">
+          <div className="mb-2 text-xs font-bold uppercase tracking-wide text-flag-600 dark:text-flag-400">{t('À éviter', 'Avoid')}</div>
+          <ul className="space-y-2.5">
+            {donts.map((d) => (
+              <li key={d[0]} className="flex gap-2">
+                <span className="mt-0.5 shrink-0 font-bold text-flag-500">✕</span>
+                <span><span className="font-semibold text-heading">{t(d[0], d[2])}</span> <span className="text-sm text-primary">— {t(d[1], d[3])}</span></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Rester éligible une fois admis — GPA minimum + progression vers le diplôme,
+// par division (D1 / D2 / D3). Source : NCAA handbook.
+// ---------------------------------------------------------------------------
+function StayEligibleCard() {
+  const { t } = useLang()
+  const divs = [
+    {
+      tag: 'Division I', color: '#1273b8',
+      rows: [
+        ['GPA minimum', 't', '1.80 (→ année 2) · 1.90 (→ année 3) · 2.00 (→ année 4+)', '1.80 (→ year 2) · 1.90 (→ year 3) · 2.00 (→ year 4+)'],
+        ['Progression vers le diplôme', 't', '40 % du diplôme fin année 2 · 60 % fin année 3 · 80 % fin année 4', '40% of degree by end of year 2 · 60% by year 3 · 80% by year 4'],
+        ['Crédits', 't', 'Min. d’heures-crédit chaque semestre (≈ 18–24 / an)', 'Minimum credit-hours each term (≈ 18–24 / yr)'],
+      ],
+    },
+    {
+      tag: 'Division II', color: '#3a3f7a',
+      rows: [
+        ['GPA minimum', 't', '2.00', '2.00'],
+        ['Crédits', 't', '24 heures-crédit par an (9 par trimestre)', '24 credit-hours per year (9 per term)'],
+      ],
+    },
+    {
+      tag: 'Division III', color: '#6f63a0',
+      rows: [
+        ['GPA minimum', 't', 'Pas de minimum national', 'No national minimum'],
+        ['Règle', 't', 'Tu suis les standards de ta fac, comme tout étudiant', 'You follow your school’s standards, like any student'],
+      ],
+    },
+  ]
+  return (
+    <section className="panel p-5">
+      <h3 className="font-display text-lg font-extrabold text-heading">{t('Rester éligible une fois admis', 'Staying eligible once admitted')}</h3>
+      <p className="mt-0.5 text-sm text-secondary">{t('Être recruté ne suffit pas : chaque année, un GPA minimum et une progression vers le diplôme sont exigés pour continuer à nager.', 'Getting recruited isn’t the end: each year a minimum GPA and progress toward your degree are required to keep competing.')}</p>
+      <div className="mt-4 grid gap-3 lg:grid-cols-3">
+        {divs.map((d) => (
+          <div key={d.tag} className="rounded-xl surface-2 border border-hair p-4">
+            <span className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold text-white" style={{ background: d.color }}>{d.tag}</span>
+            <dl className="mt-3 space-y-2">
+              {d.rows.map((r) => (
+                <div key={r[0]}>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide text-tertiary">{t(r[0], r[0] === 'GPA minimum' ? 'Minimum GPA' : r[0] === 'Crédits' ? 'Credits' : r[0] === 'Progression vers le diplôme' ? 'Progress toward degree' : r[0] === 'Règle' ? 'Rule' : r[0])}</dt>
+                  <dd className="text-sm font-medium text-primary">{t(r[2], r[3])}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Ressources officielles (liens vérifiés). Regroupe NCAA, tests et gouvernement
+// US pour tout avoir au même endroit.
+// ---------------------------------------------------------------------------
+function ResourcesHub() {
+  const { t } = useLang()
+  const groups = [
+    {
+      title: 'NCAA', titleEn: 'NCAA',
+      links: [
+        ['NCAA Eligibility Center', 'Créer ton compte, t’enregistrer, suivre la checklist et les standards académiques internationaux (Belgique).', 'Create your account, register, follow the checklist and the international (Belgium) academic standards.', 'https://www.eligibilitycenter.org'],
+        ['Règles & calendrier de recrutement (natation)', 'Quand et comment un coach peut te contacter.', 'When and how a coach may contact you.', 'https://www.ncsasports.org/mens-swimming/recruiting-rules-calendar'],
+      ],
+    },
+    {
+      title: 'Tests & académique', titleEn: 'Tests & academics',
+      links: [
+        ['Duolingo English Test', 'Test d’anglais accepté par de nombreuses facs.', 'English test accepted by many schools.', 'https://englishtest.duolingo.com'],
+        ['SAT (College Board)', 'Inscription et préparation au SAT.', 'SAT registration and prep.', 'https://satsuite.collegeboard.org/sat'],
+      ],
+    },
+    {
+      title: 'Visa & gouvernement US', titleEn: 'Visa & US government',
+      links: [
+        ['Form I-20 (Study in the States)', 'Le document envoyé par la fac pour demander le visa.', 'The document the school issues to apply for the visa.', 'https://studyinthestates.dhs.gov/students/prepare/students-and-the-form-i-20'],
+        ['SEVIS I-901 (paiement)', 'Payer les frais SEVIS avant l’entretien de visa.', 'Pay the SEVIS fee before the visa interview.', 'https://www.fmjfee.com'],
+        ['Visa étudiant F-1 (Dept. of State)', 'Procédure officielle du visa F-1.', 'Official F-1 visa process.', 'https://travel.state.gov/content/travel/en/us-visas/study/student-visa.html'],
+      ],
+    },
+  ]
+  return (
+    <section className="panel p-5">
+      <h3 className="font-display text-lg font-extrabold text-heading">{t('Ressources officielles', 'Official resources')}</h3>
+      <p className="mt-0.5 text-sm text-secondary">{t('Tous les liens utiles au même endroit — NCAA, tests et administration US.', 'Every useful link in one place — NCAA, tests and US admin.')}</p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {groups.map((g) => (
+          <div key={g.title}>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-tertiary">{t(g.title, g.titleEn)}</div>
+            <ul className="space-y-2">
+              {g.links.map((l) => (
+                <li key={l[0]}>
+                  <a href={l[3]} target="_blank" rel="noopener noreferrer" className="group block rounded-xl surface-2 border border-hair p-3 transition hover:border-pool-500">
+                    <span className="flex items-center gap-1.5 font-semibold text-accent group-hover:underline">{l[0]} <span className="text-xs">↗</span></span>
+                    <span className="mt-0.5 block text-xs text-secondary">{t(l[1], l[2])}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export default function Steps() {
   const { t } = useLang()
   const [done, setDone] = useState(() => loadChecklist())
@@ -135,6 +293,10 @@ export default function Steps() {
           </section>
         )
       })}
+
+      <AmateurismCard />
+      <StayEligibleCard />
+      <ResourcesHub />
 
       <p className="px-1 text-xs text-secondary">
         {t(

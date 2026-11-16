@@ -241,6 +241,22 @@ export default function CoachView({ profile }) {
           </div>
         </section>
 
+        {/* ============ ELIGIBILITY SNAPSHOT ============ */}
+        <section className="relative py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-6">
+            <SectionTitle eyebrow={t('Pour les coachs', 'For coaches')} title={t('Éligibilité en un coup d’œil', 'Eligibility snapshot')} />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <EligCard icon="cap" title="NCAA Eligibility Center" value={t('Enregistrement en préparation', 'Registration in progress')} />
+              <EligCard icon="star" title={t('Amateurisme', 'Amateurism')} value={t('Statut amateur préservé', 'Amateur status intact')} />
+              <EligCard icon="book" title={t('Anglais', 'English')} value={lang === 'en' ? profile.englishTestEn : profile.englishTest} />
+              <EligCard icon="doc" title={t('Nationalité & promo', 'Nationality & class')} value={`${lang === 'en' ? profile.nationalityEn : profile.nationality} · ${t('Promo', 'Class of')} ${profile.usEntryYear}`} />
+            </div>
+            <Reveal className="mt-5 text-center text-sm text-white/50">
+              {t('Points clés du recrutement international — détails complets dans la FAQ et le dossier PDF.', 'Key international-recruiting points — full details in the FAQ and the PDF package.')}
+            </Reveal>
+          </div>
+        </section>
+
         {/* ============ CONTACT ============ */}
         <section id="contact" className="relative overflow-hidden py-20 sm:py-28">
           <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(60% 50% at 50% 0%, rgba(45,212,238,0.10), transparent 70%)' }} />
@@ -375,6 +391,18 @@ function ToolCard({ icon, title, subtitle, children }) {
         </div>
       </div>
       {children}
+    </Reveal>
+  )
+}
+
+function EligCard({ icon, title, value }) {
+  return (
+    <Reveal className="cine-card p-5">
+      <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/15 text-cyan-300 ring-1 ring-cyan-400/25">
+        <Icon name={icon} className="h-5 w-5" />
+      </span>
+      <div className="text-xs font-bold uppercase tracking-widest text-cyan-300/70">{title}</div>
+      <div className="mt-1 font-semibold text-white">{value}</div>
     </Reveal>
   )
 }
