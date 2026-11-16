@@ -67,6 +67,64 @@ function CoreCoursesCard() {
   )
 }
 
+// ---------------------------------------------------------------------------
+// Les cours réels d'Arthur (horaire d'une école néerlandophone) rangés dans les
+// catégories core course NCAA. Cases verrouillées (lecture seule) — repère, le
+// mapping officiel est fait par l'Eligibility Center.
+// ---------------------------------------------------------------------------
+function MyCoursesMapping() {
+  const { t } = useLang()
+  const groups = [
+    { fr: '« English » = langue d’instruction', en: '“English” = language of instruction', color: '#1273b8', courses: [['Néerlandais', 'NE', 'Dutch', 'langue des cours', 'the teaching language']] },
+    { fr: 'Langue étrangère', en: 'Foreign language', color: '#3a3f7a', courses: [['Anglais', 'EN', 'English'], ['Français', 'FR', 'French'], ['Allemand', 'DU', 'German']] },
+    { fr: 'Mathématiques', en: 'Math', color: '#1d7a4d', courses: [['Mathématiques', 'WI', 'Mathematics']] },
+    { fr: 'Sciences', en: 'Science', color: '#0e7490', courses: [['Sciences — chimie / physique / bio', 'NW', 'Science — chem / phys / bio']] },
+    { fr: 'Sciences sociales', en: 'Social science', color: '#6f63a0', courses: [['Histoire', 'GE', 'History'], ['Géographie', 'AA', 'Geography'], ['Économie', 'EC', 'Economics']] },
+    { fr: 'Au choix (philo / religion)', en: 'Additional (philosophy / religion)', color: '#b45309', courses: [['Religion', 'GO', 'Religion', 'philo / religion comparée', 'philosophy / comparative religion']] },
+  ]
+  const nonCore = [['Éducation physique', 'LO', 'Physical education']]
+  return (
+    <section className="panel p-5">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Mes cours → core courses NCAA', 'My courses → NCAA core courses')}</p>
+      <p className="mb-4 text-sm text-secondary">{t('D’après ton horaire réel (école néerlandophone). Cases verrouillées : le classement vient des règles NCAA, tu ne le modifies pas. Comme tes cours sont en néerlandais, c’est le néerlandais qui remplit la case « English ».', 'Based on your real timetable (Dutch-language school). Locked cells: the mapping comes from NCAA rules, you don’t change it. Since your classes are in Dutch, Dutch fills the “English” slot.')}</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {groups.map((g) => (
+          <div key={g.fr} className="rounded-xl surface-2 border border-hair p-3">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: g.color }} />
+              <span className="text-[11px] font-bold uppercase tracking-wide text-secondary">{t(g.fr, g.en)}</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {g.courses.map((c) => (
+                <span key={c[1]} className="inline-flex items-center gap-1.5 rounded-lg surface-3 border border-hair px-2.5 py-1 text-xs">
+                  <span className="font-semibold text-heading">{t(c[0], c[2])}</span>
+                  <span className="rounded bg-navy-900 px-1.5 text-[10px] font-bold text-white">{c[1]}</span>
+                  {c[3] && <span className="text-[10px] font-semibold text-tertiary">· {t(c[3], c[4])}</span>}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="rounded-xl bg-flag-500/10 p-3 ring-1 ring-flag-500/20 sm:col-span-2">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="font-bold text-flag-500">✕</span>
+            <span className="text-[11px] font-bold uppercase tracking-wide text-flag-600 dark:text-flag-400">{t('Ne compte pas (non-académique)', 'Doesn’t count (non-academic)')}</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {nonCore.map((c) => (
+              <span key={c[1]} className="inline-flex items-center gap-1.5 rounded-lg surface-3 border border-hair px-2.5 py-1 text-xs">
+                <span className="font-semibold text-heading">{t(c[0], c[2])}</span>
+                <span className="rounded bg-navy-900 px-1.5 text-[10px] font-bold text-white">{c[1]}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      <p className="mt-3 text-[11px] text-tertiary">{t('Ces matières comptent par année sur l’ensemble de ta scolarité (le NCAA exige un nombre d’années par catégorie). La religion compte dans les cases « au choix » quand elle est académique (religion comparée / philosophie, comme ton cours sur les valeurs et la conscience). L’Eligibility Center fait le mapping officiel à partir de tes bulletins — ceci est un repère.', 'These subjects count per year across your whole schooling (the NCAA requires a number of years per area). Religion counts in the “additional” slots when it is academic (comparative religion / philosophy, like your course on values and conscience). The Eligibility Center does the official mapping from your transcripts — this is a guide.')}</p>
+    </section>
+  )
+}
+
 export default function Gpa() {
   const { t } = useLang()
   const [scale, setScale] = useState(() => loadGpaScale())
@@ -256,6 +314,8 @@ export default function Gpa() {
         </section>
 
         <CoreCoursesCard />
+
+        <MyCoursesMapping />
 
       <p className="px-1 text-xs text-secondary">
         {t(
