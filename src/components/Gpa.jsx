@@ -7,6 +7,66 @@ import { PageHeader } from './ui/Page.jsx'
 const rid = () => 's' + Date.now() + Math.random().toString(36).slice(2, 6)
 const blank = () => ({ id: rid(), name: '', grade: '' })
 
+// ---------------------------------------------------------------------------
+// Les « core courses » NCAA : les matières académiques retenues par l'Eligibility
+// Center pour le GPA officiel. (International Student-Athlete Handbook.)
+// ---------------------------------------------------------------------------
+function CoreCoursesCard() {
+  const { t } = useLang()
+  const d1 = [
+    ['Anglais', '4 ans', 'English', '4 yrs'],
+    ['Maths (algèbre ou +)', '3 ans', 'Math (algebra+)', '3 yrs'],
+    ['Sciences (dont 1 labo)', '2 ans', 'Science (incl. 1 lab)', '2 yrs'],
+    ['Anglais / maths / sciences', '+1 an', 'English / math / science', '+1 yr'],
+    ['Sciences sociales', '2 ans', 'Social science', '2 yrs'],
+    ['Au choix (dont langue étrangère)', '4 ans', 'Additional (incl. foreign language)', '4 yrs'],
+  ]
+  const facts = [
+    ['GPA minimum sur ces cours', '2.3 (D1) · 2.2 (D2) — pas la moyenne de toutes tes notes.', 'Minimum GPA on these courses', '2.3 (D1) · 2.2 (D2) — not the average of all your grades.'],
+    ['Règle 10/7 (D1)', '10 des 16 cours finis avant la dernière année, dont 7 en anglais/maths/sciences, puis verrouillés.', '10/7 rule (D1)', '10 of the 16 done before your final year, 7 of them in English/math/science, then locked.'],
+    ['Tests SAT / ACT', 'Non obligatoires depuis 2023 — tout repose sur les core courses.', 'SAT / ACT tests', 'Not required since 2023 — everything rests on the core courses.'],
+    ['Tes langues', 'Néerlandais, allemand, français comptent comme « langue étrangère ».', 'Your languages', 'Dutch, German, French count as “foreign language”.'],
+  ]
+  return (
+    <section className="panel p-5">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-tertiary">{t('Les core courses NCAA', 'NCAA core courses')}</p>
+      <p className="mb-4 text-sm text-secondary">{t('Les matières académiques que le NCAA Eligibility Center retient pour calculer ton GPA officiel. Le sport et les options non-académiques ne comptent pas.', 'The academic subjects the NCAA Eligibility Center keeps to compute your official GPA. Sport and non-academic electives don’t count.')}</p>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div>
+          <div className="mb-2 flex items-baseline justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wide text-tertiary">{t('16 cours exigés (Division I)', '16 required courses (Division I)')}</span>
+            <span className="rounded-full bg-navy-900 px-2 py-0.5 text-[10px] font-bold text-white">16</span>
+          </div>
+          <ul className="overflow-hidden rounded-xl surface-2 border border-hair">
+            {d1.map((r) => (
+              <li key={r[0]} className="flex items-center justify-between gap-3 border-t border-hair px-3 py-2 first:border-t-0">
+                <span className="text-sm text-primary">{t(r[0], r[2])}</span>
+                <span className="shrink-0 rounded-md surface-3 px-2 py-0.5 text-xs font-bold text-heading">{t(r[1], r[3])}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1.5 text-[11px] text-tertiary">{t('Division II : 16 cours aussi, répartis autrement (3 anglais, 2 maths, 2 sciences, 3 en +, 2 sociales, 4 libres).', 'Division II: also 16 courses, split differently (3 English, 2 math, 2 science, 3 more, 2 social, 4 free).')}</p>
+        </div>
+        <div>
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-tertiary">{t('À retenir', 'Key points')}</div>
+          <dl className="space-y-2.5">
+            {facts.map((f) => (
+              <div key={f[0]} className="rounded-xl surface-2 border border-hair p-3">
+                <dt className="text-sm font-semibold text-heading">{t(f[0], f[2])}</dt>
+                <dd className="mt-0.5 text-xs text-secondary">{t(f[1], f[3])}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+      <div className="mt-4 rounded-xl bg-pool-500/10 p-4 ring-1 ring-pool-500/25">
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-accent">{t('Pour un élève belge', 'For a Belgian student')}</div>
+        <p className="text-sm text-primary">{t('Tu ne choisis pas tes core courses : l’Eligibility Center prend ton bulletin belge (filière générale) et mappe chaque matière académique sur ce tableau, selon le barème propre à la Belgique. Le non-académique (éducation physique, options techniques) n’est pas compté.', 'You don’t pick your core courses: the Eligibility Center takes your Belgian report card (general track) and maps each academic subject onto this table, using Belgium-specific standards. Non-academic subjects (PE, technical electives) are not counted.')}</p>
+      </div>
+    </section>
+  )
+}
+
 export default function Gpa() {
   const { t } = useLang()
   const [scale, setScale] = useState(() => loadGpaScale())
@@ -194,6 +254,8 @@ export default function Gpa() {
             ))}
           </div>
         </section>
+
+        <CoreCoursesCard />
 
       <p className="px-1 text-xs text-secondary">
         {t(
