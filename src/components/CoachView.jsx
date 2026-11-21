@@ -187,7 +187,7 @@ export default function CoachView({ profile }) {
         </section>
 
         {/* ============ LE NAGEUR (présentation + progression) ============ */}
-        <CineSection id="swimmer" eyebrow={t('Le nageur', 'The swimmer')} title={t('Qui est Arthur', 'Meet Arthur')}>
+        <CineSection id="swimmer" eyebrow={t('Le nageur', 'The swimmer')} title={t('Qui suis-je', 'Meet me')}>
           <AboutMe profile={profile} coachView />
         </CineSection>
 
