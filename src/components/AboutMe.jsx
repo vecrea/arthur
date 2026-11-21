@@ -145,8 +145,8 @@ export default function AboutMe({ profile, coachView = false }) {
 
   const age = Math.floor((Date.now() - new Date(profile.birthDate)) / (365.25 * 864e5))
   const defaultMsg = t(
-    `Je m'appelle ${profile.name}, nageur belge de ${age} ans spécialisé en sprint (nage libre & dos). Je m'entraîne au ${profile.homeClub} avec ${profile.coach}, et j'ai récemment participé à un stage au Cercle des Nageurs de Marseille. Objectif : rejoindre un programme universitaire NCAA à la rentrée ${profile.usEntryYear} et progresser au plus haut niveau tout en étudiant l'économie.`,
-    `My name is ${profile.name}, a 16-year-old Belgian swimmer specializing in sprint (freestyle & backstroke). I train at ${profile.homeClub} with ${profile.coach}, and recently attended a camp at Cercle des Nageurs de Marseille. Goal: join an NCAA college program in fall ${profile.usEntryYear} and reach the highest level while studying economics.`,
+    `Je m'appelle ${profile.name}, nageur belge de ${age} ans spécialisé en sprint (nage libre & dos). Je m'entraîne au ${profile.homeClub} avec ${profile.coach}, et j'ai récemment participé à un stage au Cercle des Nageurs de Marseille. Objectif : rejoindre un programme universitaire NCAA à la rentrée ${profile.usEntryYear} et progresser au plus haut niveau.`,
+    `My name is ${profile.name}, a 16-year-old Belgian swimmer specializing in sprint (freestyle & backstroke). I train at ${profile.homeClub} with ${profile.coach}, and recently attended a camp at Cercle des Nageurs de Marseille. Goal: join an NCAA college program in fall ${profile.usEntryYear} and reach the highest level.`,
   )
   const message = (lang === 'en' ? A.messageEn : A.messageFr) || defaultMsg
 

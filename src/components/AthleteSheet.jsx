@@ -28,10 +28,10 @@ const L = {
 }
 
 const DEFAULT_BIO_EN =
-  "16-year-old Belgian swimmer specializing in sprint freestyle and backstroke. National-level competitor (Belgian Championships), training at LSC under coach Mathieu Huberty. Recently completed a training camp at the Cercle des Nageurs de Marseille (sub-elite group) under coach Brian. Targeting Fall 2028 enrollment with a major in Economics — motivated, coachable, and committed to combining academic and athletic excellence in the US."
+  "16-year-old Belgian swimmer specializing in sprint freestyle and backstroke. National-level competitor (Belgian Championships), training at LSC under coach Mathieu Huberty. Recently completed a training camp at the Cercle des Nageurs de Marseille (sub-elite group) under coach Brian. Targeting Fall 2028 enrollment — motivated, coachable, and committed to combining academic and athletic excellence in the US."
 
 const DEFAULT_BIO_FR =
-  "Nageur belge de 16 ans, spécialisé en sprint (nage libre & dos). Compétiteur de niveau national (Championnats de Belgique), je m'entraîne au LSC avec le coach Mathieu Huberty. J'ai récemment participé à un stage au Cercle des Nageurs de Marseille (groupe sous-élites) avec le coach Brian. Objectif : intégrer une université américaine (NCAA) à la rentrée 2028 en filière Économie — motivé, à l'écoute et déterminé à allier excellence scolaire et sportive aux États-Unis."
+  "Nageur belge de 16 ans, spécialisé en sprint (nage libre & dos). Compétiteur de niveau national (Championnats de Belgique), je m'entraîne au LSC avec le coach Mathieu Huberty. J'ai récemment participé à un stage au Cercle des Nageurs de Marseille (groupe sous-élites) avec le coach Brian. Objectif : intégrer une université américaine (NCAA) à la rentrée 2028 — motivé, à l'écoute et déterminé à allier excellence scolaire et sportive aux États-Unis."
 
 const FIELDS = [
   { key: 'email', label: { en: 'Email', fr: 'Email' }, ph: { en: 'arthur@email.com', fr: 'arthur@email.com' } },
@@ -43,9 +43,7 @@ const FIELDS = [
   { key: 'sat', label: { en: 'SAT / ACT', fr: 'SAT / ACT' }, ph: { en: 'coming soon', fr: 'à venir' } },
   { key: 'english', label: { en: 'English test', fr: "Test d'anglais" }, ph: { en: 'TOEFL/Duolingo coming', fr: 'TOEFL/Duolingo à venir' } },
   { key: 'videoUrl', label: { en: 'Race video (URL)', fr: 'Vidéo (lien)' }, ph: { en: 'https://youtube.com/...', fr: 'https://youtube.com/...' } },
-  { key: 'ncaaEligibility', label: { en: 'NCAA eligibility (FAQ)', fr: 'Éligibilité NCAA (FAQ)' }, ph: { en: 'Eligibility Center: in progress', fr: 'Eligibility Center : en cours' } },
-  { key: 'visaStatus', label: { en: 'Visa status (FAQ)', fr: 'Visa (FAQ)' }, ph: { en: 'F-1 planned (I-20 on offer)', fr: 'F-1 prévu (I-20 à l’offre)' } },
-]
+  { key: 'ncaaEligibility', label: { en: 'NCAA eligibility (FAQ)', fr: 'Éligibilité NCAA (FAQ)' }, ph: { en: 'Eligibility Center: in progress', fr: 'Eligibility Center : en cours' } },]
 
 export default function AthleteSheet({ profile, coachView = false }) {
   const { lang, t: tr } = useLang()
@@ -149,9 +147,7 @@ export default function AthleteSheet({ profile, coachView = false }) {
           <section>
             <h3 className="mb-2 font-display text-sm font-extrabold uppercase tracking-wide text-flag-600 dark:text-flag-400">{t.academics}</h3>
             <dl className="space-y-1 text-sm">
-              <Row k={t.school} val={lang === 'en' ? profile.currentGradeEn : profile.currentGrade} />
-              <Row k={t.major} val={lang === 'en' ? profile.majorEn : profile.major} />
-              <Row k={t.gpa} val={v(extras.average)} />
+              <Row k={t.school} val={lang === 'en' ? profile.currentGradeEn : profile.currentGrade} />              <Row k={t.gpa} val={v(extras.average)} />
               <Row k={t.sat} val={v(extras.sat)} />
               <Row k={t.english} val={extras.english?.trim() ? extras.english : lang === 'en' ? profile.englishTestEn : profile.englishTest} />
             </dl>

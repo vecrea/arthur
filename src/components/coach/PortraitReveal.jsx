@@ -113,9 +113,8 @@ export default function PortraitReveal({ srcBase, srcReveal, className = '', sty
     }
     const placeholder = (c, variant) => {
       const cy = h * 0.4, r = Math.min(w, h * 0.82) * 0.25, cx = w / 2
-      const halo = c.createRadialGradient(cx, cy, 0, cx, cy, r * 3.2)
-      halo.addColorStop(0, 'rgba(45,212,238,0.13)'); halo.addColorStop(1, 'rgba(45,212,238,0)')
-      c.fillStyle = halo; c.fillRect(0, 0, w, h)
+      // Pas de halo radial de fond : sur mobile, rempli sur tout le canvas, il
+      // laissait un « cercle/rectangle » bleu visible derrière le portrait.
       const bg = c.createLinearGradient(cx - r, cy - r, cx + r, cy + r * 3)
       bg.addColorStop(0, '#26506f'); bg.addColorStop(0.6, '#13293f'); bg.addColorStop(1, '#0a1829')
       c.fillStyle = bg

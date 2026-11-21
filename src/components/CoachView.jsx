@@ -79,6 +79,10 @@ export default function CoachView({ profile }) {
     [profile, bestScm],
   )
   const bestFree = times.find((x) => x.ev.key === '50FR') || times[0]
+  // Temps vedette du bloc Stats : le 50 NL en petit bassin (SCM) si dispo,
+  // sinon le grand bassin (LCM). Plus de conversion yards.
+  const heroTime = bestFree ? (bestFree.scm ?? bestFree.lcm) : null
+  const heroCourse = bestFree && bestFree.scm != null ? 'SCM' : 'LCM'
 
   // Barre de progression du scroll.
   const [prog, setProg] = useState(0)
@@ -177,7 +181,7 @@ export default function CoachView({ profile }) {
           <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 text-center sm:grid-cols-4">
             <Stat text={String(age)} label={t('ans', 'years old')} />
             <Stat text={String(months)} label={t('mois avant la rentrée', 'months to enrollment')} count value={months} />
-            {bestFree && <Stat value={bestFree.scy} decimals={2} label={`${t('meilleur', 'best')} ${t(bestFree.ev.label, bestFree.ev.labelEn)} · yards`} count />}
+            {heroTime != null && <Stat value={heroTime} decimals={2} label={`${t('meilleur', 'best')} ${t(bestFree.ev.label, bestFree.ev.labelEn)} · ${heroCourse}`} count />}
             <Stat text="NCAA" label={t('objectif 2028', '2028 target')} glow="#38bdf8" />
           </div>
         </section>
@@ -195,7 +199,7 @@ export default function CoachView({ profile }) {
               {times.map((x, i) => <TimeCard key={x.ev.key} {...x} delay={(i % 3) * 0.08} />)}
             </div>
             <Reveal className="mt-5 text-center text-sm text-white/50">
-              {t('Meilleurs temps en SCM (petit bassin) et LCM (grand bassin) — conversion yards (SCY) indicative pour les standards US.', 'Best times in SCM (short course) and LCM (long course) — indicative yards (SCY) conversion for US standards.')}
+              {t('Meilleurs temps en SCM (petit bassin) et LCM (grand bassin).', 'Best times in SCM (short course) and LCM (long course).')}
             </Reveal>
           </div>
         </section>
@@ -264,7 +268,7 @@ export default function CoachView({ profile }) {
             <Reveal className="text-center">
               <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-cyan-300/80">{t('Recrutement', 'Recruiting')}</div>
               <h2 className="font-cine text-5xl uppercase leading-none text-white sm:text-7xl cine-glow">{t('Parlons-en', 'Let’s talk')}</h2>
-              <p className="mx-auto mt-4 max-w-xl text-white/70">{t('Présentez-vous — votre message arrive directement à Arthur.', 'Introduce yourself — your message goes straight to Arthur.')}</p>
+              <p className="mx-auto mt-4 max-w-xl text-white/70">{t('Présentez-vous — votre message m’arrive directement.', 'Introduce yourself — your message goes straight to me.')}</p>
             </Reveal>
 
             {(ig || email || phone) && (
@@ -290,7 +294,7 @@ export default function CoachView({ profile }) {
             <ToolCard icon="star" title={t('Laisser un mot', 'Leave a note')} subtitle={t('Un retour, un encouragement.', 'Feedback or encouragement.')}><CoachMessageForm type="note" minimal messagePlaceholder={t('Votre mot pour Arthur…', 'Your note for Arthur…')} submitLabel={t('Envoyer', 'Send')} /></ToolCard>
           </div>
           <div className="mt-5">
-            <ToolCard icon="book" title={t('Questions fréquentes', 'Recruiting FAQ')} subtitle={t('Académique, éligibilité, visa — déjà répondu.', 'Academics, eligibility, visa — already answered.')}><CoachFaq profile={profile} /></ToolCard>
+            <ToolCard icon="book" title={t('Questions fréquentes', 'Recruiting FAQ')} subtitle={t('Académique, éligibilité — déjà répondu.', 'Academics, eligibility — already answered.')}><CoachFaq profile={profile} /></ToolCard>
           </div>
         </section>
 
@@ -341,7 +345,7 @@ function Stat({ value, text, label, decimals = 0, count = false, glow }) {
   )
 }
 
-function CourseTime({ label, time, scy }) {
+function CourseTime({ label, time }) {
   if (time == null) {
     return (
       <div className="opacity-40">
@@ -354,12 +358,11 @@ function CourseTime({ label, time, scy }) {
     <div>
       <div className="text-[10px] font-bold uppercase tracking-widest text-cyan-300/70">{label}</div>
       <div className="mt-1 font-cine text-3xl text-white sm:text-4xl">{formatTime(time)}</div>
-      <div className="mt-0.5 text-[11px] text-white/45">≈ {formatTime(scy)} yd</div>
     </div>
   )
 }
 
-function TimeCard({ ev, lcm, scm, scyLcm, scyScm, scy, delay }) {
+function TimeCard({ ev, lcm, scm, scy, delay }) {
   const { t, lang } = useLang()
   const lv = LEVELS[scyLevel(scy, ev.key)]
   return (
@@ -371,8 +374,8 @@ function TimeCard({ ev, lcm, scm, scyLcm, scyScm, scy, delay }) {
       </div>
       <div className="relative mt-1 text-[11px] uppercase tracking-wide text-white/40">{t(ev.stroke, STROKE_EN[ev.stroke])}</div>
       <div className="relative mt-3 grid grid-cols-2 gap-3">
-        <CourseTime label="SCM" time={scm} scy={scyScm} />
-        <CourseTime label="LCM" time={lcm} scy={scyLcm} />
+        <CourseTime label="SCM" time={scm} />
+        <CourseTime label="LCM" time={lcm} />
       </div>
     </Reveal>
   )
