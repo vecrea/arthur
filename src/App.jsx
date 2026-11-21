@@ -23,20 +23,15 @@ import { universities } from './data/schools.js'
 import { computeMatches } from './lib/score.js'
 import { loadFavorites, saveFavorites, loadTheme, saveTheme } from './lib/storage.js'
 import { useLang } from './lib/i18n.jsx'
+import { isCoachUrl } from './lib/coachUrl.js'
 import { localizeUni } from './data/uni-en.js'
 
 export default function App() {
   const { t, lang } = useLang()
   const [tab, setTab] = useState('home')
   const [theme, setTheme] = useState(() => loadTheme())
-  // Mode coach (lecture seule) : /?coach dans l'URL → page dédiée pour les coachs.
-  const coachMode = useMemo(() => {
-    try {
-      return new URLSearchParams(window.location.search).has('coach')
-    } catch {
-      return false
-    }
-  }, [])
+  // Mode coach (lecture seule) : /coach (ou ?coach) dans l'URL → page dédiée.
+  const coachMode = useMemo(() => isCoachUrl(), [])
   const [favorites, setFavorites] = useState(() => loadFavorites())
   const [filters, setFilters] = useState({
     search: '',

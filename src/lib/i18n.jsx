@@ -4,21 +4,16 @@
 // La langue est mémorisée dans le navigateur.
 // ---------------------------------------------------------------------------
 import { createContext, useContext, useEffect, useState } from 'react'
+import { isCoachUrl } from './coachUrl.js'
 
 const KEY = 'pitusa.lang.v1'
 const LangContext = createContext({ lang: 'fr', setLang: () => {}, t: (fr) => fr })
 
 // Tout le site est en anglais par défaut (public NCAA / coachs US). La page
-// coach (?coach) force toujours l'anglais, sans écraser ni lire la préférence
-// mémorisée ; l'appli principale part en anglais mais retient un éventuel
-// passage en français.
-const isCoach = (() => {
-  try {
-    return new URLSearchParams(window.location.search).has('coach')
-  } catch {
-    return false
-  }
-})()
+// coach (/coach ou ?coach) force toujours l'anglais, sans écraser ni lire la
+// préférence mémorisée ; l'appli principale part en anglais mais retient un
+// éventuel passage en français.
+const isCoach = isCoachUrl()
 
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
