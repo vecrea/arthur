@@ -47,7 +47,7 @@ export default function CoachRequests() {
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white"><Icon name="arrow" className="h-5 w-5" /></span>
         <div>
           <div className="font-bold text-emerald-700 dark:text-emerald-300">{t('Demande envoyée ✓', 'Request sent ✓')}</div>
-          <div className="text-sm text-secondary">{t('Arthur te recontacte vite.', 'Arthur will get back to you soon.')}</div>
+          <div className="text-sm text-secondary">{t('Je te recontacte vite.', 'I’ll get back to you soon.')}</div>
         </div>
       </div>
     )

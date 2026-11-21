@@ -33,7 +33,7 @@ export default function CoachMessageForm({ type = 'interest', minimal = false, m
         </span>
         <div>
           <div className="font-bold text-emerald-700 dark:text-emerald-300">{t('Message envoyé ✓', 'Message sent ✓')}</div>
-          <div className="text-sm text-secondary">{t('Arthur le verra et te répondra à ton adresse.', 'Arthur will see it and reply to your email.')}</div>
+          <div className="text-sm text-secondary">{t('Je le verrai et te répondrai à ton adresse.', 'I’ll see it and reply to your email.')}</div>
         </div>
       </div>
     )
@@ -62,7 +62,7 @@ export default function CoachMessageForm({ type = 'interest', minimal = false, m
       </div>
       {status === 'error' && (
         <p className="text-sm font-semibold text-flag-600 dark:text-flag-400">
-          {t('Envoi impossible pour le moment. Réessaie, ou écris directement à Arthur.', 'Could not send right now. Try again, or email Arthur directly.')}
+          {t('Envoi impossible pour le moment. Réessaie, ou écris-moi directement.', 'Could not send right now. Try again, or email me directly.')}
         </p>
       )}
     </form>

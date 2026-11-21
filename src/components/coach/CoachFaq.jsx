@@ -33,7 +33,7 @@ export default function CoachFaq({ profile }) {
         <CoachMessageForm
           type="question"
           minimal
-          messagePlaceholder={t('Ta question à Arthur…', 'Your question for Arthur…')}
+          messagePlaceholder={t('Ta question pour moi…', 'Your question for me…')}
           submitLabel={t('Envoyer la question', 'Send question')}
         />
       </div>

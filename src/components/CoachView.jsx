@@ -236,7 +236,7 @@ export default function CoachView({ profile }) {
             <SectionTitle eyebrow={t('Dossier', 'Package')} title={t('Le dossier complet', 'The full package')} />
             <Reveal>
               <div className="cine-card overflow-hidden p-7 text-center sm:p-10">
-                <p className="mx-auto mb-6 max-w-xl text-white/70">{t('La fiche de recrutement en PDF (académique, natation, meilleurs temps) + le contact d’Arthur à enregistrer d’un geste.', 'The recruiting sheet as a PDF (academics, swimming, best times) + Arthur’s contact to save in one tap.')}</p>
+                <p className="mx-auto mb-6 max-w-xl text-white/70">{t('La fiche de recrutement en PDF (académique, natation, meilleurs temps) + mon contact à enregistrer d’un geste.', 'The recruiting sheet as a PDF (academics, swimming, best times) + my contact to save in one tap.')}</p>
                 <div className="flex justify-center">
                   <DownloadPacket profile={profile} />
                 </div>
@@ -281,7 +281,7 @@ export default function CoachView({ profile }) {
 
             <Reveal delay={0.1} className="mt-8">
               <div className="cine-card p-5 sm:p-7">
-                <CoachMessageForm type="interest" messagePlaceholder={t('Votre message (programme, intérêt, questions…)', 'Your message (program, interest, questions…)')} submitLabel={t('Envoyer à Arthur', 'Send to Arthur')} />
+                <CoachMessageForm type="interest" messagePlaceholder={t('Votre message (programme, intérêt, questions…)', 'Your message (program, interest, questions…)')} submitLabel={t('M’envoyer', 'Send to me')} />
               </div>
             </Reveal>
           </div>
@@ -291,7 +291,7 @@ export default function CoachView({ profile }) {
         <section className="relative mx-auto max-w-6xl px-6 pb-24">
           <div className="grid gap-5 lg:grid-cols-2">
             <ToolCard icon="steps" title={t('Demandes rapides', 'Quick requests')} subtitle={t('Vidéo, relevé, appel, temps récents.', 'Video, transcript, call, latest times.')}><CoachRequests /></ToolCard>
-            <ToolCard icon="star" title={t('Laisser un mot', 'Leave a note')} subtitle={t('Un retour, un encouragement.', 'Feedback or encouragement.')}><CoachMessageForm type="note" minimal messagePlaceholder={t('Votre mot pour Arthur…', 'Your note for Arthur…')} submitLabel={t('Envoyer', 'Send')} /></ToolCard>
+            <ToolCard icon="star" title={t('Laisser un mot', 'Leave a note')} subtitle={t('Un retour, un encouragement.', 'Feedback or encouragement.')}><CoachMessageForm type="note" minimal messagePlaceholder={t('Votre mot pour moi…', 'Your note for me…')} submitLabel={t('Envoyer', 'Send')} /></ToolCard>
           </div>
           <div className="mt-5">
             <ToolCard icon="book" title={t('Questions fréquentes', 'Recruiting FAQ')} subtitle={t('Académique, éligibilité — déjà répondu.', 'Academics, eligibility — already answered.')}><CoachFaq profile={profile} /></ToolCard>
